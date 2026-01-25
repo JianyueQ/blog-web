@@ -37,13 +37,44 @@
 import {computed, onMounted, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import {siteDateStatistics} from '@/utils/getTime'
-import {getSiteConfig, getSocialLinks} from '@/api'
+import {getSiteConfig, getSocialLinks} from "@/api/front/links.js";
 
 const route = useRoute()
 const currentYear = computed(() => new Date().getFullYear())
 
 // 社交链接和网站配置
-const socialLinks = ref([])
+const socialLinks = ref([
+  {
+    "name": "Github",
+    "icon": "/images/icon/github.png",
+    "tip": "去 Github 看看",
+    "url": ""
+  },
+  {
+    "name": "BiliBili",
+    "icon": "/images/icon/bilibili.png",
+    "tip": "(゜-゜)つロ 干杯 ~",
+    "url": ""
+  },
+  {
+    "name": "QQ",
+    "icon": "/images/icon/qq.png",
+    "tip": "有什么事吗",
+    "url": ""
+  },
+  {
+    "name": "Email",
+    "icon": "/images/icon/email.png",
+    "tip": "来封 Email ~",
+    "url": ""
+  },
+  {
+    "name": "Telegram",
+    "icon": "/images/icon/telegram.png",
+    "tip": "你懂的 ~",
+    "url": ""
+  }
+])
 const siteConfig = ref({
   brandName: 'jianyue.cloud',
   siteStartDate: '2024-01-01'
@@ -53,15 +84,15 @@ const siteConfig = ref({
 const hoveredIndex = ref(null)
 
 // 是否收起（非首页收起）
-const isCollapsed = computed(() => route.path !== '/')
+const isCollapsed = computed(() => route.path !== '/home')
 
 // 加载数据
 onMounted(async () => {
   try {
-    socialLinks.value = await getSocialLinks()
-    siteConfig.value = await getSiteConfig()
+    socialLinks.value = (await getSocialLinks()).data
+    siteConfig.value = (await getSiteConfig()).data
   } catch (error) {
-    console.error('Failed to load footer data:', error)
+
   }
 })
 
@@ -78,12 +109,12 @@ let clickTimer = null
 
 const handleBrandClick = () => {
   clickCount++
-  
+
   // 清除之前的定时器
   if (clickTimer) {
     clearTimeout(clickTimer)
   }
-  
+
   // 2 秒内点击 5 次触发
   if (clickCount >= 5) {
     clickCount = 0
@@ -91,7 +122,7 @@ const handleBrandClick = () => {
     window.open('/backstage/login', '_blank')
     return
   }
-  
+
   // 2 秒后重置计数
   clickTimer = setTimeout(() => {
     clickCount = 0
@@ -149,12 +180,12 @@ const handleBrandClick = () => {
       cursor: pointer;
       transition: all 0.3s;
       user-select: none;
-      
+
       &:hover {
         color: #fff;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
       }
-      
+
       &:active {
         transform: scale(0.95);
       }

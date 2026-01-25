@@ -1,7 +1,7 @@
 <template>
   <header class="header" :class="{ 'mobile-open': mobileMenuOpen }">
     <div class="container">
-      <div class="logo" @click="router.push('/')">
+      <div class="logo" @click="router.push('/home')">
         <img src="/images/icon/logo.png" alt="Logo" />
         <span class="logo-text">jianyue</span>
       </div>
@@ -13,7 +13,7 @@
           :key="item.path"
           :to="item.path"
           class="nav-item"
-          active-class="active"
+          exact-active-class="active"
         >
           <span class="nav-text">{{ item.name }}</span>
         </router-link>
@@ -50,7 +50,7 @@ const router = useRouter()
 const mobileMenuOpen = ref(false)
 
 const navItems = [
-  { name: '首页', path: '/' },
+  { name: '首页', path: '/home' },
   { name: '归档', path: '/archive' },
   { name: '友链', path: '/links' },
   { name: '相册', path: '/gallery' },

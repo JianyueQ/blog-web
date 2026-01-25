@@ -50,6 +50,7 @@ import { ref } from 'vue'
 
 const skills = ref([])
 
+//todo 添加联系信息
 const contacts = ref([
   { type: 'Email', value: 'your@email.com', icon: '/images/icon/email.png' },
   { type: 'GitHub', value: 'github.com/yourname', icon: '/images/icon/github.png' },

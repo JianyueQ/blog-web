@@ -27,7 +27,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getUserInfo, getSocialLinks } from '@/api/index.js'
+
 
 const name = ref()
 const title = ref()
@@ -37,12 +37,11 @@ const description = ref()
 // 加载数据
 onMounted(async () => {
   try {
-    const userInfo = await getUserInfo()
-    name.value = userInfo.name
-    title.value = userInfo.title
-    description.value = userInfo.description
+    // const userInfo = await getUserInfo()
+    // name.value = userInfo.name
+    // title.value = userInfo.title
+    // description.value = userInfo.description
 
-    // socialLinks.value = await getSocialLinks()
   } catch (error) {
     console.error('Failed to load profile data:', error)
   }
