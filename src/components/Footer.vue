@@ -89,8 +89,9 @@ const isCollapsed = computed(() => route.path !== '/home')
 // 加载数据
 onMounted(async () => {
   try {
-    socialLinks.value = (await getSocialLinks()).data
-    siteConfig.value = (await getSiteConfig()).data
+    //todo
+    // socialLinks.value = (await getSocialLinks()).data
+    // siteConfig.value = (await getSiteConfig()).data
   } catch (error) {
 
   }

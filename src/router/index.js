@@ -1,4 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
+import {getToken} from "@/utils/auth.js"
+import {ElMessage} from 'element-plus'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,6 +9,7 @@ const router = createRouter({
         {
             path: '/',
             component: () => import('@/layouts/FrontLayout.vue'),
+            redirect: '/home',
             children: [
                 {
                     path: 'home',
@@ -47,9 +50,81 @@ const router = createRouter({
         },
         // ==================== 后台路由 ====================
         {
-            path: '/backstage/layout',
-            component: () => import('@/views/backstage/layout/index.vue'),
-            children: []
+            path: '/backstage',
+            component: () => import('@/layouts/BackstageLayout.vue'),
+            redirect: '/backstage/home',
+            meta: { requiresAuth: true },
+            children: [
+                {
+                    path: 'home',
+                    name: 'backstageHome',
+                    component: () => import('@/views/backstage/Home/index.vue'),
+                    meta: { title: '首页' }
+                },
+                {
+                    path: 'article',
+                    name: 'backstageArticle',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '文章管理' },
+                    props: { title: '文章管理' }
+                },
+                {
+                    path: 'category',
+                    name: 'backstageCategory',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '分类管理' },
+                    props: { title: '分类管理' }
+                },
+                {
+                    path: 'tag',
+                    name: 'tag',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '标签管理' },
+                    props: { title: '标签管理' }
+                },
+                {
+                    path: 'gallery',
+                    name: 'backstageGallery',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '图库管理' },
+                    props: { title: '图库管理' }
+                },
+                {
+                    path: 'upload',
+                    name: 'backstageUpload',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '文件上传' },
+                    props: { title: '文件上传' }
+                },
+                {
+                    path: 'comment',
+                    name: 'backstageComment',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '评论管理' },
+                    props: { title: '评论管理' }
+                },
+                {
+                    path: 'links',
+                    name: 'backstageLinks',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '友链管理' },
+                    props: { title: '友链管理' }
+                },
+                {
+                    path: 'user',
+                    name: 'backstageUser',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '用户管理' },
+                    props: { title: '用户管理' }
+                },
+                {
+                    path: 'config',
+                    name: 'backstageConfig',
+                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
+                    meta: { title: '系统配置' },
+                    props: { title: '系统配置' }
+                }
+            ]
         },
         // 最后添加 404 页面路由
         {
@@ -62,23 +137,56 @@ const router = createRouter({
     ]
 })
 
-// 路由守卫
+/**
+ * 路由守卫
+ *
+ * @description 全局前置守卫，用于控制路由访问权限
+ * - 前台路由：无需登录，任何人都可以访问
+ * - 后台路由：需要登录验证，未登录自动跳转到登录页
+ * - 登录页：已登录状态下访问会自动跳转到后台首页
+ */
 router.beforeEach((to, from, next) => {
-    const token = localStorage.getItem('admin_token')
+    const token = getToken()
+    const isBackstageRoute = to.path.startsWith('/backstage')
+    const isLoginPage = to.path === '/backstage/login'
 
-    // 需要登录的页面
-    // if (to.meta.requiresAuth && !token) {
-    //   next('/backstage/login')
-    //   return
+    // 设置页面标题
+    // if (to.meta.title) {
+    //     document.title = to.meta.title + ' - 博客'
     // }
 
-    // 已登录用户不能访问登录页
-    // if (to.meta.requiresGuest && token) {
-    //   next('/backstage/dashboard')
-    //   return
-    // }
-
-    next()
+    // 判断是否是后台路由（排除登录页）
+    if (isBackstageRoute && !isLoginPage) {
+        // 需要验证 token
+        if (!token) {
+            // 未登录，提示并跳转到登录页
+            ElMessage.warning('请先登录')
+            next({
+                path: '/backstage/login',
+                query: { redirect: to.fullPath } // 保存目标路由，登录后可跳转回来
+            })
+            return
+        }
+        // 已登录，允许访问
+        next()
+    } else if (isLoginPage) {
+        // 如果已登录，访问登录页时自动跳转到后台首页
+        if (token) {
+            // 如果有重定向参数，则跳转到重定向页面
+            const redirect = to.query.redirect
+            if (redirect && redirect.startsWith('/backstage')) {
+                next({ path: redirect })
+            } else {
+                next({ path: '/backstage/home' })
+            }
+            return
+        }
+        // 未登录，允许访问登录页
+        next()
+    } else {
+        // 前台路由，直接放行
+        next()
+    }
 })
 
 export default router
