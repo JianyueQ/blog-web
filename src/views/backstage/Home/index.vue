@@ -1,391 +1,439 @@
 <template>
-  <div class="dashboard-container">
+  <div class="dashboard-pro">
+    <!-- 欢迎栏 -->
+    <div class="welcome-banner fade-in">
+      <div class="welcome-content">
+        <h1>欢迎回来，管理员</h1>
+        <p>这是您今天的博客概览。所有系统运行正常，继续保持！</p>
+      </div>
+      <div class="current-time">
+        <el-icon><Calendar/></el-icon>
+        <span>{{ currentTime }}</span>
+      </div>
+    </div>
+
+    <!-- 统计核心指标 -->
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stats-card slide-in delay-100">
-          <div class="stats-content">
-            <div class="stats-icon" style="background: var(--backstage-gradient-primary);">
-              <el-icon :size="30"><Document /></el-icon>
+      <el-col :xs="24" :sm="12" :lg="6" v-for="(item, index) in statsCards" :key="index">
+        <div class="pro-card stats-card slide-in" :style="{ animationDelay: (index * 0.1) + 's' }">
+          <div class="card-body">
+            <div class="stats-icon" :style="{ backgroundColor: item.color + '15', color: item.color }">
+              <el-icon><component :is="item.icon" /></el-icon>
             </div>
             <div class="stats-info">
-              <div class="stats-label">文章总数</div>
-              <div class="stats-value count-up">128</div>
+              <div class="label">{{ item.label }}</div>
+              <div class="value">{{ item.value }}</div>
+              <div class="trend" :class="item.trend > 0 ? 'up' : 'down'">
+                <el-icon><CaretTop v-if="item.trend > 0"/><CaretBottom v-else/></el-icon>
+                <span>{{ Math.abs(item.trend) }}%</span>
+                <span class="trend-label">自上周</span>
+              </div>
             </div>
           </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stats-card slide-in delay-200">
-          <div class="stats-content">
-            <div class="stats-icon" style="background: var(--backstage-gradient-success);">
-              <el-icon :size="30"><View /></el-icon>
-            </div>
-            <div class="stats-info">
-              <div class="stats-label">总访问量</div>
-              <div class="stats-value count-up">5,268</div>
-            </div>
+          <div class="mini-chart">
+             <!-- 简单的 CSS 渐变背景作为迷你图占位 -->
+             <div class="chart-line" :style="{ background: 'linear-gradient(90deg, ' + item.color + '00 0%, ' + item.color + '44 100%)' }"></div>
           </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stats-card slide-in delay-300">
-          <div class="stats-content">
-            <div class="stats-icon" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);">
-              <el-icon :size="30"><ChatDotRound /></el-icon>
-            </div>
-            <div class="stats-info">
-              <div class="stats-label">评论总数</div>
-              <div class="stats-value count-up">342</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-
-      <el-col :xs="24" :sm="12" :lg="6">
-        <el-card class="stats-card slide-in delay-400">
-          <div class="stats-content">
-            <div class="stats-icon" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
-              <el-icon :size="30"><Link /></el-icon>
-            </div>
-            <div class="stats-info">
-              <div class="stats-label">友链数量</div>
-              <div class="stats-value count-up">18</div>
-            </div>
-          </div>
-        </el-card>
+        </div>
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" style="margin-top: 24px;">
+    <el-row :gutter="20" class="main-content-row">
+      <!-- 最近动态 -->
       <el-col :xs="24" :lg="16">
-        <el-card class="slide-in delay-300">
-          <template #header>
-            <div class="card-header">
-              <span>最近文章</span>
+        <div class="pro-card content-card slide-in delay-300">
+          <div class="card-header">
+            <div class="title-area">
+              <span class="title">内容中心动态</span>
+              <span class="subtitle">实时监控您的文章发布状态</span>
             </div>
-          </template>
-          <el-table :data="recentArticles" style="width: 100%">
-            <el-table-column prop="title" label="标题" />
-            <el-table-column prop="category" label="分类" width="120" />
-            <el-table-column prop="date" label="发布时间" width="180" />
-          </el-table>
-        </el-card>
+            <el-button link type="primary">查看全部</el-button>
+          </div>
+          <div class="card-body">
+            <el-table :data="recentArticles" style="width: 100%" class="pro-table">
+              <el-table-column label="文章标题" min-width="250">
+                <template #default="scope">
+                  <div class="article-title-cell">
+                    <div class="article-icon"><Document /></div>
+                    <span>{{ scope.row.title }}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="category" label="分类" width="120">
+                <template #default="scope">
+                  <el-tag :type="getTagType(scope.row.category)" size="small" effect="light">
+                    {{ scope.row.category }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="date" label="发布时间" width="180" />
+              <el-table-column label="操作" width="100" fixed="right">
+                <template #default>
+                  <el-button link type="primary" size="small">编辑</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
       </el-col>
 
+      <!-- 快捷指令 -->
       <el-col :xs="24" :lg="8">
-        <el-card class="slide-in delay-400">
-          <template #header>
-            <div class="card-header">
-              <span>快捷操作</span>
-            </div>
-          </template>
-          <div class="quick-actions">
-            <el-button type="primary" :icon="Edit" @click="handleAction('写文章')" class="btn-hover">写文章</el-button>
-            <el-button type="success" :icon="Upload" @click="handleAction('上传图片')" class="btn-hover">上传图片</el-button>
-            <el-button type="warning" :icon="Setting" @click="handleAction('系统设置')" class="btn-hover">系统设置</el-button>
-            <el-button type="info" :icon="View" @click="handleAction('查看网站')" class="btn-hover">查看网站</el-button>
+        <div class="pro-card quick-card slide-in delay-400">
+          <div class="card-header">
+            <span class="title">快捷创作指令</span>
           </div>
-        </el-card>
+          <div class="card-body">
+            <div class="quick-grid">
+              <div v-for="(act, idx) in quickActions" :key="idx" 
+                   class="quick-item" @click="handleAction(act.label)">
+                <div class="icon-box" :style="{ color: act.color, backgroundColor: act.color + '10' }">
+                  <el-icon><component :is="act.icon" /></el-icon>
+                </div>
+                <span>{{ act.label }}</span>
+              </div>
+            </div>
+            
+            <div class="system-status">
+              <div class="status-header">系统运行状态</div>
+              <div class="status-item">
+                <span class="label">CPU 使用率</span>
+                <el-progress :percentage="12" status="success" :stroke-width="4" />
+              </div>
+              <div class="status-item">
+                <span class="label">内存 占用</span>
+                <el-progress :percentage="35" :stroke-width="4" />
+              </div>
+            </div>
+          </div>
+        </div>
       </el-col>
     </el-row>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { Document, View, ChatDotRound, Link, Edit, Upload, Setting } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+import { 
+  Document, View, ChatDotRound, Link, Edit, 
+  Upload, Setting, Calendar, CaretTop, CaretBottom,
+  Plus, Monitor, Collection, Operation
+} from '@element-plus/icons-vue'
+
+const currentTime = ref('')
+const updateTime = () => {
+  const now = new Date()
+  currentTime.value = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+onMounted(() => {
+  updateTime()
+  setInterval(updateTime, 60000)
+})
+
+const statsCards = [
+  { label: '文章总数', value: '1,284', icon: Document, color: '#1677ff', trend: 12.5 },
+  { label: '访客总量', value: '52,862', icon: View, color: '#52c41a', trend: 8.2 },
+  { label: '互动评论', value: '842', icon: ChatDotRound, color: '#faad14', trend: -2.4 },
+  { label: '友链数量', value: '126', icon: Link, color: '#722ed1', trend: 5.1 }
+]
 
 const recentArticles = ref([
-  { title: '欢迎使用简悦博客后台管理系统', category: '公告', date: '2026-01-28 10:00:00' },
-  { title: 'Vue3 开发实战技巧分享', category: '技术', date: '2026-01-27 15:30:00' },
-  { title: 'Element Plus 组件使用指南', category: '教程', date: '2026-01-26 09:20:00' },
-  { title: '博客系统性能优化实践', category: '技术', date: '2026-01-25 14:15:00' },
-  { title: '前端工程化最佳实践', category: '技术', date: '2026-01-24 11:45:00' }
+  { title: 'PRO MAX 2.0 视觉更新说明', category: '公告', date: '2026-01-29 10:00' },
+  { title: '现代化后台架构演进实践', category: '技术', date: '2026-01-28 15:30' },
+  { title: 'Element Plus 极致自定义指南', category: '教程', date: '2026-01-27 09:20' },
+  { title: '博客响应式布局深度优化', category: '技术', date: '2026-01-26 14:15' },
+  { title: '从零开始构建全栈博客', category: '教程', date: '2026-01-25 11:45' }
 ])
 
+const quickActions = [
+  { label: '写文章', icon: Plus, color: '#1677ff' },
+  { label: '传图片', icon: Upload, color: '#52c41a' },
+  { label: '配系统', icon: Setting, color: '#faad14' },
+  { label: '看前台', icon: Monitor, color: '#722ed1' },
+  { label: '分类集', icon: Collection, color: '#13c2c2' },
+  { label: '管理台', icon: Operation, color: '#eb2f96' }
+]
+
+const getTagType = (cat) => {
+  const map = { '公告': 'warning', '技术': 'primary', '教程': 'success' }
+  return map[cat] || 'info'
+}
+
 const handleAction = (action) => {
-  ElMessage.info(`${action}功能开发中...`)
+  // TODO: 之后根据需要添加交互, 目前使用 ElMessage.info(`${action}模块正在加载...`)
 }
 </script>
 
 <style scoped lang="scss">
-.dashboard-container {
-  .stats-card {
-    margin-bottom: 24px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--backstage-border-light);
-
-    &:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: var(--backstage-shadow-hover);
-      border-color: var(--backstage-primary-light);
-    }
-
-    :deep(.el-card__body) {
-      background-color: var(--backstage-card-bg) !important;
-      padding: 28px !important;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stats-content {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      position: relative;
-      z-index: 2;
-
-      .stats-icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        box-shadow: var(--backstage-shadow-base);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.6s ease;
-        }
-
-        &:hover::before {
-          left: 100%;
-        }
-
-        :deep(.el-icon) {
-          font-size: 32px;
-          transition: transform 0.3s ease;
-        }
-
-        &:hover :deep(.el-icon) {
-          transform: scale(1.1);
-        }
-      }
-
-      .stats-info {
-        flex: 1;
-
-        .stats-label {
-          font-size: 14px;
-          color: var(--backstage-text-secondary);
-          margin-bottom: 12px;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .stats-value {
-          font-size: 32px;
-          font-weight: bold;
-          color: var(--backstage-text-primary);
-          font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-          transition: color 0.3s ease;
-        }
-
-        &:hover .stats-value {
-          color: var(--backstage-primary);
-        }
-      }
-    }
-  }
-
-  .card-header {
+.dashboard-pro {
+  .welcome-banner {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 600;
-    color: var(--backstage-text-primary);
-    font-size: 18px;
-    padding: 0 8px;
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 8px;
-      width: 40px;
-      height: 3px;
-      background: var(--backstage-primary);
-      border-radius: 2px;
+    margin-bottom: 24px;
+    
+    .welcome-content {
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--backstage-text-primary);
+        margin: 0 0 8px 0;
+      }
+      p {
+        font-size: 14px;
+        color: var(--backstage-text-secondary);
+        margin: 0;
+      }
+    }
+    
+    .current-time {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--backstage-card-bg);
+      border: 1px solid var(--backstage-border-color);
+      border-radius: var(--backstage-radius-lg);
+      font-size: 14px;
+      color: var(--backstage-text-regular);
+      box-shadow: var(--backstage-shadow-light);
+      
+      .el-icon {
+        color: var(--backstage-primary);
+      }
     }
   }
 
-  :deep(.el-card) {
-    border-radius: 16px;
-    box-shadow: var(--backstage-shadow-base);
-    transition: all 0.3s ease;
-    border: 1px solid var(--backstage-border-light);
+  .pro-card {
+    background: var(--backstage-card-bg);
+    border: 1px solid var(--backstage-border-color);
+    border-radius: var(--backstage-radius-xl);
+    box-shadow: var(--backstage-shadow-light);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    margin-bottom: 20px;
 
     &:hover {
-      box-shadow: var(--backstage-shadow-hover);
-      border-color: var(--backstage-primary-light);
+      box-shadow: var(--backstage-shadow-base);
+      transform: translateY(-2px);
     }
-
-    .el-card__header {
-      background-color: var(--backstage-card-bg);
-      border-bottom: 1px solid var(--backstage-border-light);
-      padding: 20px 24px;
-      border-radius: 16px 16px 0 0;
+    
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--backstage-border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--backstage-text-primary);
+      }
+      
+      .subtitle {
+        display: block;
+        font-size: 12px;
+        color: var(--backstage-text-secondary);
+        font-weight: 400;
+        margin-top: 2px;
+      }
     }
+    
+    .card-body {
+      padding: 20px;
+    }
+  }
 
-    .el-card__body {
+  .stats-card {
+    position: relative;
+    .card-body {
+      display: flex;
+      gap: 16px;
       padding: 24px;
-      border-radius: 0 0 16px 16px;
-    }
-  }
-
-  :deep(.el-table) {
-    background-color: transparent;
-    border-radius: 12px;
-    overflow: hidden;
-
-    th {
-      background-color: var(--backstage-card-bg);
-      color: var(--backstage-text-primary);
-      font-weight: 600;
-      font-size: 14px;
-      padding: 16px;
-      border-bottom: 1px solid var(--backstage-border-light);
-    }
-
-    td {
-      color: var(--backstage-text-regular);
-      font-size: 14px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--backstage-border-lighter);
-      transition: all 0.3s ease;
-    }
-
-    tr {
-      transition: all 0.3s ease;
-    }
-
-    tr:hover > td {
-      background-color: var(--backstage-card-hover-bg) !important;
-      transform: translateX(4px);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-  }
-
-  .quick-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    .el-button {
-      width: 100%;
-      height: 48px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 12px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      border: 1px solid transparent;
+      z-index: 1;
       position: relative;
-      overflow: hidden;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
+    }
+    
+    .stats-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .stats-info {
+      .label {
+        font-size: 13px;
+        color: var(--backstage-text-secondary);
+        margin-bottom: 4px;
+      }
+      .value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--backstage-text-primary);
+        line-height: 1;
+        margin-bottom: 8px;
+      }
+      .trend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        
+        &.up { color: var(--backstage-success); }
+        &.down { color: var(--backstage-danger); }
+        
+        .trend-label {
+          color: var(--backstage-text-placeholder);
+          margin-left: 2px;
+          font-weight: 400;
+        }
+      }
+    }
+    
+    .mini-chart {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      opacity: 0.3;
+      pointer-events: none;
+      
+      .chart-line {
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.6s ease;
+        clip-path: polygon(0% 100%, 0% 60%, 10% 70%, 20% 40%, 30% 60%, 40% 30%, 50% 50%, 60% 20%, 70% 40%, 80% 10%, 90% 30%, 100% 0%, 100% 100%);
       }
+    }
+  }
 
-      &:hover::before {
-        left: 100%;
+  .main-content-row {
+    margin-top: 4px;
+  }
+
+  .pro-table {
+    :deep(.el-table__header) th {
+      background-color: var(--backstage-border-lighter);
+      color: var(--backstage-text-regular);
+      font-weight: 600;
+      font-size: 13px;
+      border-bottom: none;
+    }
+    
+    .article-title-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      .article-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: var(--backstage-primary-lighter);
+        color: var(--backstage-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
       }
+    }
+  }
 
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+    
+    .quick-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 8px;
+      border-radius: var(--backstage-radius-lg);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      
       &:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--backstage-shadow-hover);
+        background-color: var(--backstage-border-lighter);
+        border-color: var(--backstage-border-color);
+        transform: translateY(-2px);
       }
-
-      &:active {
-        transform: translateY(0);
+      
+      .icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
       }
-
-      &.el-button--primary {
-        background: var(--backstage-gradient-primary);
-        border-color: transparent;
-
-        &:hover {
-          background: var(--backstage-gradient-primary);
-          opacity: 0.95;
-        }
+      
+      span {
+        font-size: 13px;
+        color: var(--backstage-text-regular);
+        font-weight: 500;
       }
+    }
+  }
 
-      &.el-button--success {
-        background: var(--backstage-gradient-success);
-        border-color: transparent;
-
-        &:hover {
-          background: var(--backstage-gradient-success);
-          opacity: 0.95;
-        }
-      }
-
-      &.el-button--warning {
-        background: var(--backstage-warning);
-        border-color: transparent;
-
-        &:hover {
-          background: var(--backstage-warning-light);
-        }
-      }
-
-      &.el-button--info {
-        background: var(--backstage-info);
-        border-color: transparent;
-
-        &:hover {
-          background: var(--backstage-info-light);
-        }
+  .system-status {
+    background: var(--backstage-border-lighter);
+    padding: 16px;
+    border-radius: var(--backstage-radius-lg);
+    
+    .status-header {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--backstage-text-primary);
+    }
+    
+    .status-item {
+      margin-bottom: 12px;
+      &:last-child { margin-bottom: 0; }
+      
+      .label {
+        display: block;
+        font-size: 12px;
+        color: var(--backstage-text-secondary);
+        margin-bottom: 6px;
       }
     }
   }
 }
 
-// 响应式优化
-@media (max-width: 768px) {
-  .dashboard-container {
-    .stats-card {
-      .stats-content {
-        .stats-icon {
-          width: 56px;
-          height: 56px;
-        }
+// 动画
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
-        .stats-info {
-          .stats-value {
-            font-size: 24px;
-          }
-        }
-      }
-    }
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.6s ease-out forwards; }
+.slide-in { animation: slideIn 0.5s ease-out forwards; }
+
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+@media (max-width: 1200px) {
+  .quick-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

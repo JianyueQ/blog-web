@@ -69,65 +69,56 @@ const router = createRouter({
                 {
                     path: 'article',
                     name: 'backstageArticle',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '文章管理' },
-                    props: { title: '文章管理' }
+                    component: () => import('@/views/backstage/Article/index.vue'),
+                    meta: { title: '文章管理' }
                 },
                 {
                     path: 'category',
                     name: 'backstageCategory',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '分类管理' },
-                    props: { title: '分类管理' }
+                    component: () => import('@/views/backstage/Category/index.vue'),
+                    meta: { title: '分类管理' }
                 },
                 {
                     path: 'tag',
                     name: 'tag',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '标签管理' },
-                    props: { title: '标签管理' }
+                    component: () => import('@/views/backstage/Tag/index.vue'),
+                    meta: { title: '标签管理' }
                 },
                 {
                     path: 'gallery',
                     name: 'backstageGallery',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '图库管理' },
-                    props: { title: '图库管理' }
+                    component: () => import('@/views/backstage/Gallery/index.vue'),
+                    meta: { title: '图库管理' }
                 },
                 {
                     path: 'upload',
                     name: 'backstageUpload',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '文件上传' },
-                    props: { title: '文件上传' }
+                    component: () => import('@/views/backstage/Upload/index.vue'),
+                    meta: { title: '文件上传' }
                 },
                 {
                     path: 'comment',
                     name: 'backstageComment',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '评论管理' },
-                    props: { title: '评论管理' }
+                    component: () => import('@/views/backstage/Comment/index.vue'),
+                    meta: { title: '评论管理' }
                 },
                 {
                     path: 'links',
                     name: 'backstageLinks',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '友链管理' },
-                    props: { title: '友链管理' }
+                    component: () => import('@/views/backstage/Links/index.vue'),
+                    meta: { title: '友链管理' }
                 },
                 {
                     path: 'user',
                     name: 'backstageUser',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '用户管理' },
-                    props: { title: '用户管理' }
+                    component: () => import('@/views/backstage/User/index.vue'),
+                    meta: { title: '用户管理' }
                 },
                 {
                     path: 'config',
                     name: 'backstageConfig',
-                    component: () => import('@/views/backstage/components/PlaceholderPage.vue'),
-                    meta: { title: '系统配置' },
-                    props: { title: '系统配置' }
+                    component: () => import('@/views/backstage/Config/index.vue'),
+                    meta: { title: '系统配置' }
                 }
             ]
         },
