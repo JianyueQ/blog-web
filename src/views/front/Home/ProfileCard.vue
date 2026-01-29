@@ -8,20 +8,6 @@
     <h1 class="name">{{ name }}</h1>
     <p class="title">{{ title }}</p>
     <p class="description">{{ description }}</p>
-
-<!--    <div class="social-links">-->
-<!--      <a-->
-<!--        v-for="social in socialLinks"-->
-<!--        :key="social.name"-->
-<!--        :href="social.url"-->
-<!--        target="_blank"-->
-<!--        rel="noopener noreferrer"-->
-<!--        class="social-link"-->
-<!--        :title="social.name"-->
-<!--      >-->
-<!--        <img :src="social.icon" :alt="social.name" />-->
-<!--      </a>-->
-<!--    </div>-->
   </div>
 </template>
 
@@ -29,9 +15,9 @@
 import { ref, onMounted } from 'vue'
 
 
-const name = ref()
-const title = ref()
-const description = ref()
+const name = ref('Jianyue')
+const title = ref('Web Developer')
+const description = ref('专注于前端开发，热爱技术分享，记录生活点滴')
 // const socialLinks = ref([])
 
 // 加载数据

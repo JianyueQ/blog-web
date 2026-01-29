@@ -1,7 +1,7 @@
 <template>
   <div class="archive-view">
     <div class="archive-header">
-      <h1 class="page-title">归档</h1>
+      <h1 class="page-title">文章</h1>
       <p class="page-subtitle">记录成长的每一步</p>
       <div class="archive-stats">
         <span class="stat-item">共 {{ totalPosts }} 篇文章</span>

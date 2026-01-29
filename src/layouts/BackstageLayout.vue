@@ -13,13 +13,14 @@
       </div>
 
       <el-menu
-          :default-active="activeMenu"
+          class="sidebar-menu"
           :collapse="isCollapse"
           :collapse-transition="false"
+          :default-active="activeMenu"
           router
-          class="sidebar-menu"
           :popper-append-to-body="false"
           unique-opened
+
       >
         <el-menu-item index="/backstage/home">
           <el-icon>
@@ -117,13 +118,13 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="profile" >
-                  <el-icon>
+                  <el-icon class="dropdown-icon">
                     <User/>
                   </el-icon>
                   个人中心
                 </el-dropdown-item>
                 <el-dropdown-item command="logout" divided>
-                  <el-icon>
+                  <el-icon class="dropdown-icon">
                     <SwitchButton/>
                   </el-icon>
                   退出登录
@@ -387,20 +388,20 @@ onUnmounted(() => {
       line-height: 48px;
 
       &:hover {
-        background-color: var(--backstage-sidebar-bg-hover) !important;
-        color: var(--backstage-sidebar-text-hover) !important;
+        background-color: var(--backstage-sidebar-bg-hover) ;
+        color: var(--backstage-sidebar-text-hover) ;
         transform: translateX(4px);
       }
 
-      .el-icon {
-        color: var(--backstage-sidebar-text);
+      :deep(.el-icon) {
+        color: #000 ;
         font-size: 18px;
         margin-right: 12px;
         transition: all 0.3s ease;
       }
 
-      &:hover .el-icon {
-        color: var(--backstage-sidebar-text-hover);
+      &:hover :deep(.el-icon) {
+        color: #000 ;
         transform: scale(1.1);
       }
     }
@@ -412,7 +413,7 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0 !important;
+        //padding: 0 !important;
 
         &:hover {
           transform: translateX(0);
@@ -431,8 +432,9 @@ onUnmounted(() => {
       border-left-color: var(--backstage-sidebar-border-active);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-      .el-icon {
-        color: var(--backstage-sidebar-text-active);
+
+      :deep(.el-icon) {
+        color: #000 !important;
       }
     }
 
@@ -443,7 +445,7 @@ onUnmounted(() => {
       margin: 0 8px;
 
       .el-menu-item {
-        padding-left: 50px !important;
+        padding-left: 50px ;
         margin: 2px 0;
 
         &:hover {
@@ -526,6 +528,20 @@ onUnmounted(() => {
         }
       }
     }
+
+    // 下拉菜单图标样式
+    :deep(.dropdown-icon) {
+      color: #000 !important;
+    }
+
+    // 确保下拉菜单中的图标颜色正确
+    :deep(.el-dropdown-menu) {
+      .el-dropdown-item {
+        :deep(.el-icon) {
+          color: #000 !important;
+        }
+      }
+    }
   }
 }
 
@@ -604,32 +620,32 @@ onUnmounted(() => {
     gap: 16px;
 
     .header-icon {
-      font-size: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      color: var(--backstage-text-regular);
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      background-color: var(--backstage-card-bg);
-      box-shadow: var(--backstage-shadow-light);
+        font-size: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #000 !important;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background-color: var(--backstage-card-bg);
+        box-shadow: var(--backstage-shadow-light);
 
-      &:hover {
-        color: var(--backstage-primary);
-        background-color: var(--backstage-primary-lighter);
-        transform: translateY(-2px);
-        box-shadow: var(--backstage-shadow-base);
-      }
-
-      &.theme-toggle-icon {
         &:hover {
-          transform: translateY(-2px) rotate(180deg);
+          color: #000 !important;
+          background-color: var(--backstage-primary-lighter);
+          transform: translateY(-2px);
+          box-shadow: var(--backstage-shadow-base);
+        }
+
+        &.theme-toggle-icon {
+          &:hover {
+            transform: translateY(-2px) rotate(180deg);
+          }
         }
       }
-    }
 
     .user-info {
       display: flex;

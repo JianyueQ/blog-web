@@ -162,7 +162,6 @@ const getCodeImage = async () => {
     }
   } catch (error) {
     console.error('获取验证码失败:', error)
-    ElMessage.error('获取验证码失败，请刷新重试')
   }
 }
 
@@ -206,8 +205,7 @@ const handleLogin = async () => {
           refreshCode()
         }
       } catch (error) {
-        console.error('登录失败:', error)
-        ElMessage.error('登录失败，请检查网络连接')
+        ElMessage.error(res.msg || '登录失败，请检查网络连接')
         // 刷新验证码
         refreshCode()
       } finally {

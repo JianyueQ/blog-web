@@ -2,18 +2,18 @@
   <header class="header" :class="{ 'mobile-open': mobileMenuOpen }">
     <div class="container">
       <div class="logo" @click="router.push('/home')">
-        <img src="/images/icon/logo.png" alt="Logo" />
+        <img src="/images/icon/logo.png" alt="Logo"/>
         <span class="logo-text">jianyue</span>
       </div>
 
       <!-- PC端导航 -->
       <nav class="nav xs-hidden">
         <router-link
-          v-for="item in navItems"
-          :key="item.path"
-          :to="item.path"
-          class="nav-item"
-          exact-active-class="active"
+            v-for="item in navItems"
+            :key="item.path"
+            :to="item.path"
+            class="nav-item"
+            exact-active-class="active"
         >
           <span class="nav-text">{{ item.name }}</span>
         </router-link>
@@ -29,11 +29,11 @@
     <transition name="slide-down">
       <div v-if="mobileMenuOpen" class="mobile-nav" @click="toggleMobileMenu">
         <router-link
-          v-for="item in navItems"
-          :key="item.path"
-          :to="item.path"
-          class="mobile-nav-item"
-          active-class="active"
+            v-for="item in navItems"
+            :key="item.path"
+            :to="item.path"
+            class="mobile-nav-item"
+            active-class="active"
         >
           {{ item.name }}
         </router-link>
@@ -43,19 +43,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
 
 const router = useRouter()
 const mobileMenuOpen = ref(false)
 
 const navItems = [
-  { name: '首页', path: '/home' },
-  { name: '归档', path: '/archive' },
-  { name: '友链', path: '/links' },
-  { name: '相册', path: '/gallery' },
-  { name: '关于', path: '/about' },
-  { name: '其他', path: '/more' }
+  {name: '首页', path: '/home'},
+  {name: '归档', path: '/archive'},
+  {name: '相册', path: '/gallery'},
+  {name: '关于', path: '/about'},
+  {name: '其他', path: '/more'},
+  {name: '留言', path: '/message'},
+  {name: '友链', path: '/links'}
 ]
 
 const toggleMobileMenu = () => {

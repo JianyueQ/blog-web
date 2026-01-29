@@ -219,6 +219,21 @@ const currentPath = computed(() => {
       animation-duration: 0.5s;
       animation-delay: 0.3s;
       animation-fill-mode: forwards;
+      text-decoration: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #0d6efd;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(20, 130, 240, 0.3);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(20, 130, 240, 0.2);
+      }
     }
     @keyframes slideUp {
       0% {
@@ -228,6 +243,138 @@ const currentPath = computed(() => {
       100% {
         transform: translateY(0);
         opacity: 1;
+      }
+    }
+  }
+}
+
+// 移动端响应式适配
+@media (max-width: 992px) {
+  .wscn-http404-container {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+
+  .wscn-http404 {
+    width: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .pic-404 {
+      float: none;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 30px;
+
+      &__child {
+        &.left {
+          width: 60px;
+          left: 150px;
+        }
+        &.mid {
+          width: 35px;
+          left: 280px;
+        }
+        &.right {
+          width: 48px;
+          left: 350px;
+        }
+      }
+    }
+
+    .bullshit {
+      float: none;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px 0;
+      text-align: center;
+
+      &__oops {
+        font-size: 28px;
+        line-height: 36px;
+      }
+
+      &__headline {
+        font-size: 18px;
+        line-height: 22px;
+      }
+
+      &__info {
+        font-size: 12px;
+        line-height: 20px;
+        margin-bottom: 20px;
+      }
+
+      &__return-home {
+        float: none;
+        margin: 20px auto 0;
+        width: 130px;
+        height: 42px;
+        line-height: 42px;
+        font-size: 15px;
+      }
+
+      p {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .wscn-http404-container {
+    top: 45%;
+    padding: 0 15px;
+  }
+
+  .wscn-http404 {
+    .pic-404 {
+      max-width: 300px;
+
+      &__child {
+        &.left {
+          width: 45px;
+          left: 110px;
+        }
+        &.mid {
+          width: 28px;
+          left: 210px;
+        }
+        &.right {
+          width: 38px;
+          left: 260px;
+        }
+      }
+    }
+
+    .bullshit {
+      max-width: 300px;
+
+      &__oops {
+        font-size: 24px;
+        line-height: 32px;
+        margin-bottom: 15px;
+      }
+
+      &__headline {
+        font-size: 16px;
+        line-height: 20px;
+      }
+
+      &__info {
+        font-size: 11px;
+        line-height: 18px;
+      }
+
+      &__return-home {
+        width: 120px;
+        height: 38px;
+        line-height: 38px;
+        font-size: 14px;
       }
     }
   }

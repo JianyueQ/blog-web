@@ -37,6 +37,11 @@ const router = createRouter({
                     component: () => import('@/views/front/About/index.vue')
                 },
                 {
+                    path: 'message',
+                    name: 'message',
+                    component: () => import('@/views/front/Message/index.vue')
+                },
+                {
                     path: 'more',
                     name: 'more',
                     component: () => import('@/views/front/More/index.vue')
