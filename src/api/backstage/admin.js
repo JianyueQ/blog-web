@@ -1,5 +1,7 @@
 import request from '@/utils/request'
 
+let apiPrefix = '/system/admin/profile'
+
 /**
  * 上传头像
  * @param data
@@ -7,8 +9,9 @@ import request from '@/utils/request'
  */
 export function uploadAvatar(data) {
     return request({
-        url: '/avatar',
+        url: `${apiPrefix}/avatar`,
         method: 'post',
-        data
+        data: data,
+        headers: { 'Content-Type': 'multipart/form-data' }
     })
 }

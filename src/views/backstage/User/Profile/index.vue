@@ -16,7 +16,7 @@
               <h2 class="nickname">{{ userStore.nickname }}</h2>
               <p class="username">{{ userStore.username }}</p>
             </div>
-            
+
             <div class="user-meta">
               <div class="meta-item">
                 <el-icon><Message /></el-icon>
@@ -45,7 +45,7 @@
                     <el-input v-model="userForm.email" placeholder="请输入您的常用邮箱" />
                   </el-form-item>
                   <el-form-item label="个人简介">
-                    <el-input v-model="userForm.remark" type="textarea" :rows="4" placeholder="向大家介绍一下自己吧" />
+                    <el-input v-model="userForm.description" type="textarea" :rows="4" placeholder="向大家介绍一下自己吧" />
                   </el-form-item>
                   <div class="form-actions mt-20">
                     <el-button type="primary" round @click="handleUpdateProfile">保存基本资料</el-button>
@@ -81,7 +81,7 @@
 
     <!-- 头像裁剪对话框 -->
     <AvatarCropper ref="cropperRef" @success="handleAvatarSuccess" />
-    
+
     <!-- 修改密码对话框 -->
     <ResetPwd ref="resetPwdRef" />
   </div>
@@ -102,13 +102,14 @@ const resetPwdRef = ref(null)
 const userForm = reactive({
   nickname: '',
   email: '',
-  remark: ''
+  description: ''
 })
 
 onMounted(() => {
   if (userStore.user) {
     userForm.nickname = userStore.user.nickname
     userForm.email = userStore.user.email
+    userForm.description = userStore.user.description
   }
 })
 
@@ -125,7 +126,9 @@ const handleUpdateProfile = () => {
 }
 
 const handleAvatarSuccess = (newAvatarUrl) => {
-  // TODO: 处理裁剪后的头像上传成功逻辑
+  if (newAvatarUrl) {
+    userStore.user.avatar = newAvatarUrl
+  }
 }
 </script>
 

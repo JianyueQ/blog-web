@@ -10,18 +10,26 @@
     <div class="cropper-container">
       <el-row :gutter="20">
         <el-col :span="16">
-          <div class="cropper-main">
-            <!-- 模拟裁剪区域，由于无法安装 vue-cropper，这里提供一个结构化 UI -->
-            <div class="cropper-box" v-if="imageUrl">
-              <img :src="imageUrl" :style="imgStyle" alt="Cropper" />
-              <div class="cropper-face"></div>
-            </div>
+            <div class="cropper-main">
+            <vue-cropper
+              v-if="imageUrl"
+              ref="cropper"
+              :img="imageUrl"
+              :info="true"
+              :autoCrop="options.autoCrop"
+              :autoCropWidth="options.autoCropWidth"
+              :autoCropHeight="options.autoCropHeight"
+              :fixedBox="options.fixedBox"
+              :outputType="options.outputType"
+              :centerBox="options.centerBox"
+              @realTime="realTime"
+            />
             <div class="cropper-upload-placeholder" v-else @click="triggerUpload">
               <el-icon><Plus /></el-icon>
               <span>选择图片</span>
             </div>
           </div>
-          
+
           <div class="cropper-toolbar mt-20" v-if="imageUrl">
             <el-button-group class="button-row">
               <el-button :icon="ZoomIn" circle @click="handleZoom(0.1)" title="放大" />
@@ -32,22 +40,23 @@
             <el-button link type="primary" @click="triggerUpload">重新选择</el-button>
           </div>
         </el-col>
-        
+
         <el-col :span="8">
           <div class="preview-section">
             <div class="preview-label">预览</div>
             <div class="preview-list">
               <div class="preview-item circle">
                 <div class="preview-img-wrapper">
-                  <img :src="imageUrl || '/images/icon/logo.png'" :style="imgStyle" />
+                  <div v-if="previews.url" class="preview-cropper">
+                    <div :style="previewStyle">
+                      <div :style="previews.div">
+                        <img :src="previews.url" :style="previews.img" />
+                      </div>
+                    </div>
+                  </div>
+<!--                  <img v-else src="/images/icon/logo.png" class="default-avatar" />-->
                 </div>
                 <span>120x120</span>
-              </div>
-              <div class="preview-item small circle">
-                <div class="preview-img-wrapper">
-                  <img :src="imageUrl || '/images/icon/logo.png'" :style="imgStyle" />
-                </div>
-                <span>48x48</span>
               </div>
             </div>
           </div>
@@ -69,25 +78,40 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { Plus, ZoomIn, ZoomOut, RefreshLeft, RefreshRight } from '@element-plus/icons-vue'
+import 'vue-cropper/dist/index.css'
+import { VueCropper } from 'vue-cropper'
+import { uploadAvatar } from '@/api/backstage/admin'
+import { ElMessage } from 'element-plus'
 
 const visible = ref(false)
 const imageUrl = ref('')
 const fileInput = ref(null)
+const cropper = ref(null)
+const previews = ref({})
 
-const transform = reactive({
-  scale: 1,
-  rotate: 0
+const options = reactive({
+  autoCrop: true,
+  autoCropWidth: 200,
+  autoCropHeight: 200,
+  fixedBox: true,
+  outputType: 'png',
+  centerBox: true
 })
 
-const imgStyle = computed(() => ({
-  transform: `scale(${transform.scale}) rotate(${transform.rotate}deg)`,
-  transition: 'all 0.2s'
-}))
+const previewStyle = computed(() => {
+  if (!previews.value.url) return {}
+  return {
+    width: previews.value.w + 'px',
+    height: previews.value.h + 'px',
+    overflow: 'hidden',
+    zoom: 120 / previews.value.w
+  }
+})
 
 const open = () => {
   visible.value = true
-  transform.scale = 1
-  transform.rotate = 0
+  imageUrl.value = ''
+  previews.value = {}
 }
 
 const triggerUpload = () => {
@@ -96,28 +120,49 @@ const triggerUpload = () => {
 
 const onFileChange = (e) => {
   const file = e.target.files[0]
-  if (file) {
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      imageUrl.value = event.target.result
-    }
-    reader.readAsDataURL(file)
+  if (!file) return
+  // 重置 input 值，确保同文件可再次触发
+  e.target.value = ''
+
+  if (!file.type.includes('image/')) {
+    ElMessage.error('请选择图片文件')
+    return
   }
+  const reader = new FileReader()
+  reader.onload = (event) => {
+    imageUrl.value = event.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 const handleZoom = (val) => {
-  transform.scale = Math.max(0.5, Math.min(3, transform.scale + val))
+  cropper.value.changeScale(val > 0 ? 1 : -1)
 }
 
 const handleRotate = (deg) => {
-  transform.rotate += deg
+  if (deg > 0) {
+    cropper.value.rotateRight()
+  } else {
+    cropper.value.rotateLeft()
+  }
+}
+
+const realTime = (data) => {
+  previews.value = data
 }
 
 const handleSave = () => {
-  // TODO: 实际裁剪逻辑通常需要 canvas 转换或 vue-cropper 获取 blob
-  // 这里模拟保存并触发 success 事件
-  emit('success', imageUrl.value)
-  visible.value = false
+  cropper.value.getCropBlob((blob) => {
+    const formData = new FormData()
+    formData.append('avatarfile', blob, 'avatar.png')
+    uploadAvatar(formData).then(res => {
+      ElMessage.success('头像上传成功')
+      emit('success', res.imgUrl)
+      visible.value = false
+    }).catch(err => {
+      // ElMessage.error(err.message || '上传失败')
+    })
+  })
 }
 
 const emit = defineEmits(['success'])
@@ -143,36 +188,6 @@ defineExpose({ open })
     overflow: hidden;
     position: relative;
     border: 1px solid var(--backstage-border-color);
-
-    .cropper-box {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-image: linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #eee 75%, #eee 100%), 
-                        linear-gradient(45deg, #eee 25%, white 25%, white 75%, #eee 75%, #eee 100%);
-      background-size: 20px 20px;
-      background-position: 0 0, 10px 10px;
-
-      img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-
-      .cropper-face {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.5);
-        border: 2px solid var(--backstage-primary);
-        pointer-events: none;
-      }
-    }
 
     .cropper-upload-placeholder {
       display: flex;
@@ -222,28 +237,22 @@ defineExpose({ open })
         .preview-img-wrapper {
           background: #eee;
           overflow: hidden;
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          
-          img {
-            max-width: 100%;
-            max-height: 100%;
+
+          .preview-cropper {
+            overflow: hidden;
           }
-        }
 
-        &.circle .preview-img-wrapper {
-          border-radius: 50%;
-        }
-
-        &:not(.small) .preview-img-wrapper {
-          width: 120px;
-          height: 120px;
-        }
-
-        &.small .preview-img-wrapper {
-          width: 48px;
-          height: 48px;
+          .default-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
         }
 
         span {
