@@ -23,13 +23,17 @@
           unique-opened
       >
         <el-menu-item index="/backstage/home">
-          <el-icon><HomeFilled/></el-icon>
+          <el-icon>
+            <HomeFilled/>
+          </el-icon>
           <template #title>工作台</template>
         </el-menu-item>
 
         <el-sub-menu index="content">
           <template #title>
-            <el-icon><Document/></el-icon>
+            <el-icon>
+              <Document/>
+            </el-icon>
             <span>内容发布</span>
           </template>
           <el-menu-item index="/backstage/article">文章创作</el-menu-item>
@@ -39,7 +43,9 @@
 
         <el-sub-menu index="media">
           <template #title>
-            <el-icon><Picture/></el-icon>
+            <el-icon>
+              <Picture/>
+            </el-icon>
             <span>资源中心</span>
           </template>
           <el-menu-item index="/backstage/gallery">视觉素材</el-menu-item>
@@ -47,25 +53,31 @@
         </el-sub-menu>
 
         <el-menu-item index="/backstage/comment">
-          <el-icon><ChatDotRound/></el-icon>
+          <el-icon>
+            <ChatDotRound/>
+          </el-icon>
           <template #title>互动管理</template>
         </el-menu-item>
 
         <el-menu-item index="/backstage/links">
-          <el-icon><Link/></el-icon>
+          <el-icon>
+            <Link/>
+          </el-icon>
           <template #title>友链中心</template>
         </el-menu-item>
 
         <el-sub-menu index="system">
           <template #title>
-            <el-icon><Setting/></el-icon>
+            <el-icon>
+              <Setting/>
+            </el-icon>
             <span>系统控制</span>
           </template>
           <el-menu-item index="/backstage/user">成员准入</el-menu-item>
           <el-menu-item index="/backstage/config">核心配置</el-menu-item>
         </el-sub-menu>
       </el-menu>
-      
+
       <div class="sidebar-footer" v-if="!isCollapse">
         <div class="version">v2.0.0 PRO MAX</div>
       </div>
@@ -77,13 +89,19 @@
       <el-header class="header-container">
         <div class="header-left">
           <div class="collapse-trigger" @click="toggleCollapse">
-            <el-icon v-if="isCollapse"><Expand/></el-icon>
-            <el-icon v-else><Fold/></el-icon>
+            <el-icon v-if="isCollapse">
+              <Expand/>
+            </el-icon>
+            <el-icon v-else>
+              <Fold/>
+            </el-icon>
           </div>
 
           <el-breadcrumb separator="/" class="breadcrumb">
             <el-breadcrumb-item :to="{ path: '/backstage/home' }">
-               <el-icon class="breadcrumb-home"><HomeFilled/></el-icon>
+              <el-icon class="breadcrumb-home">
+                <HomeFilled/>
+              </el-icon>
             </el-breadcrumb-item>
             <el-breadcrumb-item v-if="currentRouteName">{{ currentRouteName }}</el-breadcrumb-item>
           </el-breadcrumb>
@@ -92,30 +110,46 @@
         <div class="header-right">
           <div class="action-icons">
             <div class="action-item" @click="toggleTheme" :title="currentTheme === 'dark' ? '切换浅色' : '切换深色'">
-              <el-icon v-if="currentTheme === 'dark'"><Sunny/></el-icon>
-              <el-icon v-else><Moon/></el-icon>
+              <el-icon v-if="currentTheme === 'dark'">
+                <Sunny/>
+              </el-icon>
+              <el-icon v-else>
+                <Moon/>
+              </el-icon>
             </div>
             <div class="action-item" @click="refreshPage" title="刷新">
-              <el-icon><Refresh/></el-icon>
+              <el-icon>
+                <Refresh/>
+              </el-icon>
             </div>
             <div class="action-item" @click="toggleFullscreen" title="全屏">
-              <el-icon><FullScreen/></el-icon>
+              <el-icon>
+                <FullScreen/>
+              </el-icon>
             </div>
           </div>
 
           <el-dropdown @command="handleCommand" trigger="click">
             <div class="user-profile">
-              <el-avatar :size="32" src="/images/icon/logo.png"/>
-              <span class="user-name">Administrator</span>
-              <el-icon><ArrowDown/></el-icon>
+              <el-avatar :size="32" :src="userStore.avatar || '/images/icon/logo.png'"/>
+              <span class="user-name">{{ userStore.nickname }}</span>
+              <el-icon>
+                <ArrowDown/>
+              </el-icon>
             </div>
             <template #dropdown>
               <el-dropdown-menu class="pro-dropdown-menu">
                 <el-dropdown-item command="profile">
-                  <el-icon><User/></el-icon>个人设置
+                  <el-icon>
+                    <User/>
+                  </el-icon>
+                  个人中心
                 </el-dropdown-item>
                 <el-dropdown-item command="logout" divided class="logout-item">
-                  <el-icon><SwitchButton/></el-icon>退出系统
+                  <el-icon>
+                    <SwitchButton/>
+                  </el-icon>
+                  退出系统
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -158,9 +192,13 @@ import {
   User
 } from '@element-plus/icons-vue'
 import {removeToken} from '@/utils/auth'
+import {ElMessageBox} from "element-plus";
+import {logout} from "@/api/backstage/login.js";
+import {useUserStore} from "@/stores/user.js";
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 // 侧边栏折叠状态
 const isCollapse = ref(false)
@@ -183,6 +221,7 @@ const currentRouteName = computed(() => {
     '/backstage/comment': '访客互动管理',
     '/backstage/links': '友情链接维护',
     '/backstage/user': '系统成员管理',
+    '/backstage/profile': '个人中心',
     '/backstage/config': '全局核心配置'
   }
   return routeNameMap[route.path] || ''
@@ -211,11 +250,26 @@ const toggleFullscreen = () => {
 // 处理用户下拉菜单命令
 const handleCommand = (command) => {
   if (command === 'profile') {
-    // TODO: 之后根据需要添加交互, 目前使用 ElMessage.info('个人设置模块开发中...')
+    router.push('/backstage/profile')
   } else if (command === 'logout') {
-    // TODO: 之后根据需要添加交互, 目前使用 ElMessageBox.confirm('确定退出系统吗?', '提示', { type: 'warning' })
-    removeToken()
-    router.push('/backstage/login')
+    // TODO: 退出登录确认交互，由用户决定是否启用
+    ElMessageBox.confirm('确定要退出系统吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      logout().then(() => {
+        userStore.clearUser()
+        removeToken()
+        router.push('/backstage/login')
+      }).catch((error) => {
+        userStore.clearUser()
+        removeToken()
+        router.push('/backstage/login')
+      })
+    }).catch(() => {
+      // 取消退出
+    })
   }
 }
 
@@ -296,7 +350,7 @@ onUnmounted(() => {
       align-items: center;
       gap: 12px;
     }
-    
+
     .logo-content-collapsed {
       display: flex;
       justify-content: center;
@@ -310,7 +364,7 @@ onUnmounted(() => {
       background: #fff;
       padding: 2px;
     }
-    
+
     .logo-image-collapsed {
       width: 32px;
       height: 32px;
@@ -358,7 +412,7 @@ onUnmounted(() => {
       &:hover {
         color: var(--backstage-sidebar-text-hover) !important;
         background-color: var(--backstage-sidebar-bg-hover) !important;
-        
+
         .el-icon {
           transform: scale(1.1);
         }
@@ -375,26 +429,26 @@ onUnmounted(() => {
     :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
       color: var(--backstage-primary) !important;
     }
-    
+
     :deep(.el-menu--inline) {
-       background: rgba(0, 0, 0, 0.2);
-       margin: 4px 12px;
-       border-radius: 6px;
-       
-       .el-menu-item {
-         margin: 2px 0;
-         padding-left: 45px !important;
-         height: 38px;
-         line-height: 38px;
-         font-size: 13px;
-       }
+      background: rgba(0, 0, 0, 0.2);
+      margin: 4px 12px;
+      border-radius: 6px;
+
+      .el-menu-item {
+        margin: 2px 0;
+        padding-left: 45px !important;
+        height: 38px;
+        line-height: 38px;
+        font-size: 13px;
+      }
     }
   }
-  
+
   .sidebar-footer {
     padding: 16px;
     border-top: 1px solid var(--backstage-border-color);
-    
+
     .version {
       font-size: 11px;
       color: var(--backstage-text-placeholder);
@@ -447,13 +501,13 @@ onUnmounted(() => {
         color: var(--backstage-primary);
       }
     }
-    
+
     .breadcrumb {
       :deep(.el-breadcrumb__inner) {
         font-weight: 400;
         color: var(--backstage-text-secondary);
       }
-      
+
       .breadcrumb-home {
         font-size: 16px;
         vertical-align: -2px;
@@ -469,7 +523,7 @@ onUnmounted(() => {
     .action-icons {
       display: flex;
       gap: 4px;
-      
+
       .action-item {
         width: 36px;
         height: 36px;
@@ -481,7 +535,7 @@ onUnmounted(() => {
         cursor: pointer;
         border-radius: 6px;
         transition: all 0.2s;
-        
+
         &:hover {
           background-color: var(--backstage-border-light);
           color: var(--backstage-primary);
@@ -508,7 +562,7 @@ onUnmounted(() => {
         font-weight: 500;
         color: var(--backstage-text-primary);
       }
-      
+
       .el-icon {
         font-size: 12px;
         color: var(--backstage-text-placeholder);
@@ -523,7 +577,7 @@ onUnmounted(() => {
   padding: 0; // 内容区内部控制 padding
   background-color: var(--backstage-bg-color);
   overflow-y: auto;
-  
+
   .page-wrapper {
     padding: 24px;
     min-height: 100%;
@@ -558,18 +612,20 @@ onUnmounted(() => {
 
 .pro-dropdown-menu {
   padding: 4px;
+
   .el-dropdown-menu__item {
     border-radius: 4px;
     padding: 8px 16px;
     font-size: 13px;
-    
+
     .el-icon {
       margin-right: 8px;
       font-size: 16px;
     }
-    
+
     &.logout-item {
       color: var(--backstage-danger);
+
       &:hover {
         background-color: var(--backstage-danger-lighter);
       }
@@ -580,9 +636,11 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .header-container {
     padding: 0 12px;
+
     .breadcrumb {
       display: none;
     }
+
     .action-icons {
       display: none !important;
     }

@@ -3,7 +3,7 @@
     <!-- 欢迎栏 -->
     <div class="welcome-banner fade-in">
       <div class="welcome-content">
-        <h1>欢迎回来，管理员</h1>
+        <h1>欢迎回来，{{ userStore.nickname }}</h1>
         <p>这是您今天的博客概览。所有系统运行正常，继续保持！</p>
       </div>
       <div class="current-time">
@@ -119,7 +119,9 @@ import {
   Upload, Setting, Calendar, CaretTop, CaretBottom,
   Plus, Monitor, Collection, Operation
 } from '@element-plus/icons-vue'
+import { useUserStore } from '@/stores/user'
 
+const userStore = useUserStore()
 const currentTime = ref('')
 const updateTime = () => {
   const now = new Date()

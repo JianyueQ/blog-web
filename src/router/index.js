@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {getToken} from "@/utils/auth.js"
+import {getToken, removeToken} from "@/utils/auth.js"
 import {ElMessage} from 'element-plus'
+import {useUserStore} from "@/stores/user.js";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -115,6 +116,12 @@ const router = createRouter({
                     meta: { title: '用户管理' }
                 },
                 {
+                    path: 'profile',
+                    name: 'backstageProfile',
+                    component: () => import('@/views/backstage/User/Profile/index.vue'),
+                    meta: { title: '个人中心' }
+                },
+                {
                     path: 'config',
                     name: 'backstageConfig',
                     component: () => import('@/views/backstage/Config/index.vue'),
@@ -160,6 +167,21 @@ router.beforeEach((to, from, next) => {
             next({
                 path: '/backstage/login',
                 query: { redirect: to.fullPath } // 保存目标路由，登录后可跳转回来
+            })
+            return
+        }
+
+        // 获取用户信息
+        const userStore = useUserStore()
+        if (userStore.user === null) {
+            userStore.getInfo().then(() => {
+                next()
+            }).catch(() => {
+                removeToken()
+                next({
+                    path: '/backstage/login',
+                    query: { redirect: to.fullPath }
+                })
             })
             return
         }

@@ -280,82 +280,21 @@
 
   // 按钮组件
   .el-button {
-    border-radius: var(--backstage-radius-md) !important;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    border: 1px solid transparent !important;
-    font-weight: 500 !important;
-    padding: 10px 20px !important;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
 
     &:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: var(--backstage-shadow-base) !important;
+      transform: translateY(-1px);
     }
 
     &:active {
-      transform: translateY(0) !important;
-    }
-
-    &.el-button--primary {
-      background: var(--backstage-gradient-primary) !important;
-      border-color: transparent !important;
-
-      &:hover {
-        opacity: 0.95 !important;
-      }
-    }
-
-    &.el-button--success {
-      background: var(--backstage-gradient-success) !important;
-      border-color: transparent !important;
-
-      &:hover {
-        opacity: 0.95 !important;
-      }
-    }
-
-    &.el-button--warning {
-      background: var(--backstage-warning) !important;
-      border-color: transparent !important;
-
-      &:hover {
-        background: var(--backstage-warning-light) !important;
-      }
-    }
-
-    &.el-button--danger {
-      background: var(--backstage-danger) !important;
-      border-color: transparent !important;
-
-      &:hover {
-        background: var(--backstage-danger-light) !important;
-      }
-    }
-
-    &.el-button--info {
-      background: var(--backstage-info) !important;
-      border-color: transparent !important;
-
-      &:hover {
-        background: var(--backstage-info-light) !important;
-      }
-    }
-
-    &.el-button--default {
-      background: var(--backstage-card-bg) !important;
-      border-color: var(--backstage-border-light) !important;
-      color: var(--backstage-text-primary) !important;
-
-      &:hover {
-        background: var(--backstage-card-hover-bg) !important;
-        border-color: var(--backstage-primary-light) !important;
-        color: var(--backstage-primary) !important;
-      }
+      transform: translateY(0);
     }
   }
 
   // 输入框组件
   .el-input {
     .el-input__wrapper {
+      background-color: var(--backstage-card-bg) !important;
       border-radius: var(--backstage-radius-md) !important;
       border: 1px solid var(--backstage-border-light) !important;
       box-shadow: none !important;
@@ -384,6 +323,7 @@
   // 选择器组件
   .el-select {
     .el-input__wrapper {
+      background-color: var(--backstage-card-bg) !important;
       border-radius: var(--backstage-radius-md) !important;
       border: 1px solid var(--backstage-border-light) !important;
       box-shadow: none !important;
@@ -572,6 +512,11 @@
 
   // 分页组件
   .el-pagination {
+    button, .el-pager li, .el-input__wrapper {
+      background-color: var(--backstage-card-bg) !important;
+      color: var(--backstage-text-primary) !important;
+    }
+
     .el-pagination__total {
       color: var(--backstage-text-secondary);
     }
@@ -673,5 +618,126 @@
       --el-table-header-text-color: var(--backstage-text-primary);
       --el-table-row-hover-bg-color: var(--backstage-card-hover-bg);
     }
+
+    // 分页、输入框、下拉框在暗黑模式下的极致优化
+    .el-input__wrapper, 
+    .el-select__wrapper,
+    .el-textarea__inner,
+    .el-pagination button,
+    .el-pagination .el-pager li,
+    .el-pagination .el-input__wrapper {
+      background-color: #1a1a1a !important;
+      border-color: #333 !important;
+      box-shadow: none !important;
+    }
+
+    // 基础按钮暗黑模式适配 (解决白色背景问题)
+    .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(.el-button--danger) {
+      background-color: #1a1a1a !important;
+      border-color: #333 !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+      
+      &:hover {
+        background-color: #333 !important;
+        border-color: var(--backstage-primary) !important;
+        color: var(--backstage-primary) !important;
+      }
+    }
+
+    .el-form-item__label {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .el-input__inner,
+    .el-textarea__inner,
+    .el-select__placeholder,
+    .el-pagination button,
+    .el-pagination .el-pager li {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+  }
+
+  // 全局弹窗与下拉组件暗黑优化 (针对 Teleported 组件)
+  .el-dialog,
+  .el-overlay,
+  .el-overlay-dialog,
+  .el-message-box,
+  .el-select-dropdown,
+  .el-dropdown-menu,
+  .el-message,
+  .el-popper {
+    .el-dialog,
+    .el-message-box,
+    .el-dropdown-menu,
+    .el-select-dropdown__list,
+    .el-popper__content,
+    .el-alert {
+      background-color: #141414 !important;
+      border: 1px solid #333 !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    // 针对 el-dialog 内部结构的强制覆盖
+    .el-dialog__header,
+    .el-dialog__body,
+    .el-dialog__footer,
+    .el-message-box__header,
+    .el-message-box__content,
+    .el-message-box__btns {
+      background-color: #141414 !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .el-dialog__title,
+    .el-message-box__title,
+    .el-message-box__message,
+    .el-alert__title,
+    .el-alert__description {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    // 弹窗内表单项适配
+    .el-form-item__label {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .el-input__wrapper, .el-textarea__inner {
+      background-color: #1a1a1a !important;
+      border-color: #333 !important;
+      box-shadow: none !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+      
+      .el-input__inner {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
+    }
+
+    // 弹窗内按钮深度适配
+    .el-button:not(.el-button--primary):not(.el-button--success):not(.el-button--warning):not(.el-button--danger) {
+      background-color: #1a1a1a !important;
+      border: 1px solid #444 !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+      
+      &:hover {
+        background-color: #333 !important;
+        border-color: var(--backstage-primary) !important;
+        color: var(--backstage-primary) !important;
+      }
+    }
+    
+    // 强制清除可能的白边
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+// 通用工具类
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+
+  & > * {
+    margin: 0 !important;
   }
 }
