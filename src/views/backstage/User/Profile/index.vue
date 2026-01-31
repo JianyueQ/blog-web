@@ -93,6 +93,8 @@ import { Camera, Message, Calendar } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
 import AvatarCropper from './AvatarCropper.vue'
 import ResetPwd from './ResetPwd.vue'
+import {updateProfile} from "@/api/backstage/admin.js";
+import {ElMessage} from "element-plus";
 
 const userStore = useUserStore()
 const activeTab = ref('basic')
@@ -119,10 +121,22 @@ const handleOpenCropper = () => {
 
 const handleOpenResetPwd = () => {
   resetPwdRef.value.open()
+
+
+
 }
 
 const handleUpdateProfile = () => {
   // TODO: 调用后端更新资料接口，完成后更新 store
+  updateProfile(userForm).then((res) => {
+    userStore.user.nickname = userForm.nickname
+    userStore.user.email = userForm.email
+    userStore.user.description = userForm.description
+    // 弹窗提示
+    ElMessage.success(res.message || '更新资料成功')
+  }).catch((error) => {
+
+  })
 }
 
 const handleAvatarSuccess = (newAvatarUrl) => {

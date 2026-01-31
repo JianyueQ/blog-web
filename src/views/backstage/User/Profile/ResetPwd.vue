@@ -16,35 +16,35 @@
         :closable="false"
         class="mb-20 dark-alert"
       />
-      
-      <el-form 
+
+      <el-form
         ref="formRef"
-        :model="form" 
+        :model="form"
         :rules="rules"
         label-position="top"
       >
         <el-form-item label="当前旧密码" prop="oldPassword">
-          <el-input 
-            v-model="form.oldPassword" 
-            type="password" 
+          <el-input
+            v-model="form.oldPassword"
+            type="password"
             placeholder="请输入当前正在使用的密码"
             show-password
           />
         </el-form-item>
-        
+
         <el-form-item label="设置新密码" prop="newPassword">
-          <el-input 
-            v-model="form.newPassword" 
-            type="password" 
+          <el-input
+            v-model="form.newPassword"
+            type="password"
             placeholder="请输入 6-20 位新密码"
             show-password
           />
         </el-form-item>
-        
+
         <el-form-item label="确认新密码" prop="confirmPassword">
-          <el-input 
-            v-model="form.confirmPassword" 
-            type="password" 
+          <el-input
+            v-model="form.confirmPassword"
+            type="password"
             placeholder="请再次输入新密码"
             show-password
           />
@@ -63,9 +63,16 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import {updatePassword} from "@/api/backstage/admin.js";
+import {ElMessage} from "element-plus";
+import router from "@/router/index.js";
+import {removeToken} from "@/utils/auth.js";
+import {useUserStore} from "@/stores/user.js";
 
 const visible = ref(false)
 const formRef = ref(null)
+
+const userStore = useUserStore()
 
 const form = reactive({
   oldPassword: '',
@@ -101,8 +108,18 @@ const open = () => {
 const handleSubmit = () => {
   formRef.value.validate((valid) => {
     if (valid) {
-      // TODO: 调用后端修改密码接口
-      // TODO: 成功后提示并跳转到登录页，使用 ElMessage
+      updatePassword(form).then((res) => {
+        visible.value = false
+        // 成功后提示并跳转到登录页
+        ElMessage.success(res.message || '修改密码成功')
+        setTimeout(() => {
+          //移除token
+          userStore.clearUser()
+          removeToken()
+          // 跳转到登录页
+          router.push('/backstage/login')
+        }, 1000)
+      })
     }
   })
 }

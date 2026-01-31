@@ -160,7 +160,7 @@ const handleSave = () => {
       emit('success', res.imgUrl)
       visible.value = false
     }).catch(err => {
-      // ElMessage.error(err.message || '上传失败')
+
     })
   })
 }
