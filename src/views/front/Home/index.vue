@@ -99,7 +99,7 @@ onUnmounted(() => {
 .home-view {
   font-family: 'Space Grotesk', sans-serif;
   width: 100%;
-  padding: 4rem 2rem;
+  padding: 2rem; // 减小顶部内边距，使内容更靠近导航栏
   max-width: 1400px;
   margin: 0 auto;
 
@@ -110,9 +110,11 @@ onUnmounted(() => {
     align-items: start;
 
     .left-section {
-      position: sticky;
-      top: 100px;
-      z-index: 10;
+      // 解决 PC 端下滑时分开移动的问题：
+      // 由于个人资料卡片内容较多，使用 sticky 会在到达底部前产生分离感。
+      // 将其改为 relative 布局，使其随右侧内容同步滚动。
+      position: relative;
+      z-index: 1;
     }
 
     .right-section {

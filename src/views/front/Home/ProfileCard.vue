@@ -2,9 +2,10 @@
   <div class="profile-card">
     <!-- 头像区域 -->
     <div class="avatar-container">
-      <img :src="profile.avatar || '/images/icon/logo.png'" alt="Avatar" class="avatar" />
+      <img :src="profile.avatar || '/images/icon/logo.png'" alt="Avatar" class="avatar"/>
       <div class="avatar-ring"></div>
-      <div class="status-dot"></div>
+      <!--todo 添加状态点添加头像-->
+      <!--      <div class="status-dot"></div>-->
     </div>
 
     <!-- 基本信息 -->
@@ -27,8 +28,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getBlogOwnerProfile } from '@/api/front/user.js'
+import {onMounted, ref} from 'vue'
+import {getBlogOwnerProfile} from '@/api/front/user.js'
 
 const profile = ref({
   nickname: '',
@@ -86,10 +87,10 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.05),
-      transparent
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.05),
+            transparent
     );
     transition: 0.5s;
   }
@@ -300,8 +301,12 @@ onMounted(() => {
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
 
