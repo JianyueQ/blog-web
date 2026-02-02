@@ -2,7 +2,7 @@
   <div class="time-capsule">
     <div class="capsule-header-main">
       <h3 class="capsule-title">时光胶囊</h3>
-      <div class="capsule-subtitle">Time is the most valuable thing a man can spend.</div>
+      <div class="capsule-subtitle">{{ currentSubtitle }}</div>
     </div>
 
     <div class="capsule-grid">
@@ -23,7 +23,6 @@
         </div>
       </div>
     </div>
-    <!-- todo: 启用时光胶囊详细数据分析弹窗 -->
   </div>
 </template>
 
@@ -32,9 +31,24 @@ import { ref, onMounted } from 'vue'
 import { getTimeCapsule } from '@/utils/getTime.js'
 
 const timeCapsule = ref({})
+const currentSubtitle = ref('')
+
+const subtitles = [
+  '盛年不重来，一日难再晨。及时当勉励，岁月不待人。 —— 陶渊明 《杂诗》',
+  '莫等闲，白了少年头，空悲切。 —— 岳飞 《满江红》',
+  '夫天地者，万物之逆旅也；光阴者，百代之过客也。 —— 李白 《春夜宴从弟桃花园序》',
+  '流光容易把人抛，红了樱桃，绿了芭蕉。 —— 蒋捷 《贺新郎》',
+  '少壮不努力，老大徒伤悲。 —— 《汉乐府·长歌行》 《长歌行》',
+  '一寸光阴一寸金，寸金难买寸光阴。 —— 王贞白 《劝学诗》',
+  '公道世间唯白发，贵人头上不曾饶。 —— 杜牧 《秋夕》',
+  '逝者如斯夫，不舍昼夜。 —— 孔子 《论语·述而》',
+  '昨日复昨日，昨日何其多。 —— 钱福 《明日歌》',
+  '劝君莫惜金缕衣，劝君惜取少年时。 —— 杜秋娘 《金缕衣》'
+]
 
 onMounted(() => {
   timeCapsule.value = getTimeCapsule()
+  currentSubtitle.value = subtitles[Math.floor(Math.random() * subtitles.length)]
 
   // 每分钟更新一次
   setInterval(() => {
@@ -44,7 +58,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+//@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 .time-capsule {
   font-family: 'Space Grotesk', sans-serif;

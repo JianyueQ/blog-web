@@ -36,7 +36,8 @@ const profile = ref({
   avatar: '',
   description: '',
   lastLoginTime: '',
-  lastLoginIp: ''
+  lastLoginIp: '',
+  uuid:''
 })
 
 const fetchProfile = async () => {

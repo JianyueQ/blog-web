@@ -1,11 +1,10 @@
 //定制请求的实例
 import axios from 'axios';
-import {getToken} from '@/utils/auth'
+import {getToken, removeToken} from '@/utils/auth'
 import {tansParams} from "@/utils/common.js";
 import errorCode from "@/utils/errorCode.js";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElNotification, ElMessageBox} from "element-plus";
 import cache from '@/plugins/cache'
-import {MessageBox} from "@element-plus/icons-vue";
 
 let downloadLoadingInstance
 // 是否显示重新登录
@@ -85,29 +84,28 @@ service.interceptors.response.use(res => {
         if (code === 401) {
             if (!isRelogin.show) {
                 isRelogin.show = true
-                MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
+                ElMessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
                     confirmButtonText: '重新登录',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     isRelogin.show = false
-                    // store.dispatch('LogOut').then(() => {
-                    //     location.href = '/index'
-                    // })
+                    removeToken()
+                    location.href = '/backstage/login'
                 }).catch(() => {
                     isRelogin.show = false
                 })
             }
-            return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
+            return Promise.reject({ code: 401, message: '无效的会话，或者会话已过期，请重新登录。' })
         } else if (code === 500) {
             ElMessage({message: msg, type: 'error'})
-            return Promise.reject(new Error(msg))
+            return Promise.reject({ code: 500, message: msg })
         } else if (code === 601) {
             ElMessage({message: msg, type: 'warning'})
-            return Promise.reject('error')
+            return Promise.reject({ code: 601, message: msg })
         } else if (code !== 200) {
-            Notification.error({title: msg})
-            return Promise.reject('error')
+            ElNotification.error({title: msg})
+            return Promise.reject({ code: code, message: msg })
         } else {
             return res.data
         }

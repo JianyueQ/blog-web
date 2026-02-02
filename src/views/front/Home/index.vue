@@ -3,7 +3,7 @@
     <div class="home-grid">
       <!-- 左侧个人资料 -->
       <div class="left-section">
-        <ProfileCard />
+        <ProfileCard/>
       </div>
 
       <!-- 右侧内容区域 -->
@@ -17,26 +17,16 @@
             </div>
             <div class="card-content">
               <div class="time-display">{{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}</div>
-              <div class="date-display">{{ currentTime.year }}年{{ currentTime.month }}月{{ currentTime.day }}日 {{ currentTime.weekday }}</div>
+              <div class="date-display">{{ currentTime.year }}年{{ currentTime.month }}月{{ currentTime.day }}日
+                {{ currentTime.weekday }}
+              </div>
             </div>
             <!-- todo: 启用时钟详细信息弹窗 -->
-          </div>
-
-          <!-- 天气卡片 (占位) -->
-          <div class="info-card weather-card">
-            <div class="card-icon">
-              <span class="icon">⛅</span>
-            </div>
-            <div class="card-content">
-              <div class="weather-temp">24°C</div>
-              <div class="weather-desc">晴间多云 · 优质</div>
-            </div>
-            <!-- todo: 启用天气预报详细弹窗 -->
           </div>
         </div>
 
         <!-- 时光胶囊 -->
-        <TimeCapsule />
+        <TimeCapsule/>
 
         <!-- 欢迎语/其他内容 -->
         <div class="welcome-section">
@@ -60,10 +50,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import {onMounted, onUnmounted, ref} from 'vue'
 import ProfileCard from './ProfileCard.vue'
 import TimeCapsule from './TimeCapsule.vue'
-import { getCurrentTime } from '@/utils/getTime.js'
+import {getCurrentTime} from '@/utils/getTime.js'
+
 
 const currentTime = ref({
   year: '',
@@ -75,11 +66,13 @@ const currentTime = ref({
   weekday: ''
 })
 
+
 let timeInterval = null
 
 const updateTime = () => {
   currentTime.value = getCurrentTime()
 }
+
 
 onMounted(() => {
   updateTime()
@@ -146,8 +139,13 @@ onUnmounted(() => {
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
           }
 
-          &.clock-card { animation-delay: 0.2s; }
-          &.weather-card { animation-delay: 0.3s; }
+          &.clock-card {
+            animation-delay: 0.2s;
+          }
+
+          &.weather-card {
+            animation-delay: 0.3s;
+          }
 
           .card-icon {
             font-size: 2.5rem;
@@ -222,6 +220,7 @@ onUnmounted(() => {
             &:not(.secondary) {
               background: #2563eb;
               color: #fff;
+
               &:hover {
                 background: #1d4ed8;
                 transform: translateY(-2px);
@@ -233,6 +232,7 @@ onUnmounted(() => {
               background: rgba(255, 255, 255, 0.05);
               color: #e4e4e7;
               border: 1px solid rgba(255, 255, 255, 0.1);
+
               &:hover {
                 background: rgba(255, 255, 255, 0.1);
                 border-color: rgba(255, 255, 255, 0.2);
@@ -271,7 +271,7 @@ onUnmounted(() => {
 
       .welcome-section {
         padding: 2rem;
-        
+
         .welcome-title {
           font-size: 1.8rem;
         }

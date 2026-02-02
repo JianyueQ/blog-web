@@ -152,12 +152,6 @@ router.beforeEach((to, from, next) => {
     const token = getToken()
     const isBackstageRoute = to.path.startsWith('/backstage')
     const isLoginPage = to.path === '/backstage/login'
-
-    // 设置页面标题
-    // if (to.meta.title) {
-    //     document.title = to.meta.title + ' - 博客'
-    // }
-
     // 判断是否是后台路由（排除登录页）
     if (isBackstageRoute && !isLoginPage) {
         // 需要验证 token
@@ -176,12 +170,21 @@ router.beforeEach((to, from, next) => {
         if (userStore.user === null) {
             userStore.getInfo().then(() => {
                 next()
-            }).catch(() => {
-                removeToken()
-                next({
-                    path: '/backstage/login',
-                    query: { redirect: to.fullPath }
-                })
+            }).catch((err) => {
+                // 优化错误处理逻辑
+                if (err && err.code === 401) {
+                    // 当返回 401 错误时，由 request.js 统一弹出 MessageBox 提醒
+                    // 这里中止本次路由跳转，等待用户在弹窗中点击“确定”后再跳转
+                    next(false)
+                } else {
+                    // 对于 500 等其他服务器异常，已经在 request.js 中弹出错误消息
+                    // 这里我们中止导航，防止用户被错误地引导至登录页
+                    if (!from.name) {
+                        next({ path: '/home' })
+                    } else {
+                        next(false)
+                    }
+                }
             })
             return
         }
