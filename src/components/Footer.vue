@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <p class="copyright">
-          © {{ currentYear }} <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span>
+          <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span> © {{ currentYear }}
         </p>
         <p class="site-stats" v-if="siteConfig.siteStartDate">
           {{ siteDateStatistics(new Date(siteConfig.siteStartDate)) }}
@@ -37,44 +37,13 @@
 import {computed, onMounted, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import {siteDateStatistics} from '@/utils/getTime'
-import {getSiteConfig, getSocialLinks} from "@/api/front/links.js";
+import {getBlogOwnerSocialInfo} from '@/api/front/links'
 
 const route = useRoute()
 const currentYear = computed(() => new Date().getFullYear())
 
 // 社交链接和网站配置
-const socialLinks = ref([
-  {
-    "name": "Github",
-    "icon": "/images/icon/github.png",
-    "tip": "去 Github 看看",
-    "url": ""
-  },
-  {
-    "name": "BiliBili",
-    "icon": "/images/icon/bilibili.png",
-    "tip": "(゜-゜)つロ 干杯 ~",
-    "url": ""
-  },
-  {
-    "name": "QQ",
-    "icon": "/images/icon/qq.png",
-    "tip": "有什么事吗",
-    "url": ""
-  },
-  {
-    "name": "Email",
-    "icon": "/images/icon/email.png",
-    "tip": "来封 Email ~",
-    "url": ""
-  },
-  {
-    "name": "Telegram",
-    "icon": "/images/icon/telegram.png",
-    "tip": "你懂的 ~",
-    "url": ""
-  }
-])
+const socialLinks = ref([])
 const siteConfig = ref({
   brandName: 'jianyue.cloud',
   siteStartDate: '2024-01-01'
@@ -89,11 +58,22 @@ const isCollapsed = computed(() => route.path !== '/home')
 // 加载数据
 onMounted(async () => {
   try {
-    //todo
-    // socialLinks.value = (await getSocialLinks()).data
-    // siteConfig.value = (await getSiteConfig()).data
+    const res = await getBlogOwnerSocialInfo()
+    if (res.code === 200) {
+      // 容错处理：如果 status 或 sortOrder 为 null，则给定默认值
+      // 这里的逻辑是：只要 url 存在，就认为是有效的社交链接
+      socialLinks.value = (res.data || [])
+        .filter(item => item.url) // 只要有跳转链接就显示
+        .map(item => ({
+          ...item,
+          status: item.status === null ? '1' : String(item.status),
+          sortOrder: item.sortOrder === null ? 0 : Number(item.sortOrder)
+        }))
+        .filter(item => item.status === '1') // 过滤掉明确禁用的
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+    }
   } catch (error) {
-
+    console.error('获取社交链接失败:', error)
   }
 })
 
@@ -181,6 +161,8 @@ const handleBrandClick = () => {
       cursor: pointer;
       transition: all 0.3s;
       user-select: none;
+      //右边距
+      margin-right: 1.0rem;
 
       &:hover {
         color: #fff;

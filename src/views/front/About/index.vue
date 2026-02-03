@@ -14,25 +14,16 @@
         </p>
       </div>
 
-<!--      <div class="about-section skills-section">-->
-<!--        <h2 class="section-title">技能树</h2>-->
-<!--        <div class="skills-grid">-->
-<!--          <div v-for="skill in skills" :key="skill.name" class="skill-item">-->
-<!--            <div class="skill-header">-->
-<!--              <span class="skill-name">{{ skill.name }}</span>-->
-<!--              <span class="skill-level">{{ skill.level }}%</span>-->
-<!--            </div>-->
-<!--            <div class="skill-bar">-->
-<!--              <div class="skill-progress" :style="{ width: `${skill.level}%` }"></div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </div>-->
-
       <div class="about-section contact-section">
         <h2 class="section-title">联系方式</h2>
-        <div class="contact-grid">
-          <div v-for="contact in contacts" :key="contact.type" class="contact-item">
+        <div v-if="loading" class="loading">加载中...</div>
+        <div v-else class="contact-grid">
+          <div
+            v-for="contact in contacts"
+            :key="contact.type"
+            class="contact-item"
+            @click="visitLink(contact.url)"
+          >
             <img :src="contact.icon" :alt="contact.type" class="contact-icon" />
             <div class="contact-info">
               <div class="contact-type">{{ contact.type }}</div>
@@ -46,16 +37,45 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { getBlogOwnerSocialInfo } from '@/api/front/links'
 
 const skills = ref([])
+const contacts = ref([])
+const loading = ref(false)
 
-//todo 添加联系信息
-const contacts = ref([
-  { type: 'Email', value: 'your@email.com', icon: '/images/icon/email.png' },
-  { type: 'GitHub', value: 'github.com/yourname', icon: '/images/icon/github.png' },
-  { type: 'Bilibili', value: 'bilibili.com/yourname', icon: '/images/icon/bilibili.png' },
-])
+// 获取博主社交联系信息
+const fetchSocialInfo = async () => {
+  loading.value = true
+  try {
+    const res = await getBlogOwnerSocialInfo()
+    if (res.code === 200) {
+      // 处理API返回的数据，转换为组件需要的格式
+      contacts.value = res.data.map(item => ({
+        type: item.name,
+        value: item.tip,
+        icon: item.icon,
+        url: item.url,
+        sortOrder: parseInt(item.sortOrder) || 0
+      })).sort((a, b) => a.sortOrder - b.sortOrder)
+    }
+  } catch (error) {
+    console.error('获取社交信息失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 访问链接
+const visitLink = (url) => {
+  if (url) {
+    window.open(url, '_blank')
+  }
+}
+
+onMounted(() => {
+  fetchSocialInfo()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -64,6 +84,13 @@ const contacts = ref([
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 0;
+
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+  }
 
   .about-header {
     text-align: center;

@@ -1,18 +1,14 @@
 import request from '@/utils/request'
 
-// 获取社交链接
-export function getSocialLinks() {
+//前缀
+let apiPrefix = '/blog/user/profile'
+
+//获取博主的社交联系信息
+export function getBlogOwnerSocialInfo() {
     return request({
-        url: '/front/socialLinks',
+        url: `${apiPrefix}/getBlogOwnerSocialInfo`,
         method: 'get'
     })
 }
 
-// 获取站点配置
-export function getSiteConfig() {
-    return request({
-        url: '/front/SiteConfig',
-        method: 'get'
-    })
-}
 

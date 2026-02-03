@@ -82,7 +82,5 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   position: relative;
-  // 确保前台布局有备用背景色
-  //background-color: #333;
 }
 </style>
