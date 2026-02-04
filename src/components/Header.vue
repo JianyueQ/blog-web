@@ -3,7 +3,7 @@
     <div class="container">
       <div class="logo" @click="router.push('/home')">
         <img src="/images/icon/logo.png" alt="Logo"/>
-        <span class="logo-text">jianyue</span>
+        <span class="logo-text">blog</span>
       </div>
 
       <!-- PC端导航 -->

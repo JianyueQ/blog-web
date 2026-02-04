@@ -1,80 +1,112 @@
 <template>
   <div class="about-view">
-    <div class="about-header">
-      <h1 class="page-title">关于我</h1>
-      <p class="page-subtitle">Hello, World!</p>
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>加载中...</p>
     </div>
 
-    <div class="about-content">
-      <div class="about-section intro-section">
-        <h2 class="section-title">自我介绍</h2>
-        <p class="section-text">
-          我是一名热爱编程的开发者，专注于前端技术栈。喜欢研究新技术，热衷于分享和记录学习过程。
-          通过这个博客，我希望能够记录自己的成长轨迹，同时也能帮助到有需要的人。
-        </p>
-      </div>
+    <!-- 内容区域 -->
+    <div v-else-if="aboutContent" class="about-container">
+      <!-- Markdown 渲染区域 -->
+      <article class="markdown-body" v-html="renderedMarkdown"></article>
 
-      <div class="about-section contact-section">
-        <h2 class="section-title">联系方式</h2>
-        <div v-if="loading" class="loading">加载中...</div>
-        <div v-else class="contact-grid">
-          <div
+      <!-- 社交联系方式 -->
+      <div v-if="contacts.length > 0" class="social-section">
+        <h2 class="social-title">快速联系</h2>
+        <div class="social-grid">
+          <a
             v-for="contact in contacts"
-            :key="contact.type"
-            class="contact-item"
-            @click="visitLink(contact.url)"
+            :key="contact.url"
+            :href="contact.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-item"
+            :title="contact.tip"
           >
-            <img :src="contact.icon" :alt="contact.type" class="contact-icon" />
-            <div class="contact-info">
-              <div class="contact-type">{{ contact.type }}</div>
-              <div class="contact-value">{{ contact.value }}</div>
-            </div>
-          </div>
+            <img :src="contact.icon" :alt="contact.name" class="social-icon" />
+            <span class="social-name">{{ contact.name }}</span>
+          </a>
         </div>
       </div>
+    </div>
+
+    <!-- 错误状态 -->
+    <div v-else class="error-container">
+      <p>暂无内容</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { getBlogOwnerAboutMe } from '@/api/front/about'
 import { getBlogOwnerSocialInfo } from '@/api/front/links'
+import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github-dark.css'
 
-const skills = ref([])
+// Markdown 渲染器配置
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value
+      } catch (__) {}
+    }
+    return ''
+  }
+})
+
+const loading = ref(true)
+const aboutContent = ref('')
 const contacts = ref([])
-const loading = ref(false)
 
-// 获取博主社交联系信息
+// 渲染 Markdown
+const renderedMarkdown = computed(() => {
+  return aboutContent.value ? md.render(aboutContent.value) : ''
+})
+
+// 获取关于我内容
+const fetchAboutMe = async () => {
+  try {
+    const res = await getBlogOwnerAboutMe()
+    // 注意: axios 响应拦截器已经解包 res.data
+    if (res && res.data && res.data.aboutMeContent) {
+      aboutContent.value = res.data.aboutMeContent
+    }
+  } catch (error) {
+    console.error('获取关于我内容失败:', error)
+  }
+}
+
+// 获取社交联系方式
 const fetchSocialInfo = async () => {
-  loading.value = true
   try {
     const res = await getBlogOwnerSocialInfo()
-    if (res.code === 200) {
-      // 处理API返回的数据，转换为组件需要的格式
-      contacts.value = res.data.map(item => ({
-        type: item.name,
-        value: item.tip,
-        icon: item.icon,
-        url: item.url,
-        sortOrder: parseInt(item.sortOrder) || 0
-      })).sort((a, b) => a.sortOrder - b.sortOrder)
+    if (res && res.data) {
+      contacts.value = res.data
+        .map(item => ({
+          name: item.name,
+          tip: item.tip,
+          icon: item.icon,
+          url: item.url,
+          sortOrder: parseInt(item.sortOrder) || 0
+        }))
+        .sort((a, b) => a.sortOrder - b.sortOrder)
     }
   } catch (error) {
     console.error('获取社交信息失败:', error)
-  } finally {
-    loading.value = false
   }
 }
 
-// 访问链接
-const visitLink = (url) => {
-  if (url) {
-    window.open(url, '_blank')
-  }
-}
-
-onMounted(() => {
-  fetchSocialInfo()
+onMounted(async () => {
+  loading.value = true
+  await Promise.all([fetchAboutMe(), fetchSocialInfo()])
+  loading.value = false
 })
 </script>
 
@@ -83,134 +115,279 @@ onMounted(() => {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 2rem 1rem;
+  min-height: 80vh;
 
-  .loading {
-    text-align: center;
-    padding: 2rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
-  }
-
-  .about-header {
-    text-align: center;
-    margin-bottom: 4rem;
-    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    .page-title {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .page-subtitle {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.7);
-      font-family: 'Pacifico-Regular', cursive;
-    }
-  }
-
-  .about-content {
+  // 加载状态
+  .loading-container,
+  .error-container {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    color: rgba(255, 255, 255, 0.7);
 
-    .about-section {
-      padding: 2.5rem;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      animation-fill-mode: both;
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 1rem;
+    }
 
-      &.intro-section { animation-delay: 0.1s; }
-      &.skills-section { animation-delay: 0.2s; }
-      &.contact-section { animation-delay: 0.3s; }
+    p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
 
-      .section-title {
-        font-size: 1.8rem;
+  // 内容容器
+  .about-container {
+    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  // Markdown 样式
+  .markdown-body {
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.8;
+    margin-bottom: 3rem;
+
+    // 标题样式
+    :deep(h1),
+    :deep(h2),
+    :deep(h3),
+    :deep(h4),
+    :deep(h5),
+    :deep(h6) {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.95);
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    :deep(h1) {
+      font-size: 2.5em;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    :deep(h2) {
+      font-size: 1.8em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    :deep(h3) {
+      font-size: 1.4em;
+    }
+
+    :deep(h4) {
+      font-size: 1.2em;
+    }
+
+    // 段落样式
+    :deep(p) {
+      margin-bottom: 1.2rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1rem;
+    }
+
+    // 链接样式
+    :deep(a) {
+      color: #60a5fa;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s;
+
+      &:hover {
+        color: #93c5fd;
+        border-bottom-color: #93c5fd;
+      }
+    }
+
+    // 列表样式
+    :deep(ul),
+    :deep(ol) {
+      padding-left: 2rem;
+      margin: 1.2rem 0;
+
+      li {
+        margin-bottom: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+
+        &::marker {
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+
+    // 引用块样式
+    :deep(blockquote) {
+      border-left: 4px solid #60a5fa;
+      padding-left: 1.5rem;
+      margin: 1.5rem 0;
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(96, 165, 250, 0.1);
+      padding: 1rem 1.5rem;
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+
+      p {
+        margin: 0;
+      }
+    }
+
+    // 代码样式
+    :deep(code) {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 0.9em;
+      color: #e879f9;
+    }
+
+    :deep(pre) {
+      background: #1e1e1e;
+      padding: 1.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+
+      code {
+        background: none;
+        padding: 0;
+        color: #d4d4d4;
+        font-size: 0.95em;
+      }
+    }
+
+    // 图片样式
+    :deep(img) {
+      max-width: 100%;
+      height: auto;
+      border-radius: 16px;
+      margin: 1.5rem 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s;
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
+    // 表格样式
+    :deep(table) {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      overflow: hidden;
+      border-radius: 12px;
+
+      th,
+      td {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 0.8rem 1rem;
+        text-align: left;
+      }
+
+      th {
+        background: rgba(255, 255, 255, 0.1);
         font-weight: 600;
         color: rgba(255, 255, 255, 0.95);
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
 
-      .section-text {
-        font-size: 1rem;
-        line-height: 1.8;
-        color: rgba(255, 255, 255, 0.7);
+      td {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.8);
       }
-    }
 
-    .skills-grid {
-      display: grid;
-      gap: 1.5rem;
-
-      .skill-item {
-        .skill-header {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 0.8rem;
-
-          .skill-name {
-            font-size: 1rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-          }
-
-          .skill-level {
-            font-family: 'UnidreamLED', monospace;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
-          }
-        }
-
-        .skill-bar {
-          width: 100%;
-          height: 10px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-          overflow: hidden;
-
-          .skill-progress {
-            height: 100%;
-            background: linear-gradient(90deg,
-              rgba(255, 255, 255, 0.6) 0%,
-              rgba(255, 255, 255, 0.9) 100%
-            );
-            border-radius: 10px;
-            transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-          }
-        }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.08);
       }
     }
 
-    .contact-grid {
+    // 水平线
+    :deep(hr) {
+      border: none;
+      border-top: 2px solid rgba(255, 255, 255, 0.2);
+      margin: 2.5rem 0;
+    }
+
+    // 强调文本
+    :deep(strong) {
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 700;
+    }
+
+    // 斜体
+    :deep(em) {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  // 社交联系区域
+  .social-section {
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation-delay: 0.2s;
+    animation-fill-mode: both;
+
+    .social-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .social-grid {
       display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
       gap: 1.5rem;
 
-      .contact-item {
+      .social-item {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 1.5rem;
-        padding: 1.2rem;
+        gap: 0.8rem;
+        padding: 1.5rem 1rem;
         background: rgba(255, 255, 255, 0.05);
         border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s;
+        text-decoration: none;
+        cursor: pointer;
 
         &:hover {
-          background: rgba(255, 255, 255, 0.1);
-          transform: translateX(5px);
+          background: rgba(255, 255, 255, 0.12);
+          transform: translateY(-5px);
+          border-color: rgba(96, 165, 250, 0.5);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .contact-icon {
+        .social-icon {
           width: 48px;
           height: 48px;
           padding: 10px;
@@ -218,55 +395,75 @@ onMounted(() => {
           border-radius: 50%;
           filter: brightness(0) invert(1);
           opacity: 0.9;
+          transition: all 0.3s;
         }
 
-        .contact-info {
-          flex: 1;
+        &:hover .social-icon {
+          opacity: 1;
+          background: rgba(96, 165, 250, 0.2);
+        }
 
-          .contact-type {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 0.3rem;
-          }
-
-          .contact-value {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.9);
-          }
+        .social-name {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+          text-align: center;
         }
       }
     }
   }
 
-  @media (max-width: 720px) {
-    padding: 1rem 0;
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: 1rem 0.5rem;
 
-    .about-header {
-      margin-bottom: 3rem;
+    .markdown-body {
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
 
-      .page-title {
-        font-size: 2.2rem;
+      :deep(h1) {
+        font-size: 2em;
       }
 
-      .page-subtitle {
-        font-size: 1rem;
+      :deep(h2) {
+        font-size: 1.5em;
+      }
+
+      :deep(h3) {
+        font-size: 1.3em;
+      }
+
+      :deep(pre) {
+        padding: 1rem;
+        font-size: 0.85em;
       }
     }
 
-    .about-content {
-      gap: 1.5rem;
+    .social-section {
+      padding: 1.5rem;
 
-      .about-section {
-        padding: 1.8rem;
+      .social-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 1rem;
 
-        .section-title {
-          font-size: 1.5rem;
+        .social-item {
+          padding: 1rem 0.8rem;
+
+          .social-icon {
+            width: 40px;
+            height: 40px;
+          }
+
+          .social-name {
+            font-size: 0.85rem;
+          }
         }
       }
     }
   }
 }
 
+// 动画
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -275,6 +472,12 @@ onMounted(() => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
