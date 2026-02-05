@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-info">
         <p class="copyright">
-          <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span> © {{ currentYear }}
+          © {{ currentYear }} <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span>
         </p>
         <p class="site-stats" v-if="siteConfig.siteStartDate">
           {{ siteDateStatistics(new Date(siteConfig.siteStartDate)) }}

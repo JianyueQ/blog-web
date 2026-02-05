@@ -126,6 +126,25 @@ const router = createRouter({
                     name: 'backstageConfig',
                     component: () => import('@/views/backstage/Config/index.vue'),
                     meta: { title: '系统配置' }
+                },
+                // 监控管理路由
+                {
+                    path: 'operlog',
+                    name: 'backstageOperlog',
+                    component: () => import('@/views/backstage/Monitor/OperLog/index.vue'),
+                    meta: { title: '操作日志' }
+                },
+                {
+                    path: 'accesslog',
+                    name: 'backstageAccesslog',
+                    component: () => import('@/views/backstage/Monitor/AccessLog/index.vue'),
+                    meta: { title: '系统访问记录' }
+                },
+                {
+                    path: 'server',
+                    name: 'backstageServer',
+                    component: () => import('@/views/backstage/Monitor/ServerMonitor/index.vue'),
+                    meta: { title: '服务器监控' }
                 }
             ]
         },

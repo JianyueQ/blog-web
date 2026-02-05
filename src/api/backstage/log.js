@@ -11,13 +11,12 @@ export function getOperlogList(params) {
 }
 
 ///monitor/operlog/{operIds}
-export function deleteOperlog(operIds) {
+export function deleteOperlog(operId) {
     return request({
-        url: `${apiPrefix}/${operIds}`,
+        url: '/monitor/operlog/' + operId,
         method: 'delete'
     })
 }
-
 ///monitor/operlog/clean
 export function cleanOperlog() {
     return request({

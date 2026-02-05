@@ -76,6 +76,18 @@
           <el-menu-item index="/backstage/user">成员准入</el-menu-item>
           <el-menu-item index="/backstage/config">核心配置</el-menu-item>
         </el-sub-menu>
+
+        <el-sub-menu index="monitor">
+          <template #title>
+            <el-icon>
+              <Monitor/>
+            </el-icon>
+            <span>监控管理</span>
+          </template>
+          <el-menu-item index="/backstage/operlog">操作日志</el-menu-item>
+          <el-menu-item index="/backstage/accesslog">系统访问记录</el-menu-item>
+          <el-menu-item index="/backstage/server">服务器监控</el-menu-item>
+        </el-sub-menu>
       </el-menu>
 
       <div class="sidebar-footer" v-if="!isCollapse">
@@ -183,6 +195,7 @@ import {
   FullScreen,
   HomeFilled,
   Link,
+  Monitor,
   Moon,
   Picture,
   Refresh,
