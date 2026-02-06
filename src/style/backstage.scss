@@ -656,8 +656,10 @@
       color: rgba(255, 255, 255, 0.85) !important;
     }
   }
+}
 
-  // 全局弹窗与下拉组件暗黑优化 (针对 Teleported 组件)
+// 全局弹窗与下拉组件暗黑优化 (针对 Teleported 组件)
+[data-theme='dark'] {
   .el-dialog,
   .el-overlay,
   .el-overlay-dialog,
@@ -671,10 +673,64 @@
     .el-dropdown-menu,
     .el-select-dropdown__list,
     .el-popper__content,
-    .el-alert {
+    .el-alert,
+    .el-picker-panel,
+    .el-date-range-picker,
+    .el-time-panel {
       background-color: #141414 !important;
       border: 1px solid #333 !important;
       color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    // 针对日期选择器内部结构的覆盖
+    .el-picker-panel__body-wrapper,
+    .el-picker-panel__content,
+    .el-date-range-picker__content,
+    .el-picker-panel__footer,
+    .el-date-range-picker__footer,
+    .el-date-range-picker__time-header,
+    .el-time-panel__content,
+    .el-time-panel__footer {
+      background-color: #141414 !important;
+      border-color: #333 !important;
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .el-date-table th,
+    .el-date-table td.next-month,
+    .el-date-table td.prev-month {
+      color: #555 !important;
+    }
+
+    .el-picker-panel__icon-btn,
+    .el-date-picker__header-label,
+    .el-date-range-picker__header div,
+    .el-time-spinner__item {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    .el-time-spinner__item:hover:not(.is-disabled):not(.is-active) {
+      background-color: #333 !important;
+    }
+
+    .el-time-panel__btn.confirm {
+      color: var(--backstage-primary) !important;
+    }
+
+    .el-date-table td.in-range .el-date-table-cell {
+      background-color: rgba(22, 119, 255, 0.1) !important;
+    }
+
+    .el-date-table td.today span {
+      color: var(--backstage-primary) !important;
+      font-weight: bold;
+    }
+
+    .el-picker-panel__shortcut {
+      color: rgba(255, 255, 255, 0.85) !important;
+      &:hover {
+        color: var(--backstage-primary) !important;
+      }
     }
 
     // 针对 el-dialog 内部结构的强制覆盖

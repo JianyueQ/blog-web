@@ -58,8 +58,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-//@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-
 .time-capsule {
   font-family: 'Space Grotesk', sans-serif;
   padding: 3rem;
