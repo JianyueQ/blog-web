@@ -10,9 +10,9 @@ export function getList(params) {
     })
 }
 
-export function deleteAccess(operId) {
+export function deleteAccess(infoIds) {
     return request({
-        url: `${apiPrefix}` + operId,
+        url: `${apiPrefix}/${infoIds}`,
         method: 'delete'
     })
 }

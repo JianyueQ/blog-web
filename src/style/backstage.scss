@@ -784,6 +784,34 @@
     // 强制清除可能的白边
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
   }
+
+  // Descriptions 组件暗黑模式适配（全局作用域）
+  .el-descriptions {
+    .el-descriptions__header {
+      background: transparent !important;
+    }
+
+    // 标签列（左侧）
+    .el-descriptions__label {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border-color: var(--backstage-border-color) !important;
+      color: var(--backstage-text-secondary) !important;
+    }
+
+    // 内容列（右侧）
+    .el-descriptions__content {
+      background: transparent !important;
+      border-color: var(--backstage-border-color) !important;
+      color: var(--backstage-text-primary) !important;
+    }
+
+    // 覆盖所有容器元素
+    .el-descriptions__cell,
+    .el-descriptions__table,
+    .el-descriptions__body {
+      background: transparent !important;
+    }
+  }
 }
 
 // 通用工具类

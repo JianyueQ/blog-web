@@ -85,7 +85,7 @@
           </div>
           <div class="card-body">
             <div class="quick-grid">
-              <div v-for="(act, idx) in quickActions" :key="idx" 
+              <div v-for="(act, idx) in quickActions" :key="idx"
                    class="quick-item" @click="handleAction(act.label)">
                 <div class="icon-box" :style="{ color: act.color, backgroundColor: act.color + '10' }">
                   <el-icon><component :is="act.icon" /></el-icon>
@@ -93,16 +93,39 @@
                 <span>{{ act.label }}</span>
               </div>
             </div>
-            
+
             <div class="system-status">
-              <div class="status-header">系统运行状态</div>
-              <div class="status-item">
-                <span class="label">CPU 使用率</span>
-                <el-progress :percentage="12" status="success" :stroke-width="4" />
+              <div class="status-header">
+                <span>系统运行状态</span>
+                <el-tag size="small" type="success" effect="plain">实时监控</el-tag>
               </div>
               <div class="status-item">
-                <span class="label">内存 占用</span>
-                <el-progress :percentage="35" :stroke-width="4" />
+                <div class="status-label-row">
+                  <span class="label">CPU 使用率</span>
+                  <span class="percentage-value" :class="getCpuStatusClass(serverStatus.cpu)">
+                    {{ serverStatus.cpu.toFixed(1) }}%
+                  </span>
+                </div>
+                <el-progress
+                  :percentage="serverStatus.cpu"
+                  :status="serverStatus.cpu >= 80 ? 'exception' : (serverStatus.cpu >= 50 ? 'warning' : 'success')"
+                  :stroke-width="6"
+                  :show-text="false"
+                />
+              </div>
+              <div class="status-item">
+                <div class="status-label-row">
+                  <span class="label">内存占用</span>
+                  <span class="percentage-value" :class="getMemStatusClass(serverStatus.mem)">
+                    {{ serverStatus.mem.toFixed(1) }}%
+                  </span>
+                </div>
+                <el-progress
+                  :percentage="serverStatus.mem"
+                  :status="serverStatus.mem >= 90 ? 'exception' : (serverStatus.mem >= 70 ? 'warning' : '')"
+                  :stroke-width="6"
+                  :show-text="false"
+                />
               </div>
             </div>
           </div>
@@ -114,23 +137,47 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { 
-  Document, View, ChatDotRound, Link, Edit, 
+import {
+  Document, View, ChatDotRound, Link, Edit,
   Upload, Setting, Calendar, CaretTop, CaretBottom,
   Plus, Monitor, Collection, Operation
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/stores/user'
+import { getInfoServer } from '@/api/backstage/server'
 
 const userStore = useUserStore()
 const currentTime = ref('')
+const serverStatus = ref({
+  cpu: 0,
+  mem: 0
+})
+
 const updateTime = () => {
   const now = new Date()
   currentTime.value = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+// 获取服务器状态
+const fetchServerStatus = async () => {
+  try {
+    const res = await getInfoServer()
+    if (res.data) {
+      serverStatus.value.cpu = res.data.cpu?.used || 0
+      serverStatus.value.mem = res.data.mem?.usage || 0
+    }
+  } catch (error) {
+    console.error('获取服务器状态失败:', error)
+  }
+}
+
 onMounted(() => {
   updateTime()
   setInterval(updateTime, 60000)
+
+  // 初始加载服务器状态
+  fetchServerStatus()
+  // 每30秒刷新一次
+  setInterval(fetchServerStatus, 30000)
 })
 
 const statsCards = [
@@ -165,6 +212,20 @@ const getTagType = (cat) => {
 const handleAction = (action) => {
   // TODO: 之后根据需要添加交互, 目前使用 ElMessage.info(`${action}模块正在加载...`)
 }
+
+// CPU 状态颜色判断
+const getCpuStatusClass = (usage) => {
+  if (usage >= 80) return 'status-danger'
+  if (usage >= 50) return 'status-warning'
+  return 'status-success'
+}
+
+// 内存状态颜色判断
+const getMemStatusClass = (usage) => {
+  if (usage >= 90) return 'status-danger'
+  if (usage >= 70) return 'status-warning'
+  return 'status-normal'
+}
 </script>
 
 <style scoped lang="scss">
@@ -174,7 +235,7 @@ const handleAction = (action) => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-    
+
     .welcome-content {
       h1 {
         font-size: 24px;
@@ -188,7 +249,7 @@ const handleAction = (action) => {
         margin: 0;
       }
     }
-    
+
     .current-time {
       display: flex;
       align-items: center;
@@ -200,7 +261,7 @@ const handleAction = (action) => {
       font-size: 14px;
       color: var(--backstage-text-regular);
       box-shadow: var(--backstage-shadow-light);
-      
+
       .el-icon {
         color: var(--backstage-primary);
       }
@@ -220,20 +281,20 @@ const handleAction = (action) => {
       box-shadow: var(--backstage-shadow-base);
       transform: translateY(-2px);
     }
-    
+
     .card-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--backstage-border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .title {
         font-size: 16px;
         font-weight: 600;
         color: var(--backstage-text-primary);
       }
-      
+
       .subtitle {
         display: block;
         font-size: 12px;
@@ -242,7 +303,7 @@ const handleAction = (action) => {
         margin-top: 2px;
       }
     }
-    
+
     .card-body {
       padding: 20px;
     }
@@ -257,7 +318,7 @@ const handleAction = (action) => {
       z-index: 1;
       position: relative;
     }
-    
+
     .stats-icon {
       width: 48px;
       height: 48px;
@@ -268,7 +329,7 @@ const handleAction = (action) => {
       font-size: 24px;
       flex-shrink: 0;
     }
-    
+
     .stats-info {
       .label {
         font-size: 13px;
@@ -288,10 +349,10 @@ const handleAction = (action) => {
         gap: 4px;
         font-size: 12px;
         font-weight: 500;
-        
+
         &.up { color: var(--backstage-success); }
         &.down { color: var(--backstage-danger); }
-        
+
         .trend-label {
           color: var(--backstage-text-placeholder);
           margin-left: 2px;
@@ -299,7 +360,7 @@ const handleAction = (action) => {
         }
       }
     }
-    
+
     .mini-chart {
       position: absolute;
       bottom: 0;
@@ -308,7 +369,7 @@ const handleAction = (action) => {
       height: 40px;
       opacity: 0.3;
       pointer-events: none;
-      
+
       .chart-line {
         width: 100%;
         height: 100%;
@@ -329,12 +390,12 @@ const handleAction = (action) => {
       font-size: 13px;
       border-bottom: none;
     }
-    
+
     .article-title-cell {
       display: flex;
       align-items: center;
       gap: 12px;
-      
+
       .article-icon {
         width: 32px;
         height: 32px;
@@ -354,7 +415,7 @@ const handleAction = (action) => {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 24px;
-    
+
     .quick-item {
       display: flex;
       flex-direction: column;
@@ -365,13 +426,13 @@ const handleAction = (action) => {
       cursor: pointer;
       transition: all 0.2s;
       border: 1px solid transparent;
-      
+
       &:hover {
         background-color: var(--backstage-border-lighter);
         border-color: var(--backstage-border-color);
         transform: translateY(-2px);
       }
-      
+
       .icon-box {
         width: 44px;
         height: 44px;
@@ -381,7 +442,7 @@ const handleAction = (action) => {
         justify-content: center;
         font-size: 20px;
       }
-      
+
       span {
         font-size: 13px;
         color: var(--backstage-text-regular);
@@ -394,18 +455,21 @@ const handleAction = (action) => {
     background: var(--backstage-border-lighter);
     padding: 16px;
     border-radius: var(--backstage-radius-lg);
-    
+
     .status-header {
+      //组件之间的距离
+      display: flex;
+      gap: 12px;
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 16px;
       color: var(--backstage-text-primary);
     }
-    
+
     .status-item {
       margin-bottom: 12px;
       &:last-child { margin-bottom: 0; }
-      
+
       .label {
         display: block;
         font-size: 12px;
