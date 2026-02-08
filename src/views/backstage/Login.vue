@@ -2,7 +2,7 @@
   <div class="login-pro" :class="{ 'is-dark': isDarkMode }">
     <!-- 动态背景网格 -->
     <div class="bg-grid"></div>
-    
+
     <!-- 背景光效 -->
     <div class="glow-effect glow-1"></div>
     <div class="glow-effect glow-2"></div>
@@ -17,10 +17,7 @@
     <!-- 登录容器 -->
     <div class="login-box slide-in">
       <div class="login-header">
-        <div class="logo">
-           <img src="/images/icon/logo.png" alt="Logo" />
-        </div>
-        <h1>PRO MAX 管理系统</h1>
+        <h1>博客后台管理系统</h1>
         <p>每一篇博文，都是思想的火花</p>
       </div>
 
@@ -51,7 +48,7 @@
           />
         </el-form-item>
 
-        <el-form-item prop="code">
+        <el-form-item prop="code" v-if="captchaEnabled">
           <div class="code-row">
             <el-input
               v-model="loginForm.code"
@@ -103,6 +100,7 @@ const loginFormRef = ref(null)
 const loading = ref(false)
 const codeUrl = ref('')
 const isDarkMode = ref(false)
+const captchaEnabled = ref(true)
 
 const loginForm = reactive({
   username: '',
@@ -125,6 +123,7 @@ const getCodeImage = async () => {
     if (res.code === 200) {
       codeUrl.value = 'data:image/gif;base64,' + res.img
       loginForm.uuid = res.uuid
+      captchaEnabled.value = res.captchaEnabled
     }
   } catch (error) {
     console.error('Code Fetch Error', error)
@@ -144,14 +143,14 @@ const handleLogin = async () => {
           setToken(res.token)
           // TODO: 之后根据需要添加交互, 目前使用 ElMessage.success('身份验证通过，正在重定向...')
           const redirect = route.query.redirect || '/backstage/home'
-          setTimeout(() => router.push(redirect), 800)
+          setTimeout(() => router.push(redirect))
         } else {
           // TODO: 之后根据需要添加交互, 目前使用 ElMessage.error(res.msg || '认证失败')
-          refreshCode()
+          await refreshCode()
         }
       } catch (error) {
         // TODO: 之后根据需要添加交互, 目前使用 ElMessage.error('系统连接异常')
-        refreshCode()
+        await refreshCode()
       } finally {
         loading.value = false
       }
@@ -181,20 +180,20 @@ onMounted(() => {
   justify-content: center;
   overflow: hidden;
   transition: all 0.5s ease;
-  
+
   &.is-dark {
     background-color: #000;
-    
+
     .login-box {
       background: rgba(20, 20, 20, 0.8);
       border-color: #333;
       backdrop-filter: blur(20px);
-      
+
       h1 { color: #fff; }
       .login-header p { color: #888; }
       .login-footer { color: #444; }
     }
-    
+
     .top-bar .theme-switch {
       background: #111;
       color: #ffd700;
@@ -208,7 +207,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
+  background-image:
     linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -223,13 +222,13 @@ onMounted(() => {
   filter: blur(100px);
   z-index: 2;
   opacity: 0.4;
-  
+
   &.glow-1 {
     top: -200px;
     right: -100px;
     background: radial-gradient(circle, #1677ff 0%, transparent 70%);
   }
-  
+
   &.glow-2 {
     bottom: -200px;
     left: -100px;
@@ -242,7 +241,7 @@ onMounted(() => {
   top: 24px;
   right: 24px;
   z-index: 10;
-  
+
   .theme-switch {
     width: 44px;
     height: 44px;
@@ -255,7 +254,7 @@ onMounted(() => {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     font-size: 20px;
     transition: all 0.3s;
-    
+
     &:hover {
       transform: scale(1.1);
     }
@@ -272,10 +271,10 @@ onMounted(() => {
   border-radius: 24px;
   box-shadow: 0 12px 48px rgba(0,0,0,0.1);
   text-align: center;
-  
+
   .login-header {
     margin-bottom: 40px;
-    
+
     .logo {
       width: 64px;
       height: 64px;
@@ -286,14 +285,14 @@ onMounted(() => {
       align-items: center;
       justify-content: center;
       box-shadow: 0 8px 16px rgba(22, 119, 255, 0.2);
-      
+
       img {
         width: 32px;
         height: 32px;
         filter: brightness(0) invert(1);
       }
     }
-    
+
     h1 {
       font-size: 26px;
       font-weight: 700;
@@ -301,7 +300,7 @@ onMounted(() => {
       margin: 0 0 10px 0;
       letter-spacing: -0.5px;
     }
-    
+
     p {
       font-size: 14px;
       color: #8c8c8c;
@@ -317,21 +316,21 @@ onMounted(() => {
     padding: 4px 12px;
     box-shadow: 0 0 0 1px #d9d9d9 inset;
     transition: all 0.3s;
-    
+
     &:hover {
       box-shadow: 0 0 0 1px #1677ff inset;
     }
-    
+
     &.is-focus {
       box-shadow: 0 0 0 1px #1677ff inset, 0 0 0 4px rgba(22, 119, 255, 0.1) !important;
     }
   }
-  
+
   .code-row {
     display: flex;
     gap: 12px;
     width: 100%;
-    
+
     .code-display {
       flex-shrink: 0;
       width: 120px;
@@ -344,24 +343,24 @@ onMounted(() => {
       justify-content: center;
       overflow: hidden;
       border: 1px solid #d9d9d9;
-      
+
       img { width: 100%; height: 100%; object-fit: cover; }
       .el-icon { font-size: 24px; color: #bfbfbf; }
     }
   }
-  
+
   .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: -8px 0 24px;
-    
+
     :deep(.el-checkbox__label) {
       font-size: 13px;
       color: #8c8c8c;
     }
   }
-  
+
   .submit-btn {
     width: 100%;
     height: 48px;
@@ -372,7 +371,7 @@ onMounted(() => {
     box-shadow: 0 8px 16px rgba(22, 119, 255, 0.2);
     margin-bottom: 32px;
     border: none;
-    
+
     &:hover {
       background: #4096ff;
       transform: translateY(-1px);

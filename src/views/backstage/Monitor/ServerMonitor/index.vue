@@ -198,7 +198,7 @@ import {onMounted, onUnmounted, ref} from 'vue'
 import {getInfoServer} from '@/api/backstage/server'
 import {ElMessage} from 'element-plus'
 import {Clock, Coin, Folder, Monitor, Refresh, SetUp} from '@element-plus/icons-vue'
-import WebSocketManager from '@/utils/websocket'
+import {createServerMonitorWS} from '@/utils/websocket'
 import {getToken} from '@/utils/auth'
 
 const loading = ref(false)
@@ -227,53 +227,34 @@ const fetchData = async () => {
   }
 }
 
-// 初始化 WebSocket 连接
+// 初始化 WebSocket 连接（使用工厂方法简化逻辑）
 const initWebSocket = () => {
   // 关闭旧连接
   if (wsManager) {
     wsManager.close()
   }
 
-  // 动态构建 WebSocket URL（自动适配 localhost / 局域网 IP / 生产域名）
-  const hostname = window.location.hostname
-  const isDev = import.meta.env.DEV
-
-  // 开发环境使用固定端口 8998，生产环境使用当前端口（Nginx 反向代理）
-  const wsBaseUrl = isDev
-      ? `${hostname}:8998/ws/monitor/server`
-      : `${window.location.host}/ws/monitor/server`
-
-  // 创建 WebSocket 管理器
-  wsManager = new WebSocketManager(wsBaseUrl, {
-    heartbeatInterval: 10000,
-    reconnectInterval: 3000,
-    maxReconnectAttempts: 5,
-    enableHeartbeat: true
-  })
-
-  // 监听连接打开
-  wsManager.on('open', () => {
-    connectionStatus.value = 'connected'
-  })
-
-  // 监听消息接收
-  wsManager.on('message', (data) => {
-    if (data.type === 'server_info' && data.data) {
-      serverData.value = data.data
+  // 创建 WebSocket 连接
+  wsManager = createServerMonitorWS({
+    onOpen: () => {
+      connectionStatus.value = 'connected'
+      console.log('[ServerMonitor] WebSocket 连接成功')
+    },
+    onMessage: (data) => {
+      if (data.type === 'server_info' && data.data) {
+        serverData.value = data.data
+      }
+    },
+    onClose: (event) => {
+      connectionStatus.value = 'disconnected'
+      console.log('[ServerMonitor] WebSocket 连接关闭', event)
+    },
+    onError: (event) => {
+      connectionStatus.value = 'error'
+      console.error('[ServerMonitor] WebSocket 错误', event)
+      // 降级到 HTTP 轮询
+      fetchData()
     }
-  })
-
-  // 监听连接关闭
-  wsManager.on('close', (event) => {
-    connectionStatus.value = 'disconnected'
-  })
-
-  // 监听错误
-  wsManager.on('error', (event) => {
-    connectionStatus.value = 'error'
-
-    // 降级到 HTTP 轮询
-    fetchData()
   })
 
   // 建立连接
