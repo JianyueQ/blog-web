@@ -136,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import {
   Document, View, ChatDotRound, Link, Edit,
   Upload, Setting, Calendar, CaretTop, CaretBottom,
@@ -151,6 +151,10 @@ const serverStatus = ref({
   cpu: 0,
   mem: 0
 })
+
+// 定时器 ID 存储
+let timeUpdateTimer = null
+let serverStatusTimer = null
 
 const updateTime = () => {
   const now = new Date()
@@ -171,13 +175,26 @@ const fetchServerStatus = async () => {
 }
 
 onMounted(() => {
+  // 初始化时间显示
   updateTime()
-  setInterval(updateTime, 60000)
-
-  // 初始加载服务器状态
+  timeUpdateTimer = setInterval(updateTime, 60000)
+  
+  // 初始化服务器状态
   fetchServerStatus()
-  // 每30秒刷新一次
-  setInterval(fetchServerStatus, 30000)
+  serverStatusTimer = setInterval(fetchServerStatus, 30000)
+})
+
+onUnmounted(() => {
+  // 清理所有定时器
+  if (timeUpdateTimer) {
+    clearInterval(timeUpdateTimer)
+    timeUpdateTimer = null
+  }
+  
+  if (serverStatusTimer) {
+    clearInterval(serverStatusTimer)
+    serverStatusTimer = null
+  }
 })
 
 const statsCards = [

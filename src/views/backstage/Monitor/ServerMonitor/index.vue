@@ -3,11 +3,25 @@
     <!-- 自动刷新控制 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
-        <el-switch v-model="autoRefresh" active-text="自动刷新" @change="handleAutoRefreshChange" />
-        <span class="refresh-interval">刷新间隔: 5秒</span>
+        <el-switch v-model="autoRefresh" active-text="实时推送" @change="handleAutoRefreshChange"/>
+        <el-tag
+            :type="connectionStatus === 'connected' ? 'success' : connectionStatus === 'connecting' ? 'warning' : 'info'"
+            size="small"
+            effect="plain"
+        >
+          <template v-if="connectionStatus === 'connected'">
+            ● 已连接 WebSocket
+          </template>
+          <template v-else-if="connectionStatus === 'connecting'">
+            ● 连接中...
+          </template>
+          <template v-else>
+            ● 未连接
+          </template>
+        </el-tag>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="立即刷新" :loading="loading" />
+        <el-button circle @click="handleManualRefresh" :icon="Refresh" title="立即刷新" :loading="loading"/>
       </div>
     </div>
 
@@ -17,16 +31,16 @@
         <div class="pro-card metric-card">
           <div class="metric-header">
             <el-icon class="icon" :style="{ color: getCpuColor(serverData.cpu?.used) }">
-              <Monitor />
+              <Monitor/>
             </el-icon>
             <span class="title">CPU 使用率</span>
           </div>
           <div class="metric-body">
             <div class="value">{{ serverData.cpu?.used || 0 }}%</div>
-            <el-progress 
-              :percentage="serverData.cpu?.used || 0" 
-              :color="getCpuColor(serverData.cpu?.used)"
-              :stroke-width="8"
+            <el-progress
+                :percentage="serverData.cpu?.used || 0"
+                :color="getCpuColor(serverData.cpu?.used)"
+                :stroke-width="8"
             />
             <div class="metric-details">
               <span>核心数: {{ serverData.cpu?.cpuNum || 0 }}</span>
@@ -40,16 +54,16 @@
         <div class="pro-card metric-card">
           <div class="metric-header">
             <el-icon class="icon" :style="{ color: getMemColor(serverData.mem?.usage) }">
-              <Coin />
+              <Coin/>
             </el-icon>
             <span class="title">内存占用</span>
           </div>
           <div class="metric-body">
             <div class="value">{{ serverData.mem?.usage || 0 }}%</div>
-            <el-progress 
-              :percentage="serverData.mem?.usage || 0" 
-              :color="getMemColor(serverData.mem?.usage)"
-              :stroke-width="8"
+            <el-progress
+                :percentage="serverData.mem?.usage || 0"
+                :color="getMemColor(serverData.mem?.usage)"
+                :stroke-width="8"
             />
             <div class="metric-details">
               <span>已用: {{ serverData.mem?.used || 0 }} GB</span>
@@ -63,16 +77,16 @@
         <div class="pro-card metric-card">
           <div class="metric-header">
             <el-icon class="icon" :style="{ color: getJvmColor(serverData.jvm?.usage) }">
-              <SetUp />
+              <SetUp/>
             </el-icon>
             <span class="title">JVM 内存</span>
           </div>
           <div class="metric-body">
             <div class="value">{{ serverData.jvm?.usage || 0 }}%</div>
-            <el-progress 
-              :percentage="serverData.jvm?.usage || 0" 
-              :color="getJvmColor(serverData.jvm?.usage)"
-              :stroke-width="8"
+            <el-progress
+                :percentage="serverData.jvm?.usage || 0"
+                :color="getJvmColor(serverData.jvm?.usage)"
+                :stroke-width="8"
             />
             <div class="metric-details">
               <span>已用: {{ serverData.jvm?.used || 0 }} MB</span>
@@ -86,7 +100,7 @@
         <div class="pro-card metric-card">
           <div class="metric-header">
             <el-icon class="icon" style="color: #13c2c2">
-              <Clock />
+              <Clock/>
             </el-icon>
             <span class="title">运行时长</span>
           </div>
@@ -153,16 +167,18 @@
           <el-col :xs="24" :sm="12" v-for="(disk, index) in serverData.sysFiles" :key="index">
             <div class="disk-item">
               <div class="disk-header">
-                <el-icon class="disk-icon"><Folder /></el-icon>
+                <el-icon class="disk-icon">
+                  <Folder/>
+                </el-icon>
                 <div class="disk-info">
                   <span class="disk-name">{{ disk.typeName }}</span>
                   <span class="disk-usage">已用 {{ disk.usage }}%</span>
                 </div>
               </div>
-              <el-progress 
-                :percentage="disk.usage" 
-                :color="getDiskColor(disk.usage)"
-                :stroke-width="10"
+              <el-progress
+                  :percentage="disk.usage"
+                  :color="getDiskColor(disk.usage)"
+                  :stroke-width="10"
               />
               <div class="disk-details">
                 <span>总容量: {{ disk.total }}</span>
@@ -178,13 +194,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { getInfoServer } from '@/api/backstage/server'
-import { ElMessage } from 'element-plus'
-import { Refresh, Monitor, Coin, SetUp, Clock, Folder } from '@element-plus/icons-vue'
+import {onMounted, onUnmounted, ref} from 'vue'
+import {getInfoServer} from '@/api/backstage/server'
+import {ElMessage} from 'element-plus'
+import {Clock, Coin, Folder, Monitor, Refresh, SetUp} from '@element-plus/icons-vue'
+import WebSocketManager from '@/utils/websocket'
+import {getToken} from '@/utils/auth'
 
 const loading = ref(false)
 const autoRefresh = ref(true)
+const connectionStatus = ref('disconnected') // disconnected | connecting | connected | error
 const serverData = ref({
   cpu: {},
   mem: {},
@@ -193,43 +212,101 @@ const serverData = ref({
   sysFiles: []
 })
 
-let refreshTimer = null
+let wsManager = null
 
-// 获取服务器数据
+// 获取服务器数据（HTTP 降级方案）
 const fetchData = async () => {
   loading.value = true
   try {
     const res = await getInfoServer()
     serverData.value = res.data || {}
   } catch (error) {
-    console.error('获取服务器信息失败:', error)
     ElMessage.error('获取服务器信息失败')
   } finally {
     loading.value = false
   }
 }
 
-// 自动刷新控制
-const handleAutoRefreshChange = (val) => {
-  if (val) {
-    startAutoRefresh()
-  } else {
-    stopAutoRefresh()
+// 初始化 WebSocket 连接
+const initWebSocket = () => {
+  // 关闭旧连接
+  if (wsManager) {
+    wsManager.close()
   }
-}
 
-const startAutoRefresh = () => {
-  stopAutoRefresh()
-  refreshTimer = setInterval(() => {
+  // 动态构建 WebSocket URL（自动适配 localhost / 局域网 IP / 生产域名）
+  const hostname = window.location.hostname
+  const isDev = import.meta.env.DEV
+
+  // 开发环境使用固定端口 8998，生产环境使用当前端口（Nginx 反向代理）
+  const wsBaseUrl = isDev
+      ? `${hostname}:8998/ws/monitor/server`
+      : `${window.location.host}/ws/monitor/server`
+
+  // 创建 WebSocket 管理器
+  wsManager = new WebSocketManager(wsBaseUrl, {
+    heartbeatInterval: 10000,
+    reconnectInterval: 3000,
+    maxReconnectAttempts: 5,
+    enableHeartbeat: true
+  })
+
+  // 监听连接打开
+  wsManager.on('open', () => {
+    connectionStatus.value = 'connected'
+  })
+
+  // 监听消息接收
+  wsManager.on('message', (data) => {
+    if (data.type === 'server_info' && data.data) {
+      serverData.value = data.data
+    }
+  })
+
+  // 监听连接关闭
+  wsManager.on('close', (event) => {
+    connectionStatus.value = 'disconnected'
+  })
+
+  // 监听错误
+  wsManager.on('error', (event) => {
+    connectionStatus.value = 'error'
+
+    // 降级到 HTTP 轮询
     fetchData()
-  }, 5000)
+  })
+
+  // 建立连接
+  connectionStatus.value = 'connecting'
+  const token = getToken()
+  if (token) {
+    wsManager.connect(token)
+  } else {
+    ElMessage.error('未找到认证信息，无法连接实时监控')
+    connectionStatus.value = 'error'
+  }
 }
 
-const stopAutoRefresh = () => {
-  if (refreshTimer) {
-    clearInterval(refreshTimer)
-    refreshTimer = null
+// 自动刷新控制（WebSocket 模式下仅用于重连）
+const handleAutoRefreshChange = (val) => {
+  autoRefresh.value = val
+
+  if (val) {
+    // 如果 WebSocket 未连接，尝试重新连接
+    if (!wsManager || !wsManager.isConnected()) {
+      initWebSocket()
+    }
+  } else {
+    // 关闭 WebSocket 连接
+    if (wsManager) {
+      wsManager.close()
+    }
   }
+}
+
+// 手动刷新（强制拉取一次 HTTP 数据）
+const handleManualRefresh = () => {
+  fetchData()
 }
 
 // 颜色计算函数
@@ -258,14 +335,21 @@ const getDiskColor = (usage) => {
 }
 
 onMounted(() => {
+  // 首次加载使用 HTTP 获取数据
   fetchData()
+
+  // 启动 WebSocket 实时推送
   if (autoRefresh.value) {
-    startAutoRefresh()
+    initWebSocket()
   }
 })
 
 onUnmounted(() => {
-  stopAutoRefresh()
+  // 清理 WebSocket 连接
+  if (wsManager) {
+    wsManager.close()
+    wsManager = null
+  }
 })
 </script>
 
@@ -343,7 +427,7 @@ onUnmounted(() => {
         font-weight: 700;
         color: var(--backstage-text-primary);
         margin-bottom: 12px;
-        
+
         &.runtime {
           font-size: 18px;
           font-weight: 600;
