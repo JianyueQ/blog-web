@@ -86,6 +86,7 @@
           </template>
           <el-menu-item index="/backstage/operlog">操作日志</el-menu-item>
           <el-menu-item index="/backstage/accesslog">系统访问记录</el-menu-item>
+          <el-menu-item index="/backstage/online">在线用户</el-menu-item>
           <el-menu-item index="/backstage/server">服务器监控</el-menu-item>
         </el-sub-menu>
       </el-menu>

@@ -19,13 +19,13 @@
                 <span>{{ config.configName }}</span>
               </div>
               <div class="config-actions" @click.stop>
-                <el-button
-                  type="danger"
-                  text
-                  icon="Delete"
+                <el-icon
+                  class="delete-btn"
                   @click="handleDelete(config)"
                   title="删除配置"
-                />
+                >
+                  <Delete />
+                </el-icon>
               </div>
             </div>
             <div class="config-card-body">
@@ -300,8 +300,19 @@ onMounted(() => {
       }
 
       .config-actions {
-        opacity: 0;
-        transition: opacity 0.2s ease;
+        .delete-btn {
+          font-size: 18px;
+          //color: var(--backstage-text-secondary);
+          color: var(--el-color-danger);
+          cursor: pointer;
+          opacity: 0.7;
+          transition: all 0.2s ease;
+
+          &:hover {
+            color: var(--el-color-danger);
+            opacity: 1;
+          }
+        }
       }
     }
 

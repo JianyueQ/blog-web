@@ -145,6 +145,12 @@ const router = createRouter({
                     name: 'backstageServer',
                     component: () => import('@/views/backstage/Monitor/ServerMonitor/index.vue'),
                     meta: { title: '服务器监控' }
+                },
+                {
+                    path: 'online',
+                    name: 'backstageOnline',
+                    component: () => import('@/views/backstage/Monitor/OnlineUser/index.vue'),
+                    meta: { title: '在线用户' }
                 }
             ]
         },
