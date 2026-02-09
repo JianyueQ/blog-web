@@ -17,7 +17,7 @@
     <!-- 登录容器 -->
     <div class="login-box slide-in">
       <div class="login-header">
-        <h1>博客后台管理系统</h1>
+        <h1>站点后台管理系统</h1>
         <p>每一篇博文，都是思想的火花</p>
       </div>
 
@@ -81,7 +81,7 @@
       </el-form>
 
       <div class="login-footer">
-        <span>&copy; 2026 PRO MAX BLOG ENGINE. ALL RIGHTS RESERVED.</span>
+        <span>&copy; 2026 blog.Jianyue.cloud</span>
       </div>
     </div>
   </div>

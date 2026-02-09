@@ -6,7 +6,7 @@
         <transition name="fade">
           <div v-if="!isCollapse" class="logo-content">
             <img src="/images/icon/logo.png" alt="Logo" class="logo-image"/>
-            <span class="logo-text">PRO MAX 后台</span>
+            <span class="logo-text"> 站点后台</span>
           </div>
           <div v-else class="logo-content-collapsed">
             <img src="/images/icon/logo.png" alt="Logo" class="logo-image-collapsed"/>
@@ -92,7 +92,7 @@
       </el-menu>
 
       <div class="sidebar-footer" v-if="!isCollapse">
-        <div class="version">v2.0.0 PRO MAX</div>
+        <div class="version">{{ version }}</div>
       </div>
     </el-aside>
 
@@ -214,6 +214,10 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 
+// 版本号
+const version = ref("")
+
+
 // 侧边栏折叠状态
 const isCollapse = ref(false)
 
@@ -306,6 +310,14 @@ const handleResize = () => {
     }
   }
 }
+
+//获取版本号
+const getVersion = () => {
+  //.env文件获取
+  version.value = import.meta.env.VITE_APP_VERSION
+}
+
+getVersion();
 
 onMounted(() => {
   handleResize()

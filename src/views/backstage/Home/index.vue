@@ -4,7 +4,7 @@
     <div class="welcome-banner fade-in">
       <div class="welcome-content">
         <h1>欢迎回来，{{ userStore.nickname }}</h1>
-        <p>这是您今天的博客概览。所有系统运行正常，继续保持！</p>
+        <p>这是您今天的博客概览。</p>
       </div>
       <div class="current-time">
         <el-icon><Calendar/></el-icon>
@@ -45,7 +45,7 @@
           <div class="card-header">
             <div class="title-area">
               <span class="title">内容中心动态</span>
-              <span class="subtitle">实时监控您的文章发布状态</span>
+              <span class="subtitle">监控您的文章发布状态</span>
             </div>
             <el-button link type="primary">查看全部</el-button>
           </div>
@@ -178,7 +178,7 @@ onMounted(() => {
   // 初始化时间显示
   updateTime()
   timeUpdateTimer = setInterval(updateTime, 60000)
-  
+
   // 初始化服务器状态
   fetchServerStatus()
   serverStatusTimer = setInterval(fetchServerStatus, 30000)
@@ -190,7 +190,7 @@ onUnmounted(() => {
     clearInterval(timeUpdateTimer)
     timeUpdateTimer = null
   }
-  
+
   if (serverStatusTimer) {
     clearInterval(serverStatusTimer)
     serverStatusTimer = null
