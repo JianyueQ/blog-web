@@ -151,6 +151,19 @@ const router = createRouter({
                     name: 'backstageOnline',
                     component: () => import('@/views/backstage/Monitor/OnlineUser/index.vue'),
                     meta: { title: '在线用户' }
+                },
+                // 访客管理路由
+                {
+                    path: 'visitor/record',
+                    name: 'backstageVisitorRecord',
+                    component: () => import('@/views/backstage/Visitor/Record/index.vue'),
+                    meta: { title: '访客记录' }
+                },
+                {
+                    path: 'visitor/blacklist',
+                    name: 'backstageVisitorBlacklist',
+                    component: () => import('@/views/backstage/Visitor/Blacklist/index.vue'),
+                    meta: { title: '访客黑名单' }
                 }
             ]
         },

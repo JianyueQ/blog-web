@@ -89,6 +89,17 @@
           <el-menu-item index="/backstage/online">在线用户</el-menu-item>
           <el-menu-item index="/backstage/server">服务器监控</el-menu-item>
         </el-sub-menu>
+
+        <el-sub-menu index="visitor">
+          <template #title>
+            <el-icon>
+              <User/>
+            </el-icon>
+            <span>访客管理</span>
+          </template>
+          <el-menu-item index="/backstage/visitor/record">访客记录</el-menu-item>
+          <el-menu-item index="/backstage/visitor/blacklist">访客黑名单</el-menu-item>
+        </el-sub-menu>
       </el-menu>
 
       <div class="sidebar-footer" v-if="!isCollapse">
