@@ -3,6 +3,15 @@ import {getToken, removeToken} from "@/utils/auth.js"
 import {ElMessage} from 'element-plus'
 import {useUserStore} from "@/stores/user.js";
 
+// 前台页面组件预加载（解决路由切换卡顿问题）
+const Home = () => import('@/views/front/Home/index.vue')
+const Archive = () => import('@/views/front/Archive/index.vue')
+const Gallery = () => import('@/views/front/Gallery/index.vue')
+const About = () => import('@/views/front/About/index.vue')
+const More = () => import('@/views/front/More/index.vue')
+const Message = () => import('@/views/front/Message/index.vue')
+const Links = () => import('@/views/front/Links/index.vue')
+
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [

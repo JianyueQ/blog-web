@@ -8,15 +8,16 @@
 
       <!-- PC端导航 -->
       <nav class="nav xs-hidden">
-        <router-link
+        <a
             v-for="item in navItems"
             :key="item.path"
-            :to="item.path"
+            href="javascript:void(0)"
             class="nav-item"
-            exact-active-class="active"
+            :class="{ active: router.currentRoute.value.path === item.path, 'is-navigating': isNavigating }"
+            @click="handleNavClick(item.path)"
         >
           <span class="nav-text">{{ item.name }}</span>
-        </router-link>
+        </a>
       </nav>
 
       <!-- 移动端菜单按钮 -->
@@ -31,20 +32,21 @@
         v-if="mobileMenuOpen" 
         ref="mobileNavRef"
         class="mobile-nav" 
-        @click="handleNavClick"
+        @click="handleMobileNavClick"
         @touchstart="handleTouchStart"
         @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
       >
-        <router-link
+        <a
             v-for="item in navItems"
             :key="item.path"
-            :to="item.path"
+            href="javascript:void(0)"
             class="mobile-nav-item"
-            active-class="active"
+            :class="{ active: router.currentRoute.value.path === item.path, 'is-navigating': isNavigating }"
+            @click="handleNavClick(item.path)"
         >
           {{ item.name }}
-        </router-link>
+        </a>
       </div>
     </transition>
   </header>
@@ -57,6 +59,7 @@ import {useRouter} from 'vue-router'
 const router = useRouter()
 const mobileMenuOpen = ref(false)
 const mobileNavRef = ref(null)
+const isNavigating = ref(false)
 
 // 触摸滑动相关状态
 const touchState = ref({
@@ -80,8 +83,30 @@ const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
-// 处理导航点击 - 阻止事件冒泡避免关闭菜单时跳转
-const handleNavClick = (e) => {
+// 处理导航点击 - 添加防重复点击和立即反馈
+const handleNavClick = (path) => {
+  // 如果正在导航中或点击的是当前页面，不执行
+  if (isNavigating.value || path === router.currentRoute.value.path) {
+    return
+  }
+
+  isNavigating.value = true
+
+  // 立即关闭移动端菜单（如果有）
+  if (mobileMenuOpen.value) {
+    mobileMenuOpen.value = false
+  }
+
+  // 使用 setTimeout 让 UI 有时间更新（显示点击反馈）
+  setTimeout(() => {
+    router.push(path).finally(() => {
+      isNavigating.value = false
+    })
+  }, 50)
+}
+
+// 处理移动端菜单点击 - 阻止事件冒泡避免关闭菜单时跳转
+const handleMobileNavClick = (e) => {
   if (e.target.classList.contains('mobile-nav')) {
     toggleMobileMenu()
   }
@@ -240,6 +265,17 @@ onUnmounted(() => {
         background: rgba(255, 255, 255, 0.15);
         font-weight: 500;
       }
+
+      // 导航中状态 - 提供视觉反馈
+      &.is-navigating {
+        opacity: 0.7;
+        cursor: wait;
+      }
+
+      // 点击反馈
+      &:active:not(.is-navigating) {
+        transform: scale(0.95);
+      }
     }
   }
 
@@ -372,8 +408,14 @@ onUnmounted(() => {
         border-color: rgba(255, 255, 255, 0.35);
         font-weight: 500;
       }
-      
-      &:active {
+
+      // 导航中状态
+      &.is-navigating {
+        opacity: 0.7;
+        cursor: wait;
+      }
+
+      &:active:not(.is-navigating) {
         transform: scale(0.95);
       }
     }

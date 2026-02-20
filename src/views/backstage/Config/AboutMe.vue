@@ -197,7 +197,7 @@ const handleImageUpload = async (file) => {
     formData.append('image', file.raw)
 
     const res = await uploadImage(formData)
-    console.log('上传响应:', res)
+    // console.log('上传响应:', res)
 
     if (res && res.imgUrl) {
       // 插入图片链接到光标位置
@@ -280,8 +280,8 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .about-me-panel {
-  .mt-20 { 
-    margin-top: 20px; 
+  .mt-20 {
+    margin-top: 20px;
   }
 
   .pro-card {

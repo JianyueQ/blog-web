@@ -655,6 +655,85 @@
     .el-pagination .el-pager li {
       color: rgba(255, 255, 255, 0.85) !important;
     }
+
+    // el-tabs 暗黑模式适配 - border-card 类型
+    .el-tabs {
+      &.el-tabs--border-card {
+        background-color: var(--backstage-card-bg) !important;
+        border-color: var(--backstage-border-color) !important;
+
+        // 导航头部
+        .el-tabs__header {
+          background-color: var(--backstage-card-hover-bg) !important;
+          border-bottom-color: var(--backstage-border-color) !important;
+
+          // 导航项容器
+          .el-tabs__nav-wrap {
+            background-color: var(--backstage-card-hover-bg) !important;
+          }
+
+          // 导航滚动区域
+          .el-tabs__nav-scroll {
+            background-color: var(--backstage-card-hover-bg) !important;
+          }
+
+          // 导航项
+          .el-tabs__item {
+            color: var(--backstage-text-secondary) !important;
+            background-color: transparent !important;
+            border-right-color: var(--backstage-border-color) !important;
+
+            &:hover {
+              color: var(--backstage-primary) !important;
+            }
+
+            &.is-active {
+              color: var(--backstage-primary) !important;
+              background-color: var(--backstage-card-bg) !important;
+              border-bottom-color: var(--backstage-card-bg) !important;
+            }
+          }
+        }
+
+        // 内容区域
+        .el-tabs__content {
+          background-color: var(--backstage-card-bg) !important;
+        }
+      }
+
+      // 普通类型 tabs
+      &:not(.el-tabs--border-card) {
+        .el-tabs__header {
+          background-color: transparent !important;
+        }
+
+        .el-tabs__nav-wrap::after {
+          background-color: var(--backstage-border-color) !important;
+        }
+
+        .el-tabs__item {
+          color: var(--backstage-text-secondary) !important;
+
+          &:hover {
+            color: var(--backstage-primary) !important;
+          }
+
+          &.is-active {
+            color: var(--backstage-primary) !important;
+          }
+        }
+
+        .el-tabs__active-bar {
+          background-color: var(--backstage-primary) !important;
+        }
+      }
+    }
+
+    // el-tab-pane 内容区域暗黑适配
+    .el-tab-pane {
+      background-color: var(--backstage-card-bg) !important;
+      color: var(--backstage-text-primary) !important;
+    }
   }
 }
 
@@ -823,5 +902,60 @@
 
   & > * {
     margin: 0 !important;
+  }
+}
+
+// ============================================
+// 全局强制覆盖 - 暗黑模式下输入框字数统计
+// ============================================
+[data-theme='dark'] {
+  // 基础覆盖 - 最高优先级
+  .el-input__count,
+  .el-textarea__count {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  // 针对 el-input 组件内的字数统计
+  .el-input {
+    .el-input__suffix {
+      background: transparent !important;
+      background-color: transparent !important;
+    }
+
+    .el-input__suffix-inner {
+      background: transparent !important;
+      background-color: transparent !important;
+
+      .el-input__count {
+        background: transparent !important;
+        background-color: transparent !important;
+        color: rgba(255, 255, 255, 0.45) !important;
+      }
+    }
+  }
+
+  // 针对 el-textarea 组件内的字数统计
+  .el-textarea {
+    .el-textarea__inner {
+      background-color: #1a1a1a !important;
+    }
+
+    .el-textarea__count {
+      background: transparent !important;
+      background-color: transparent !important;
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
+  }
+
+  // 弹窗内特殊处理
+  .el-dialog {
+    .el-input__count,
+    .el-textarea__count {
+      background: transparent !important;
+      background-color: transparent !important;
+      color: rgba(255, 255, 255, 0.45) !important;
+    }
   }
 }

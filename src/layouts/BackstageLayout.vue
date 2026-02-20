@@ -248,10 +248,16 @@ const currentRouteName = computed(() => {
     '/backstage/gallery': '视觉素材库',
     '/backstage/upload': '附件上传中心',
     '/backstage/comment': '访客互动管理',
-    '/backstage/links': '友情链接维护',
+    '/backstage/links': '友链中心',
     '/backstage/user': '系统成员管理',
     '/backstage/profile': '个人中心',
-    '/backstage/config': '全局核心配置'
+    '/backstage/config': '全局核心配置',
+    '/backstage/operlog': '操作日志',
+    '/backstage/accesslog': '系统登录记录',
+    '/backstage/online': '在线用户',
+    '/backstage/server': '服务器监控',
+    '/backstage/visitor/record': '访客记录',
+    '/backstage/visitor/blacklist': '访客黑名单'
   }
   return routeNameMap[route.path] || ''
 })
