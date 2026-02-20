@@ -9,9 +9,16 @@
 
     <main class="main-content">
       <div class="content-wrapper">
-        <router-view v-slot="{ Component }">
-          <transition name="fade-transform" mode="out-in">
-            <component :is="Component" />
+        <router-view v-slot="{ Component, route }">
+          <transition 
+            name="fade-transform" 
+            mode="out-in"
+            @before-leave="handleBeforeLeave"
+            @after-enter="handleAfterEnter"
+          >
+            <keep-alive :include="cachedViews">
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
           </transition>
         </router-view>
       </div>
@@ -22,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import Header from './Header.vue'
 import Footer from './Footer.vue'
 
@@ -41,6 +48,22 @@ const backgrounds = [
 ]
 
 const currentBackground = ref('')
+
+// 需要缓存的页面（静态页面可以缓存，动态数据页面不建议缓存）
+const cachedViews = ref(['home', 'about', 'links', 'more'])
+
+// 动画开始前 - 优化性能
+const handleBeforeLeave = () => {
+  // 在动画开始前强制重绘，避免掉帧
+  document.body.style.pointerEvents = 'none'
+}
+
+// 动画结束后 - 恢复交互
+const handleAfterEnter = () => {
+  nextTick(() => {
+    document.body.style.pointerEvents = ''
+  })
+}
 
 onMounted(() => {
   // 随机选择一张背景图
@@ -141,16 +164,25 @@ onMounted(() => {
 
 .fade-transform-enter-active,
 .fade-transform-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform, opacity;
 }
 
 .fade-transform-enter-from {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translate3d(0, 15px, 0);
 }
 
 .fade-transform-leave-to {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translate3d(0, -15px, 0);
+}
+
+/* 优化移动端性能 */
+@media (max-width: 768px) {
+  .fade-transform-enter-active,
+  .fade-transform-leave-active {
+    transition-duration: 0.2s;
+  }
 }
 </style>

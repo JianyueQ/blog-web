@@ -1,5 +1,6 @@
 <template>
-  <div class="system-settings-panel">
+  <MobileSystemSettings v-if="isMobile" ref="mobileRef" />
+  <div v-else class="system-settings-panel">
     <div class="pro-card">
       <div class="card-header-actions">
         <el-button type="primary" icon="Plus" round @click="handleAdd">新增配置</el-button>
@@ -105,10 +106,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getSysConfig, addSysConfig, updateSysConfig, deleteSysConfig } from '@/api/backstage/sysConfig'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Setting, Delete, FolderOpened } from '@element-plus/icons-vue'
+import MobileSystemSettings from './MobileSystemSettings.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 const loading = ref(false)
 const configList = ref([])
@@ -227,7 +233,9 @@ const submitForm = async () => {
 }
 
 onMounted(() => {
-  fetchConfigList()
+  if (!isMobile.value) {
+    fetchConfigList()
+  }
 })
 </script>
 

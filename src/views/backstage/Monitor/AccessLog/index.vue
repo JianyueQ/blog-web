@@ -1,5 +1,6 @@
 <template>
-  <div class="accesslog-manage">
+  <MobileAccessLog v-if="isMobile" ref="mobileRef" />
+  <div v-else class="accesslog-manage">
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
       <el-form :model="queryParams" inline label-width="auto">
@@ -95,10 +96,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getList, deleteAccess, cleanAccess } from '@/api/backstage/accessLog'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Refresh, Delete } from '@element-plus/icons-vue'
+import MobileAccessLog from './MobileAccessLog.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 // 查询参数
 const queryParams = reactive({
@@ -218,7 +224,9 @@ const handleClean = () => {
 }
 
 onMounted(() => {
-  fetchData()
+  if (!isMobile.value) {
+    fetchData()
+  }
 })
 </script>
 

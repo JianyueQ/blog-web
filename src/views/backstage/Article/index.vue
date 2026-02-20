@@ -1,5 +1,6 @@
 <template>
-  <div class="article-manage">
+  <MobileArticle v-if="isMobile" ref="mobileRef" />
+  <div v-else class="article-manage">
     <div class="pro-card filter-card">
       <el-form :inline="true" :model="filterForm" class="filter-form">
         <el-form-item label="文章标题">
@@ -99,8 +100,13 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { Search, Refresh, Plus, Delete, Edit, View, Picture } from '@element-plus/icons-vue'
+import MobileArticle from './MobileArticle.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 const filterForm = reactive({
   title: '',

@@ -1,5 +1,6 @@
 <template>
-  <div class="social-links-panel">
+  <MobileSocialLinks v-if="isMobile" ref="mobileRef" />
+  <div v-else class="social-links-panel">
     <div class="pro-card">
       <div class="card-header-actions">
         <el-button type="primary" icon="Plus" round @click="handleAdd">新增链接</el-button>
@@ -100,10 +101,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getSocialLink, addSocial, updateSocial, deleteSocial, updateSocialStatus } from '@/api/backstage/socialLink'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import MobileSocialLinks from './MobileSocialLinks.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 // 社交链接相关
 const loading = ref(false)
@@ -216,7 +222,9 @@ const submitSocialForm = async () => {
 }
 
 onMounted(() => {
-  fetchSocialLinks()
+  if (!isMobile.value) {
+    fetchSocialLinks()
+  }
 })
 </script>
 

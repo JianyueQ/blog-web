@@ -1,5 +1,6 @@
 <template>
-  <div class="visitor-blacklist-manage">
+  <MobileBlacklist v-if="isMobile" ref="mobileRef" />
+  <div v-else class="visitor-blacklist-manage">
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
       <el-form :model="queryParams" inline label-width="auto">
@@ -140,10 +141,15 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import {getVisitorList, getVisitorDetail, updateBlacklist} from '@/api/backstage/visitor'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {Search, Refresh, Clock, View, CircleCheck, Warning} from '@element-plus/icons-vue'
+import MobileBlacklist from './MobileBlacklist.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 // 查询参数
 const queryParams = reactive({
@@ -241,7 +247,9 @@ const handleRemoveFromBlacklist = (row) => {
 }
 
 onMounted(() => {
-  fetchData()
+  if (!isMobile.value) {
+    fetchData()
+  }
 })
 </script>
 

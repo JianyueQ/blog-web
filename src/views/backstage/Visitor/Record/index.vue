@@ -1,5 +1,6 @@
 <template>
-  <div class="visitor-record-manage">
+  <MobileRecord v-if="isMobile" ref="mobileRef" />
+  <div v-else class="visitor-record-manage">
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
       <el-form :model="queryParams" inline label-width="auto">
@@ -129,10 +130,15 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
+import {onMounted, reactive, ref, computed} from 'vue'
 import {cleanVisitorRecords, getVisitorDetail, getVisitorList, updateBlacklist} from '@/api/backstage/visitor'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {CircleClose, Clock, Delete, Refresh, Search, View} from '@element-plus/icons-vue'
+import MobileRecord from './MobileRecord.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 // 查询参数
 const queryParams = reactive({
@@ -252,7 +258,9 @@ const handleClean = () => {
 }
 
 onMounted(() => {
-  fetchData()
+  if (!isMobile.value) {
+    fetchData()
+  }
 })
 </script>
 

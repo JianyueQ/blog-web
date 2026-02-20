@@ -1,5 +1,6 @@
 <template>
-  <div class="user-manage">
+  <MobileUser v-if="isMobile" ref="mobileRef" />
+  <div v-else class="user-manage">
     <div class="pro-card table-card">
       <div class="card-header">
         <div class="header-left">
@@ -93,10 +94,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, toRefs } from 'vue'
+import { ref, onMounted, reactive, toRefs, computed } from 'vue'
 import { Plus, Edit, Lock, Delete } from '@element-plus/icons-vue'
 import { getAdminList, addUser, updateUser, delUser, getUser, resetUserPwd } from '@/api/backstage/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import MobileUser from './MobileUser.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 const loading = ref(true)
 const tableData = ref([])
@@ -249,7 +255,9 @@ function handleResetPwd(row) {
 }
 
 onMounted(() => {
-  getList()
+  if (!isMobile.value) {
+    getList()
+  }
 })
 </script>
 

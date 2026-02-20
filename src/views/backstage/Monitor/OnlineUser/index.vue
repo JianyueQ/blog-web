@@ -1,5 +1,6 @@
 <template>
-  <div class="online-user-manage">
+  <MobileOnlineUser v-if="isMobile" ref="mobileRef" />
+  <div v-else class="online-user-manage">
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
       <el-form :model="queryParams" inline label-width="auto">
@@ -123,7 +124,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted} from 'vue'
+import {ref, reactive, onMounted, computed} from 'vue'
 import {getOnlineUserList, forceLogout} from '@/api/backstage/onlineUser'
 import {ElMessage, ElMessageBox} from 'element-plus'
 import {
@@ -135,6 +136,11 @@ import {
   Clock,
   SwitchButton
 } from '@element-plus/icons-vue'
+import MobileOnlineUser from './MobileOnlineUser.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 // 查询参数
 const queryParams = reactive({
@@ -214,7 +220,9 @@ const formatLoginTime = (timestamp) => {
 
 
 onMounted(() => {
-  fetchData()
+  if (!isMobile.value) {
+    fetchData()
+  }
 })
 </script>
 

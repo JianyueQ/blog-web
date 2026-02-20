@@ -27,7 +27,15 @@
 
     <!-- 移动端导航菜单 -->
     <transition name="slide-down">
-      <div v-if="mobileMenuOpen" class="mobile-nav" @click="toggleMobileMenu">
+      <div 
+        v-if="mobileMenuOpen" 
+        ref="mobileNavRef"
+        class="mobile-nav" 
+        @click="handleNavClick"
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+        @touchend="handleTouchEnd"
+      >
         <router-link
             v-for="item in navItems"
             :key="item.path"
@@ -43,11 +51,20 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {ref, onMounted, onUnmounted} from 'vue'
 import {useRouter} from 'vue-router'
 
 const router = useRouter()
 const mobileMenuOpen = ref(false)
+const mobileNavRef = ref(null)
+
+// 触摸滑动相关状态
+const touchState = ref({
+  startX: 0,
+  startY: 0,
+  scrollLeft: 0,
+  isScrolling: false
+})
 
 const navItems = [
   {name: '首页', path: '/home'},
@@ -62,6 +79,61 @@ const navItems = [
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
+
+// 处理导航点击 - 阻止事件冒泡避免关闭菜单时跳转
+const handleNavClick = (e) => {
+  if (e.target.classList.contains('mobile-nav')) {
+    toggleMobileMenu()
+  }
+}
+
+// 触摸开始
+const handleTouchStart = (e) => {
+  const touch = e.touches[0]
+  touchState.value.startX = touch.pageX
+  touchState.value.startY = touch.pageY
+  touchState.value.scrollLeft = mobileNavRef.value.scrollLeft
+  touchState.value.isScrolling = false
+}
+
+// 触摸移动
+const handleTouchMove = (e) => {
+  const touch = e.touches[0]
+  const deltaX = touch.pageX - touchState.value.startX
+  const deltaY = touch.pageY - touchState.value.startY
+
+  // 判断是否为水平滚动
+  if (!touchState.value.isScrolling) {
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      touchState.value.isScrolling = true
+    }
+  }
+
+  if (touchState.value.isScrolling) {
+    e.preventDefault()
+    mobileNavRef.value.scrollLeft = touchState.value.scrollLeft - deltaX
+  }
+}
+
+// 触摸结束
+const handleTouchEnd = () => {
+  touchState.value.isScrolling = false
+}
+
+// 点击外部关闭菜单
+const handleClickOutside = (e) => {
+  if (mobileMenuOpen.value && !e.target.closest('.header')) {
+    mobileMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -247,6 +319,14 @@ const toggleMobileMenu = () => {
     gap: 0.5rem;
     overflow-x: auto;
     overflow-y: hidden;
+    
+    /* 启用硬件加速和触摸滑动 */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    will-change: scroll-position;
+    touch-action: pan-x;
+    user-select: none;
+    -webkit-user-select: none;
 
     /* 横向滚动条样式 */
     &::-webkit-scrollbar {
@@ -274,6 +354,10 @@ const toggleMobileMenu = () => {
       border: 1px solid rgba(255, 255, 255, 0.15);
       white-space: nowrap;
       background: rgba(255, 255, 255, 0.05);
+      
+      /* 优化触摸体验 */
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
 
       &:hover {
         color: #fff;
@@ -287,6 +371,10 @@ const toggleMobileMenu = () => {
         background: rgba(255, 255, 255, 0.2);
         border-color: rgba(255, 255, 255, 0.35);
         font-weight: 500;
+      }
+      
+      &:active {
+        transform: scale(0.95);
       }
     }
   }

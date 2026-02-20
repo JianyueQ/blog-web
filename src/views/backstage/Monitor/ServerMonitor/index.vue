@@ -1,5 +1,6 @@
 <template>
-  <div class="server-monitor">
+  <MobileServerMonitor v-if="isMobile" ref="mobileRef" />
+  <div v-else class="server-monitor">
     <!-- 自动刷新控制 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
@@ -161,29 +162,46 @@
     <div class="pro-card disk-card">
       <div class="card-header">
         <span class="title">磁盘监控</span>
+        <span class="disk-count">共 {{ serverData.sysFiles?.length || 0 }} 个分区</span>
       </div>
       <div class="card-body">
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" v-for="(disk, index) in serverData.sysFiles" :key="index">
-            <div class="disk-item">
+        <el-row :gutter="24">
+          <el-col :xs="24" :sm="12" :lg="8" v-for="(disk, index) in serverData.sysFiles" :key="index">
+            <div class="disk-item" :class="{ 'disk-warning': disk.usage >= 75, 'disk-danger': disk.usage >= 90 }">
               <div class="disk-header">
-                <el-icon class="disk-icon">
-                  <Folder/>
-                </el-icon>
+                <div class="disk-icon-wrapper">
+                  <el-icon class="disk-icon">
+                    <Folder/>
+                  </el-icon>
+                </div>
                 <div class="disk-info">
-                  <span class="disk-name">{{ disk.typeName }}</span>
-                  <span class="disk-usage">已用 {{ disk.usage }}%</span>
+                  <el-tooltip :content="disk.typeName" placement="top" :show-after="500">
+                    <span class="disk-name">{{ disk.typeName }}</span>
+                  </el-tooltip>
+                  <span class="disk-usage" :style="{ color: getDiskColor(disk.usage) }">{{ disk.usage }}%</span>
                 </div>
               </div>
-              <el-progress
-                  :percentage="disk.usage"
-                  :color="getDiskColor(disk.usage)"
-                  :stroke-width="10"
-              />
+              <div class="disk-progress-wrapper">
+                <el-progress
+                    :percentage="disk.usage"
+                    :color="getDiskColor(disk.usage)"
+                    :stroke-width="12"
+                    :show-text="false"
+                />
+              </div>
               <div class="disk-details">
-                <span>总容量: {{ disk.total }}</span>
-                <span>已用: {{ disk.used }}</span>
-                <span>可用: {{ disk.free }}</span>
+                <div class="detail-item">
+                  <span class="detail-label">总容量</span>
+                  <span class="detail-value">{{ disk.total }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">已用</span>
+                  <span class="detail-value">{{ disk.used }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">可用</span>
+                  <span class="detail-value">{{ disk.free }}</span>
+                </div>
               </div>
             </div>
           </el-col>
@@ -194,12 +212,17 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref} from 'vue'
+import {onMounted, onUnmounted, ref, computed} from 'vue'
 import {getInfoServer} from '@/api/backstage/server'
 import {ElMessage} from 'element-plus'
 import {Clock, Coin, Folder, Monitor, Refresh, SetUp} from '@element-plus/icons-vue'
 import {createServerMonitorWS} from '@/utils/websocket'
 import {getToken} from '@/utils/auth'
+import MobileServerMonitor from './MobileServerMonitor.vue'
+
+// 检测是否为移动端
+const isMobile = computed(() => window.innerWidth < 768)
+const mobileRef = ref(null)
 
 const loading = ref(false)
 const autoRefresh = ref(true)
@@ -316,6 +339,8 @@ const getDiskColor = (usage) => {
 }
 
 onMounted(() => {
+  if (isMobile.value) return
+  
   // 首次加载使用 HTTP 获取数据
   fetchData()
 
@@ -341,7 +366,7 @@ onUnmounted(() => {
     border: 1px solid var(--backstage-border-color);
     border-radius: var(--backstage-radius-xl);
     box-shadow: var(--backstage-shadow-light);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 
     .card-header {
       padding: 16px 20px;
@@ -434,11 +459,44 @@ onUnmounted(() => {
   }
 
   .disk-card {
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .disk-count {
+        font-size: 13px;
+        color: var(--backstage-text-secondary);
+        font-weight: 400;
+      }
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
     .disk-item {
-      padding: 20px;
-      background: var(--backstage-border-lighter);
-      border-radius: var(--backstage-radius-lg);
-      margin-bottom: 16px;
+      padding: 24px;
+      background: var(--backstage-bg-color);
+      border: 1px solid var(--backstage-border-color);
+      border-radius: var(--backstage-radius-xl);
+      margin-bottom: 24px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: var(--backstage-primary-light);
+        box-shadow: var(--backstage-shadow-light);
+      }
+
+      &.disk-warning {
+        border-color: #faad14;
+        background: rgba(250, 173, 20, 0.05);
+      }
+
+      &.disk-danger {
+        border-color: #ff4d4f;
+        background: rgba(255, 77, 79, 0.05);
+      }
 
       &:last-child {
         margin-bottom: 0;
@@ -447,12 +505,22 @@ onUnmounted(() => {
       .disk-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: 16px;
+        margin-bottom: 20px;
 
-        .disk-icon {
-          font-size: 28px;
-          color: var(--backstage-primary);
+        .disk-icon-wrapper {
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--backstage-border-lighter);
+          border-radius: var(--backstage-radius-lg);
+
+          .disk-icon {
+            font-size: 24px;
+            color: var(--backstage-text-secondary);
+          }
         }
 
         .disk-info {
@@ -460,26 +528,56 @@ onUnmounted(() => {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          min-width: 0;
 
           .disk-name {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--backstage-text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: calc(100% - 60px);
+            cursor: default;
           }
 
           .disk-usage {
-            font-size: 13px;
-            color: var(--backstage-text-secondary);
+            font-size: 18px;
+            font-weight: 700;
           }
         }
+      }
+
+      .disk-progress-wrapper {
+        margin-bottom: 20px;
       }
 
       .disk-details {
         display: flex;
         justify-content: space-between;
-        margin-top: 8px;
-        font-size: 12px;
-        color: var(--backstage-text-secondary);
+        gap: 16px;
+
+        .detail-item {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 12px 8px;
+          background: var(--backstage-border-lighter);
+          border-radius: var(--backstage-radius-md);
+
+          .detail-label {
+            font-size: 12px;
+            color: var(--backstage-text-secondary);
+            margin-bottom: 4px;
+          }
+
+          .detail-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--backstage-text-primary);
+          }
+        }
       }
     }
   }

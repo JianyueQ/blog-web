@@ -15,37 +15,44 @@ const router = createRouter({
                 {
                     path: 'home',
                     name: 'home',
-                    component: () => import('@/views/front/Home/index.vue')
+                    component: () => import('@/views/front/Home/index.vue'),
+                    meta: { keepAlive: true }
                 },
                 {
                     path: 'archive',
                     name: 'archive',
-                    component: () => import('@/views/front/Archive/index.vue')
+                    component: () => import('@/views/front/Archive/index.vue'),
+                    meta: { keepAlive: false }
                 },
                 {
                     path: 'links',
                     name: 'links',
-                    component: () => import('@/views/front/Links/index.vue')
+                    component: () => import('@/views/front/Links/index.vue'),
+                    meta: { keepAlive: true }
                 },
                 {
                     path: 'gallery',
                     name: 'gallery',
-                    component: () => import('@/views/front/Gallery/index.vue')
+                    component: () => import('@/views/front/Gallery/index.vue'),
+                    meta: { keepAlive: false }
                 },
                 {
                     path: 'about',
                     name: 'about',
-                    component: () => import('@/views/front/About/index.vue')
+                    component: () => import('@/views/front/About/index.vue'),
+                    meta: { keepAlive: true }
                 },
                 {
                     path: 'message',
                     name: 'message',
-                    component: () => import('@/views/front/Message/index.vue')
+                    component: () => import('@/views/front/Message/index.vue'),
+                    meta: { keepAlive: false }
                 },
                 {
                     path: 'more',
                     name: 'more',
-                    component: () => import('@/views/front/More/index.vue')
+                    component: () => import('@/views/front/More/index.vue'),
+                    meta: { keepAlive: true }
                 }
             ]
         },
