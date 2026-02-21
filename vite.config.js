@@ -2,7 +2,9 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import viteCompression from 'vite-plugin-compression' // 添加压缩插件
+import viteCompression from 'vite-plugin-compression'
+
+// @ts-ignore
 
 const baseUrl = 'http://localhost:8998' // 后端接口
 
@@ -58,6 +60,16 @@ export default defineConfig({
     minify: 'terser', // 使用 terser 更高级的压缩
     // 构建后是否生成 source map 文件
     cssCodeSplit: true,
+    // Terser 配置 - 移除 console 和 debugger
+    terserOptions: {
+      compress: {
+        // 移除所有 console
+        drop_console: true,
+        // 移除 debugger
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.error', 'console.warn', 'console.info', 'console.debug']
+      }
+    },
     rollupOptions: {
       output: {
         // 分包策略

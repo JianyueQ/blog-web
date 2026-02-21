@@ -3,14 +3,33 @@ import {getToken, removeToken} from "@/utils/auth.js"
 import {ElMessage} from 'element-plus'
 import {useUserStore} from "@/stores/user.js";
 
-// 前台页面组件预加载（解决路由切换卡顿问题）
-const Home = () => import('@/views/front/Home/index.vue')
-const Archive = () => import('@/views/front/Archive/index.vue')
-const Gallery = () => import('@/views/front/Gallery/index.vue')
-const About = () => import('@/views/front/About/index.vue')
-const More = () => import('@/views/front/More/index.vue')
-const Message = () => import('@/views/front/Message/index.vue')
-const Links = () => import('@/views/front/Links/index.vue')
+// 前台页面组件 - 直接导入避免懒加载导致的浏览器加载条
+import Home from '@/views/front/Home/index.vue'
+import Archive from '@/views/front/Archive/index.vue'
+import Gallery from '@/views/front/Gallery/index.vue'
+import About from '@/views/front/About/index.vue'
+import More from '@/views/front/More/index.vue'
+import Message from '@/views/front/Message/index.vue'
+import Links from '@/views/front/Links/index.vue'
+
+// 后台页面组件 - 直接导入避免懒加载导致的浏览器加载条
+import BackstageHome from '@/views/backstage/Home/index.vue'
+import BackstageArticle from '@/views/backstage/Article/index.vue'
+import BackstageCategory from '@/views/backstage/Category/index.vue'
+import BackstageTag from '@/views/backstage/Tag/index.vue'
+import BackstageGallery from '@/views/backstage/Gallery/index.vue'
+import BackstageUpload from '@/views/backstage/Upload/index.vue'
+import BackstageComment from '@/views/backstage/Comment/index.vue'
+import BackstageLinks from '@/views/backstage/Links/index.vue'
+import BackstageUser from '@/views/backstage/User/index.vue'
+import BackstageProfile from '@/views/backstage/User/Profile/index.vue'
+import BackstageConfig from '@/views/backstage/Config/index.vue'
+import BackstageOperlog from '@/views/backstage/Monitor/OperLog/index.vue'
+import BackstageAccesslog from '@/views/backstage/Monitor/AccessLog/index.vue'
+import BackstageServer from '@/views/backstage/Monitor/ServerMonitor/index.vue'
+import BackstageOnline from '@/views/backstage/Monitor/OnlineUser/index.vue'
+import BackstageVisitorRecord from '@/views/backstage/Visitor/Record/index.vue'
+import BackstageVisitorBlacklist from '@/views/backstage/Visitor/Blacklist/index.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,43 +43,43 @@ const router = createRouter({
                 {
                     path: 'home',
                     name: 'home',
-                    component: () => import('@/views/front/Home/index.vue'),
+                    component: Home,
                     meta: { keepAlive: true }
                 },
                 {
                     path: 'archive',
                     name: 'archive',
-                    component: () => import('@/views/front/Archive/index.vue'),
+                    component: Archive,
                     meta: { keepAlive: false }
                 },
                 {
                     path: 'links',
                     name: 'links',
-                    component: () => import('@/views/front/Links/index.vue'),
+                    component: Links,
                     meta: { keepAlive: true }
                 },
                 {
                     path: 'gallery',
                     name: 'gallery',
-                    component: () => import('@/views/front/Gallery/index.vue'),
+                    component: Gallery,
                     meta: { keepAlive: false }
                 },
                 {
                     path: 'about',
                     name: 'about',
-                    component: () => import('@/views/front/About/index.vue'),
+                    component: About,
                     meta: { keepAlive: true }
                 },
                 {
                     path: 'message',
                     name: 'message',
-                    component: () => import('@/views/front/Message/index.vue'),
+                    component: Message,
                     meta: { keepAlive: false }
                 },
                 {
                     path: 'more',
                     name: 'more',
-                    component: () => import('@/views/front/More/index.vue'),
+                    component: More,
                     meta: { keepAlive: true }
                 }
             ]
@@ -80,105 +99,105 @@ const router = createRouter({
                 {
                     path: 'home',
                     name: 'backstageHome',
-                    component: () => import('@/views/backstage/Home/index.vue'),
+                    component: BackstageHome,
                     meta: { title: '首页' }
                 },
                 {
                     path: 'article',
                     name: 'backstageArticle',
-                    component: () => import('@/views/backstage/Article/index.vue'),
+                    component: BackstageArticle,
                     meta: { title: '文章管理' }
                 },
                 {
                     path: 'category',
                     name: 'backstageCategory',
-                    component: () => import('@/views/backstage/Category/index.vue'),
+                    component: BackstageCategory,
                     meta: { title: '分类管理' }
                 },
                 {
                     path: 'tag',
                     name: 'tag',
-                    component: () => import('@/views/backstage/Tag/index.vue'),
+                    component: BackstageTag,
                     meta: { title: '标签管理' }
                 },
                 {
                     path: 'gallery',
                     name: 'backstageGallery',
-                    component: () => import('@/views/backstage/Gallery/index.vue'),
+                    component: BackstageGallery,
                     meta: { title: '图库管理' }
                 },
                 {
                     path: 'upload',
                     name: 'backstageUpload',
-                    component: () => import('@/views/backstage/Upload/index.vue'),
+                    component: BackstageUpload,
                     meta: { title: '文件上传' }
                 },
                 {
                     path: 'comment',
                     name: 'backstageComment',
-                    component: () => import('@/views/backstage/Comment/index.vue'),
+                    component: BackstageComment,
                     meta: { title: '评论管理' }
                 },
                 {
                     path: 'links',
                     name: 'backstageLinks',
-                    component: () => import('@/views/backstage/Links/index.vue'),
+                    component: BackstageLinks,
                     meta: { title: '友链管理' }
                 },
                 {
                     path: 'user',
                     name: 'backstageUser',
-                    component: () => import('@/views/backstage/User/index.vue'),
+                    component: BackstageUser,
                     meta: { title: '用户管理' }
                 },
                 {
                     path: 'profile',
                     name: 'backstageProfile',
-                    component: () => import('@/views/backstage/User/Profile/index.vue'),
+                    component: BackstageProfile,
                     meta: { title: '个人中心' }
                 },
                 {
                     path: 'config',
                     name: 'backstageConfig',
-                    component: () => import('@/views/backstage/Config/index.vue'),
+                    component: BackstageConfig,
                     meta: { title: '系统配置' }
                 },
                 // 监控管理路由
                 {
                     path: 'operlog',
                     name: 'backstageOperlog',
-                    component: () => import('@/views/backstage/Monitor/OperLog/index.vue'),
+                    component: BackstageOperlog,
                     meta: { title: '操作日志' }
                 },
                 {
                     path: 'accesslog',
                     name: 'backstageAccesslog',
-                    component: () => import('@/views/backstage/Monitor/AccessLog/index.vue'),
+                    component: BackstageAccesslog,
                     meta: { title: '系统访问记录' }
                 },
                 {
                     path: 'server',
                     name: 'backstageServer',
-                    component: () => import('@/views/backstage/Monitor/ServerMonitor/index.vue'),
+                    component: BackstageServer,
                     meta: { title: '服务器监控' }
                 },
                 {
                     path: 'online',
                     name: 'backstageOnline',
-                    component: () => import('@/views/backstage/Monitor/OnlineUser/index.vue'),
+                    component: BackstageOnline,
                     meta: { title: '在线用户' }
                 },
                 // 访客管理路由
                 {
                     path: 'visitor/record',
                     name: 'backstageVisitorRecord',
-                    component: () => import('@/views/backstage/Visitor/Record/index.vue'),
+                    component: BackstageVisitorRecord,
                     meta: { title: '访客记录' }
                 },
                 {
                     path: 'visitor/blacklist',
                     name: 'backstageVisitorBlacklist',
-                    component: () => import('@/views/backstage/Visitor/Blacklist/index.vue'),
+                    component: BackstageVisitorBlacklist,
                     meta: { title: '访客黑名单' }
                 }
             ]

@@ -53,8 +53,8 @@
             @click="visitLink(link.url)"
           >
             <div class="link-avatar">
-              <img 
-                :src="link.logo || defaultLogo" 
+              <img
+                :src="link.logo || defaultLogo"
                 :alt="link.name"
                 @error="handleImageError"
               />
@@ -156,7 +156,7 @@
                 <div class="form-group">
                   <label class="form-label">站点 Logo</label>
                   <div class="logo-upload">
-                    <div 
+                    <div
                       class="upload-area"
                       :class="{ 'has-image': form.logo, 'dragging': isDragging }"
                       @click="triggerFileInput"
@@ -186,9 +186,9 @@
                         <span>点击或拖拽上传</span>
                         <small>支持 JPG、PNG 格式</small>
                       </div>
-                      <button 
-                        v-if="form.logo" 
-                        type="button" 
+                      <button
+                        v-if="form.logo"
+                        type="button"
                         class="remove-image"
                         @click.stop="removeImage"
                       >
@@ -319,7 +319,6 @@ const loadFriendLinks = async () => {
     }
   } catch (error) {
     console.error('加载友链失败:', error)
-    ElMessage.error('加载友链失败，请稍后重试')
   } finally {
     loading.value = false
   }
@@ -383,9 +382,9 @@ const uploadLogo = async (file) => {
     ElMessage.warning('请上传图片文件')
     return
   }
-  
-  if (file.size > 2 * 1024 * 1024) {
-    ElMessage.warning('图片大小不能超过 2MB')
+
+  if (file.size > 10 * 1024 * 1024) {
+    ElMessage.warning('图片大小不能超过 10MB')
     return
   }
 
@@ -399,11 +398,9 @@ const uploadLogo = async (file) => {
       form.logo = res.imgUrl
       ElMessage.success('Logo 上传成功')
     } else {
-      ElMessage.error(res.msg || '上传失败')
     }
   } catch (error) {
     console.error('上传失败:', error)
-    ElMessage.error('上传失败，请稍后重试')
   } finally {
     logoUploading.value = false
   }
@@ -420,7 +417,7 @@ const removeImage = () => {
 // 表单验证
 const validateForm = () => {
   let isValid = true
-  
+
   errors.name = ''
   errors.url = ''
   errors.email = ''
@@ -478,7 +475,6 @@ const handleSubmit = async () => {
     }
   } catch (error) {
     console.error('提交失败:', error)
-    ElMessage.error('提交失败，请稍后重试')
   } finally {
     submitting.value = false
   }

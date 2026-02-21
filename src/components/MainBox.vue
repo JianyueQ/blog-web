@@ -7,7 +7,7 @@
 
     <Header />
 
-    <main class="main-content">
+    <main class="main-content" :class="{ 'is-transitioning': isTransitioning }">
       <div class="content-wrapper">
         <router-view v-slot="{ Component, route }">
           <transition 
@@ -52,17 +52,17 @@ const currentBackground = ref('')
 // 需要缓存的页面（静态页面可以缓存，动态数据页面不建议缓存）
 const cachedViews = ref(['home', 'about', 'links', 'more'])
 
-// 动画开始前 - 优化性能
+// 过渡动画状态
+const isTransitioning = ref(false)
+
+// 动画开始前 - 标记过渡状态
 const handleBeforeLeave = () => {
-  // 在动画开始前强制重绘，避免掉帧
-  document.body.style.pointerEvents = 'none'
+  isTransitioning.value = true
 }
 
-// 动画结束后 - 恢复交互
+// 动画结束后 - 恢复状态
 const handleAfterEnter = () => {
-  nextTick(() => {
-    document.body.style.pointerEvents = ''
-  })
+  isTransitioning.value = false
 }
 
 onMounted(() => {
@@ -140,6 +140,11 @@ onMounted(() => {
     max-width: 1400px;
     margin: 0 auto;
     min-height: calc(100vh - 270px);
+  }
+
+  // 过渡动画期间禁用内容区域的交互，但保持导航栏可点击
+  &.is-transitioning .content-wrapper {
+    pointer-events: none;
   }
 
   @media (max-width: 720px) {

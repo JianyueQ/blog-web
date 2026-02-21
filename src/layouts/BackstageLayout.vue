@@ -182,9 +182,14 @@
       </el-header>
 
       <!-- 主内容区 -->
-      <el-main class="content-container">
+      <el-main class="content-container" :class="{ 'is-transitioning': isTransitioning }">
         <router-view v-slot="{ Component }">
-          <transition name="page-fade" mode="out-in">
+          <transition 
+            name="page-fade" 
+            mode="out-in"
+            @before-leave="handleBeforeLeave"
+            @after-enter="handleAfterEnter"
+          >
             <div class="page-wrapper">
               <component :is="Component"/>
             </div>
@@ -313,6 +318,19 @@ const toggleTheme = () => {
   currentTheme.value = currentTheme.value === 'light' ? 'dark' : 'light'
   localStorage.setItem('backstage-theme', currentTheme.value)
   document.documentElement.setAttribute('data-theme', currentTheme.value)
+}
+
+// 过渡动画状态
+const isTransitioning = ref(false)
+
+// 动画开始前 - 标记过渡状态
+const handleBeforeLeave = () => {
+  isTransitioning.value = true
+}
+
+// 动画结束后 - 恢复状态
+const handleAfterEnter = () => {
+  isTransitioning.value = false
 }
 
 // 响应式侧边栏
@@ -624,6 +642,11 @@ onUnmounted(() => {
   .page-wrapper {
     padding: 24px;
     min-height: 100%;
+  }
+
+  // 过渡动画期间禁用内容区域的交互，但保持侧边栏可点击
+  &.is-transitioning .page-wrapper {
+    pointer-events: none;
   }
 }
 
