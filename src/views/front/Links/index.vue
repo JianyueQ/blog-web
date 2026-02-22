@@ -36,10 +36,6 @@
 
         <!-- 空状态 -->
         <div v-else-if="friendLinks.length === 0" class="empty-state">
-          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 12h8M12 8v8"/>
-          </svg>
           <p>暂无友链，快来申请成为第一个吧</p>
         </div>
 

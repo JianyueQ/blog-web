@@ -1,18 +1,5 @@
 <template>
   <div class="links-manage">
-    <!-- 待通过提示气泡 -->
-    <el-badge :value="pendingCount" :hidden="pendingCount === 0" class="pending-badge">
-      <el-alert
-        v-if="pendingCount > 0"
-        :title="`有 ${pendingCount} 条友链申请待处理`"
-        type="warning"
-        :closable="false"
-        show-icon
-        class="pending-alert"
-        @click="activeTab = 'pending'"
-      />
-    </el-badge>
-
     <!-- Tab 切换 -->
     <el-tabs v-model="activeTab" class="links-tabs" type="border-card">
       <!-- 友链管理 Tab -->
