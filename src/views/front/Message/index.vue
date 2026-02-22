@@ -22,7 +22,7 @@
             </svg>
             <span>想要留言？点我来写下你的想法吧！</span>
           </button>
-          <span class="message-count">共 {{ totalMessages }} 条留言</span>
+<!--          <span class="message-count">共 {{ totalMessages }} 条留言</span>-->
         </div>
       </div>
 
@@ -49,58 +49,125 @@
 
               <div class="modal-body">
                 <form class="message-form" @submit.prevent="submitMessage">
-                  <!-- 头像上传 - TODO: 后续可以手动选择头像 -->
+                  <!-- 头像选择区域 -->
                   <div class="form-group avatar-group">
-                    <div class="avatar-upload-wrapper">
-                      <div
-                        class="avatar-upload-area"
-                        :class="{ 'has-image': messageForm.avatar, 'uploading': avatarUploading }"
-                        @click="!avatarUploading && triggerFileInput()"
-                        @dragenter.prevent="!avatarUploading && (isDragging = true)"
-                        @dragleave.prevent="isDragging = false"
-                        @dragover.prevent
-                        @drop.prevent="!avatarUploading && handleDrop($event)"
-                      >
-                        <input
-                          ref="fileInput"
-                          type="file"
-                          accept="image/*"
-                          style="display: none"
-                          @change="handleFileChange"
-                          :disabled="avatarUploading"
-                        />
+                    <div class="avatar-section">
+                      <!-- 当前头像显示 -->
+                      <div class="avatar-current-wrapper">
+                        <div
+                          class="avatar-upload-area"
+                          :class="{ 'has-image': messageForm.avatar, 'uploading': avatarUploading }"
+                          @click="!avatarUploading && toggleAvatarPicker()"
+                        >
+                          <!-- 头像预览 -->
+                          <img v-if="messageForm.avatar && !avatarUploading" :src="messageForm.avatar" class="avatar-preview" />
 
-                        <!-- 头像预览 -->
-                        <img v-if="messageForm.avatar && !avatarUploading" :src="messageForm.avatar" class="avatar-preview" />
+                          <!-- 上传中状态 -->
+                          <div v-else-if="avatarUploading" class="avatar-uploading">
+                            <div class="avatar-spinner">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              </svg>
+                            </div>
+                            <span class="upload-text">上传中...</span>
+                          </div>
 
-                        <!-- 上传中状态 -->
-                        <div v-else-if="avatarUploading" class="avatar-uploading">
-                          <div class="avatar-spinner">
+                          <!-- 默认状态 -->
+                          <div v-else class="avatar-placeholder">
+                            <div class="avatar-icon">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                              </svg>
+                            </div>
+                            <span class="upload-hint">选择头像</span>
+                          </div>
+
+                          <!-- 删除头像按钮 -->
+                          <button
+                            v-if="messageForm.avatar && !avatarUploading"
+                            type="button"
+                            class="avatar-remove-btn"
+                            @click.stop="removeAvatar"
+                            title="删除头像"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          </button>
+                        </div>
+                        <span class="avatar-tip">点击选择或上传头像</span>
+                      </div>
+
+                      <!-- 头像选择器 -->
+                      <div v-if="showAvatarPicker" class="avatar-picker">
+                        <div class="avatar-picker-header">
+                          <span class="avatar-picker-title">选择头像</span>
+                          <button type="button" class="avatar-close-btn" @click="toggleAvatarPicker">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
-                          </div>
-                          <span class="upload-text">上传中...</span>
+                          </button>
                         </div>
 
-                        <!-- 默认状态 -->
-                        <div v-else class="avatar-placeholder">
-                          <div class="avatar-icon">
+                        <!-- 风格选择标签 -->
+                        <div class="avatar-style-tabs">
+                          <button
+                            v-for="(config, key) in avatarStyles"
+                            :key="key"
+                            type="button"
+                            class="style-tab"
+                            :class="{ 'active': currentStyle === key }"
+                            @click="switchAvatarStyle(key)"
+                          >
+                            {{ config.name }}
+                          </button>
+                        </div>
+
+                        <!-- 预设头像网格 -->
+                        <div class="preset-avatars">
+                          <div
+                            v-for="(avatar, index) in presetAvatars"
+                            :key="`${currentStyle}-${index}`"
+                            class="preset-avatar-item"
+                            :class="{ 'selected': messageForm.avatar === avatar }"
+                            @click="selectPresetAvatar(avatar)"
+                          >
+                            <img :src="avatar" :alt="`预设头像 ${index + 1}`" />
+                          </div>
+                        </div>
+
+                        <!-- 自定义上传区域 -->
+                        <div class="custom-upload-section">
+                          <div
+                            class="custom-upload-area"
+                            :class="{ 'dragging': isDragging }"
+                            @click="triggerFileInput"
+                            @dragenter.prevent="isDragging = true"
+                            @dragleave.prevent="isDragging = false"
+                            @dragover.prevent
+                            @drop.prevent="handleDrop($event)"
+                          >
+                            <input
+                              ref="fileInput"
+                              type="file"
+                              accept="image/*"
+                              style="display: none"
+                              @change="handleFileChange"
+                            />
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="17 8 12 3 7 8"/>
+                              <line x1="12" y1="3" x2="12" y2="15"/>
                             </svg>
+                            <span>上传自定义头像</span>
+                            <small>支持 JPG、PNG，最大 10MB</small>
                           </div>
-                          <span class="upload-hint">点击上传</span>
-                        </div>
-
-                        <!-- 悬停遮罩 -->
-                        <div v-if="messageForm.avatar && !avatarUploading" class="avatar-overlay">
-                          <span>更换头像</span>
                         </div>
                       </div>
-                      <span class="avatar-tip">支持 JPG、PNG，最大 10MB</span>
                     </div>
                   </div>
 
@@ -225,58 +292,111 @@
                 </div>
 
                 <form class="reply-form" @submit.prevent="submitReply">
-                  <!-- 头像上传 -->
+                  <!-- 头像选择区域 -->
                   <div class="form-group avatar-group">
-                    <div class="avatar-upload-wrapper">
-                      <div
-                        class="avatar-upload-area"
-                        :class="{ 'has-image': replyForm.avatar, 'uploading': replyAvatarUploading }"
-                        @click="!replyAvatarUploading && triggerReplyFileInput()"
-                        @dragenter.prevent="!replyAvatarUploading && (isReplyDragging = true)"
-                        @dragleave.prevent="isReplyDragging = false"
-                        @dragover.prevent
-                        @drop.prevent="!replyAvatarUploading && handleReplyDrop($event)"
-                      >
-                        <input
-                          ref="replyFileInput"
-                          type="file"
-                          accept="image/*"
-                          style="display: none"
-                          @change="handleReplyFileChange"
-                          :disabled="replyAvatarUploading"
-                        />
+                    <div class="avatar-section">
+                      <!-- 当前头像显示 -->
+                      <div class="avatar-current-wrapper">
+                        <div
+                          class="avatar-upload-area"
+                          :class="{ 'has-image': replyForm.avatar, 'uploading': replyAvatarUploading }"
+                          @click="!replyAvatarUploading && toggleReplyAvatarPicker()"
+                        >
+                          <!-- 头像预览 -->
+                          <img v-if="replyForm.avatar && !replyAvatarUploading" :src="replyForm.avatar" class="avatar-preview" />
 
-                        <!-- 头像预览 -->
-                        <img v-if="replyForm.avatar && !replyAvatarUploading" :src="replyForm.avatar" class="avatar-preview" />
+                          <!-- 上传中状态 -->
+                          <div v-else-if="replyAvatarUploading" class="avatar-uploading">
+                            <div class="avatar-spinner">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              </svg>
+                            </div>
+                            <span class="upload-text">上传中...</span>
+                          </div>
 
-                        <!-- 上传中状态 -->
-                        <div v-else-if="replyAvatarUploading" class="avatar-uploading">
-                          <div class="avatar-spinner">
+                          <!-- 默认状态 -->
+                          <div v-else class="avatar-placeholder">
+                            <div class="avatar-icon">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                              </svg>
+                            </div>
+                            <span class="upload-hint">选择头像</span>
+                          </div>
+
+                          <!-- 删除头像按钮 -->
+                          <button
+                            v-if="replyForm.avatar && !replyAvatarUploading"
+                            type="button"
+                            class="avatar-remove-btn"
+                            @click.stop="removeReplyAvatar"
+                            title="删除头像"
+                          >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          </button>
+                        </div>
+                        <span class="avatar-tip">点击选择或上传头像</span>
+                      </div>
+
+                      <!-- 头像选择器 -->
+                      <div v-if="showReplyAvatarPicker" class="avatar-picker">
+                        <div class="avatar-picker-header">
+                          <span class="avatar-picker-title">选择头像</span>
+                          <button type="button" class="avatar-close-btn" @click="toggleReplyAvatarPicker">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                              <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
                             </svg>
-                          </div>
-                          <span class="upload-text">上传中...</span>
+                          </button>
                         </div>
 
-                        <!-- 默认状态 -->
-                        <div v-else class="avatar-placeholder">
-                          <div class="avatar-icon">
+                        <!-- 预设头像网格 -->
+                        <div class="preset-avatars">
+                          <div
+                            v-for="(avatar, index) in presetAvatars"
+                            :key="index"
+                            class="preset-avatar-item"
+                            :class="{ 'selected': replyForm.avatar === avatar }"
+                            @click="selectReplyPresetAvatar(avatar)"
+                          >
+                            <img :src="avatar" :alt="`预设头像 ${index + 1}`" />
+                          </div>
+                        </div>
+
+                        <!-- 自定义上传区域 -->
+                        <div class="custom-upload-section">
+                          <div
+                            class="custom-upload-area"
+                            :class="{ 'dragging': isReplyDragging }"
+                            @click="triggerReplyFileInput"
+                            @dragenter.prevent="isReplyDragging = true"
+                            @dragleave.prevent="isReplyDragging = false"
+                            @dragover.prevent
+                            @drop.prevent="handleReplyDrop($event)"
+                          >
+                            <input
+                              ref="replyFileInput"
+                              type="file"
+                              accept="image/*"
+                              style="display: none"
+                              @change="handleReplyFileChange"
+                            />
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                              <circle cx="12" cy="7" r="4"/>
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="17 8 12 3 7 8"/>
+                              <line x1="12" y1="3" x2="12" y2="15"/>
                             </svg>
+                            <span>上传自定义头像</span>
+                            <small>支持 JPG、PNG，最大 10MB</small>
                           </div>
-                          <span class="upload-hint">点击上传</span>
-                        </div>
-
-                        <!-- 悬停遮罩 -->
-                        <div v-if="replyForm.avatar && !replyAvatarUploading" class="avatar-overlay">
-                          <span>更换头像</span>
                         </div>
                       </div>
-                      <span class="avatar-tip">支持 JPG、PNG，最大 10MB</span>
                     </div>
                   </div>
 
@@ -495,16 +615,62 @@
             </div>
           </div>
         </div>
+
+        <!-- 加载更多提示 -->
+        <div v-if="messages.length > 0" class="load-more-section">
+          <div v-if="loadingMore" class="loading-more">
+            <div class="loading-spinner">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>加载中...</span>
+          </div>
+          <div v-else-if="!pageParams.hasMore" class="no-more">
+            <span>—— 已经到底啦 ——</span>
+          </div>
+          <div v-else class="scroll-hint">
+            <span>继续滚动加载更多</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 回到顶部按钮 -->
+    <Transition name="fade">
+      <button
+        v-show="showBackToTop"
+        class="back-to-top"
+        @click="scrollToTop"
+        title="回到顶部"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { getGuestbookList, addGuestbookMessage } from '@/api/front/guestbook.js'
 import { uploadImage } from '@/api/front/file.js'
 import { ElMessage } from 'element-plus'
+
+// 导入 DiceBear 头像库
+import { createAvatar } from '@dicebear/core'
+import * as identicon from '@dicebear/identicon'
+import * as avataaars from '@dicebear/avataaars'
+import * as bottts from '@dicebear/bottts'
+import * as funEmoji from '@dicebear/fun-emoji'
+import * as pixelArt from '@dicebear/pixel-art'
+import * as notionists from '@dicebear/notionists'
+import * as adventurer from '@dicebear/adventurer'
 
 // 表单数据
 const messageForm = reactive({
@@ -539,6 +705,8 @@ const replyTarget = ref({})
 const currentRootMessage = ref(null)
 const showEmojiPicker = ref(false)
 const showReplyEmojiPicker = ref(false)
+const showAvatarPicker = ref(false)
+const showReplyAvatarPicker = ref(false)
 const expandedReplies = ref([])
 const isDragging = ref(false)
 const avatarUploading = ref(false)
@@ -546,6 +714,9 @@ const fileInput = ref(null)
 const isReplyDragging = ref(false)
 const replyAvatarUploading = ref(false)
 const replyFileInput = ref(null)
+
+// DOM 渲染完成标志 - 用于防止在 DOM 未渲染完成时触发下一次加载
+const isDomReady = ref(true)
 
 // 默认表情列表 - TODO: 未来从后台获取表情包
 const defaultEmojis = [
@@ -559,6 +730,51 @@ const defaultEmojis = [
   '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍',
   '🔥', '⭐', '✨', '💫', '💯', '💢', '💥', '💦'
 ]
+
+// 头像风格配置 - 适配 DiceBear v9 的导出结构
+const avatarStyles = {
+  identicon: { name: '几何图案', style: identicon },
+  avataaars: { name: '卡通人物', style: avataaars },
+  bottts: { name: '机器人', style: bottts },
+  funEmoji: { name: '表情符号', style: funEmoji },
+  pixelArt: { name: '像素艺术', style: pixelArt },
+  notionists: { name: '极简线条', style: notionists },
+  adventurer: { name: '冒险家', style: adventurer }
+}
+
+// 当前选中的风格
+const currentStyle = ref('identicon')
+
+// 生成头像列表
+const generateAvatars = (styleKey, count = 12) => {
+  const style = avatarStyles[styleKey]?.style
+  if (!style) {
+    console.warn('未找到风格:', styleKey)
+    return []
+  }
+
+  const seeds = ['Felix', 'Aneka', 'Zack', 'Bella', 'Leo', 'Molly', 'Max', 'Luna', 'Charlie', 'Lucy', 'Jack', 'Daisy', 'Milo', 'Ruby', 'Oliver', 'Emma']
+
+  return seeds.slice(0, count).map(seed => {
+    try {
+      // DiceBear v9: createAvatar 返回 Avatar 对象，需要调用 toDataUri() 获取 data URI
+      const avatar = createAvatar(style, {
+        seed,
+        size: 128,
+        backgroundColor: ['transparent']
+      })
+
+      // 调用 toDataUri() 方法获取 data URI
+      return avatar.toDataUri()
+    } catch (err) {
+      console.error('生成头像失败:', err)
+      return ''
+    }
+  }).filter(Boolean)
+}
+
+// 预设头像列表（根据当前风格动态生成）
+const presetAvatars = computed(() => generateAvatars(currentStyle.value))
 
 // 计算总留言数
 const totalMessages = computed(() => {
@@ -582,10 +798,28 @@ const closeMessageModal = () => {
   isMessageModalOpen.value = false
   document.body.style.overflow = ''
   showEmojiPicker.value = false
+  showAvatarPicker.value = false
   // 重置表单错误
   formErrors.nickname = ''
   formErrors.email = ''
   formErrors.content = ''
+}
+
+// 切换头像选择器
+const toggleAvatarPicker = () => {
+  showAvatarPicker.value = !showAvatarPicker.value
+}
+
+// 选择预设头像
+const selectPresetAvatar = (avatar) => {
+  messageForm.avatar = avatar
+  showAvatarPicker.value = false
+  ElMessage.success('头像选择成功')
+}
+
+// 切换头像风格
+const switchAvatarStyle = (styleKey) => {
+  currentStyle.value = styleKey
 }
 
 // 切换 Emoji 选择器
@@ -643,12 +877,25 @@ const closeReplyModal = () => {
   isReplyModalOpen.value = false
   document.body.style.overflow = ''
   showReplyEmojiPicker.value = false
+  showReplyAvatarPicker.value = false
   replyTarget.value = {}
   currentRootMessage.value = null
   replyForm.nickname = ''
   replyForm.email = ''
   replyForm.content = ''
   replyForm.avatar = ''
+}
+
+// 切换回复头像选择器
+const toggleReplyAvatarPicker = () => {
+  showReplyAvatarPicker.value = !showReplyAvatarPicker.value
+}
+
+// 选择回复预设头像
+const selectReplyPresetAvatar = (avatar) => {
+  replyForm.avatar = avatar
+  showReplyAvatarPicker.value = false
+  ElMessage.success('头像选择成功')
 }
 
 // 触发回复文件选择
@@ -701,7 +948,6 @@ const uploadReplyAvatar = async (file) => {
     }
   } catch (error) {
     console.error('上传失败:', error)
-    ElMessage.error('上传失败，请稍后重试')
   } finally {
     replyAvatarUploading.value = false
   }
@@ -765,7 +1011,6 @@ const uploadAvatar = async (file) => {
     }
   } catch (error) {
     console.error('上传失败:', error)
-    ElMessage.error('上传失败，请稍后重试')
   } finally {
     avatarUploading.value = false
   }
@@ -776,6 +1021,95 @@ const removeAvatar = () => {
   messageForm.avatar = ''
   if (fileInput.value) {
     fileInput.value.value = ''
+  }
+}
+
+// 将 data URI 转换为 Blob
+const dataURItoBlob = (dataURI) => {
+  // 分离 MIME 类型和 base64/utf8 数据
+  const parts = dataURI.split(',')
+  const header = parts[0]
+  let data = parts[1]
+
+  // 获取 MIME 类型
+  const mimeMatch = header.match(/:(.*?);/)
+  const mimeString = mimeMatch ? mimeMatch[1] : 'image/svg+xml'
+
+  // 检查是否是 base64 编码
+  const isBase64 = header.includes('base64')
+
+  let byteString
+  if (isBase64) {
+    // base64 编码，直接使用 atob
+    byteString = atob(data)
+  } else {
+    // URL 编码（如 %3Csvg%3E），先 decodeURIComponent
+    byteString = decodeURIComponent(data)
+  }
+
+  // 转换为 Uint8Array
+  const bytes = new Uint8Array(byteString.length)
+  for (let i = 0; i < byteString.length; i++) {
+    bytes[i] = byteString.charCodeAt(i)
+  }
+
+  return new Blob([bytes], { type: mimeString })
+}
+
+// 将 SVG data URI 转换为 PNG Blob
+const svgToPngBlob = async (svgDataUri) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = 128
+      canvas.height = 128
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, 128, 128)
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error('Canvas toBlob failed'))
+      }, 'image/png')
+    }
+    img.onerror = () => reject(new Error('Image load failed'))
+    img.src = svgDataUri
+  })
+}
+
+// 上传预设头像（将 SVG 转为 PNG 后上传）
+const uploadPresetAvatar = async (dataUri) => {
+  if (!dataUri || !dataUri.startsWith('data:')) return dataUri
+
+  try {
+    let blob
+    let filename
+    let mimeType
+
+    if (dataUri.includes('image/svg+xml')) {
+      // SVG 格式，需要转换为 PNG
+      blob = await svgToPngBlob(dataUri)
+      filename = 'avatar.png'
+      mimeType = 'image/png'
+    } else {
+      // 其他格式，直接转换
+      blob = dataURItoBlob(dataUri)
+      filename = 'avatar.png'
+      mimeType = 'image/png'
+    }
+
+    const file = new File([blob], filename, { type: mimeType })
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const res = await uploadImage(formData)
+    if (res.code === 200) {
+      return res.imgUrl
+    }
+    throw new Error(res.msg || '上传失败')
+  } catch (error) {
+    console.error('头像上传失败:', error)
+    // 如果上传失败，返回空字符串（使用默认头像）
+    return ''
   }
 }
 
@@ -836,11 +1170,17 @@ const submitMessage = async () => {
 
   submitting.value = true
   try {
+    // 如果头像是 data URI，先上传到对象存储
+    let avatarUrl = messageForm.avatar
+    if (avatarUrl && avatarUrl.startsWith('data:')) {
+      avatarUrl = await uploadPresetAvatar(avatarUrl)
+    }
+
     const data = {
       nickname: messageForm.nickname.trim(),
       email: messageForm.email.trim(),
       content: messageForm.content.trim(),
-      avatar: messageForm.avatar,
+      avatar: avatarUrl,
       rootId: 0,
       parentId: 0
     }
@@ -849,6 +1189,7 @@ const submitMessage = async () => {
     if (res.code === 200) {
       ElMessage.success('留言发表成功！')
       messageForm.content = ''
+      messageForm.avatar = ''
       closeMessageModal()
       await loadMessages()
     } else {
@@ -856,7 +1197,6 @@ const submitMessage = async () => {
     }
   } catch (error) {
     console.error('提交留言失败:', error)
-    ElMessage.error('提交失败，请稍后重试')
   } finally {
     submitting.value = false
   }
@@ -875,12 +1215,18 @@ const submitReply = async () => {
 
   replySubmitting.value = true
   try {
+    // 如果头像是 data URI，先上传到对象存储
+    let avatarUrl = replyForm.avatar
+    if (avatarUrl && avatarUrl.startsWith('data:')) {
+      avatarUrl = await uploadPresetAvatar(avatarUrl)
+    }
+
     const isRoot = replyTarget.value.isRoot === 1
     const data = {
       nickname: replyForm.nickname.trim(),
       email: replyForm.email.trim(),
       content: replyForm.content.trim(),
-      avatar: replyForm.avatar,
+      avatar: avatarUrl,
       rootId: isRoot ? replyTarget.value.guestbookId : replyTarget.value.rootId,
       parentId: replyTarget.value.guestbookId
     }
@@ -898,7 +1244,6 @@ const submitReply = async () => {
     }
   } catch (error) {
     console.error('提交回复失败:', error)
-    ElMessage.error('提交失败，请稍后重试')
   } finally {
     replySubmitting.value = false
   }
@@ -926,27 +1271,237 @@ const handleAvatarError = (e) => {
   e.target.nextElementSibling.style.display = 'flex'
 }
 
-// 加载留言列表
+// 分页参数
+const pageParams = reactive({
+  pageNum: 1,
+  pageSize: 10,
+  total: 0,
+  hasMore: true
+})
+
+// 回到顶部按钮显示状态
+const showBackToTop = ref(false)
+const loadingMore = ref(false)
+
+// 加载留言列表（首次加载）
 const loadMessages = async () => {
   loading.value = true
+  isDomReady.value = false  // 标记 DOM 未就绪
+  pageParams.pageNum = 1
+  pageParams.hasMore = true
+  messages.value = [] // 清空数据
   try {
-    const res = await getGuestbookList()
+    const res = await getGuestbookList({
+      pageNum: 1,
+      pageSize: pageParams.pageSize
+    })
     if (res.code === 200) {
       messages.value = res.rows || []
+      // 如果返回的数据量等于 pageSize，认为还有更多
+      pageParams.hasMore = messages.value.length >= pageParams.pageSize
+
+      // 等待 DOM 更新完成
+      await nextTick()
+
+      // 使用 requestAnimationFrame 确保浏览器已完成渲染
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const scrollContainer = getScrollContainer()
+          let scrollHeight, clientHeight
+
+          if (scrollContainer === window) {
+            scrollHeight = document.documentElement.scrollHeight
+            clientHeight = window.innerHeight
+          } else {
+            scrollHeight = scrollContainer.scrollHeight
+            clientHeight = scrollContainer.clientHeight
+          }
+
+          // 标记 DOM 已就绪
+          loading.value = false
+          isDomReady.value = true
+
+          // 首次加载后，如果内容不足一屏且还有更多数据，自动加载更多
+          if (scrollHeight <= clientHeight + 100 && pageParams.hasMore) {
+            loadMoreMessages()
+          }
+        })
+      })
     } else {
-      ElMessage.error(res.msg || '加载失败')
+      loading.value = false
+      isDomReady.value = true
     }
   } catch (error) {
     console.error('加载留言失败:', error)
-    ElMessage.error('加载留言失败')
-  } finally {
     loading.value = false
+    isDomReady.value = true
+  }
+}
+
+// 加载更多留言
+const loadMoreMessages = async () => {
+  if (loadingMore.value || !pageParams.hasMore || !isDomReady.value) return
+
+  loadingMore.value = true
+  isDomReady.value = false  // 标记 DOM 未就绪，防止重复触发
+  const nextPage = pageParams.pageNum + 1
+
+  try {
+    const res = await getGuestbookList({
+      pageNum: nextPage,
+      pageSize: pageParams.pageSize
+    })
+
+    if (res.code === 200) {
+      const newMessages = res.rows || []
+      if (newMessages.length > 0) {
+        messages.value.push(...newMessages)
+        pageParams.pageNum = nextPage
+        // 如果返回的数据量等于 pageSize，认为还有更多
+        pageParams.hasMore = newMessages.length >= pageParams.pageSize
+      } else {
+        pageParams.hasMore = false
+      }
+
+      // 等待 DOM 更新完成
+      await nextTick()
+
+      // 使用 requestAnimationFrame 确保浏览器已完成渲染
+      requestAnimationFrame(() => {
+        // 再等待一帧，确保内容已完全渲染
+        requestAnimationFrame(() => {
+          const scrollContainer = getScrollContainer()
+          let scrollHeight, clientHeight
+
+          if (scrollContainer === window) {
+            scrollHeight = document.documentElement.scrollHeight
+            clientHeight = window.innerHeight
+          } else {
+            scrollHeight = scrollContainer.scrollHeight
+            clientHeight = scrollContainer.clientHeight
+          }
+
+          // 标记 DOM 已就绪
+          loadingMore.value = false
+          isDomReady.value = true
+
+          // 只有当内容确实不足一屏时才继续加载
+          if (scrollHeight <= clientHeight + 100 && pageParams.hasMore) {
+            loadMoreMessages()
+          }
+        })
+      })
+    } else {
+      pageParams.hasMore = false
+      loadingMore.value = false
+      isDomReady.value = true
+    }
+  } catch (error) {
+    console.error('加载更多留言失败:', error)
+    loadingMore.value = false
+    isDomReady.value = true
+  }
+}
+
+// 获取滚动容器
+const getScrollContainer = () => {
+  // 查找 .main-content 元素（FrontLayout 中的滚动容器）
+  return document.querySelector('.main-content') || window
+}
+
+// 上次触发加载的时间戳
+let lastLoadTime = 0
+// 最小触发间隔（毫秒）
+const MIN_LOAD_INTERVAL = 300
+
+// 获取滚动位置（相对于滚动容器）
+const getScrollPosition = () => {
+  const scrollContainer = getScrollContainer()
+  if (scrollContainer === window) {
+    return window.scrollY || document.documentElement.scrollTop
+  } else {
+    return scrollContainer.scrollTop
+  }
+}
+
+// 滚动监听 - 懒加载
+const handleScroll = () => {
+  const scrollContainer = getScrollContainer()
+
+  let scrollTop, scrollHeight, clientHeight
+
+  if (scrollContainer === window) {
+    scrollTop = window.scrollY || document.documentElement.scrollTop
+    scrollHeight = document.documentElement.scrollHeight
+    clientHeight = window.innerHeight
+  } else {
+    scrollTop = scrollContainer.scrollTop
+    scrollHeight = scrollContainer.scrollHeight
+    clientHeight = scrollContainer.clientHeight
+  }
+
+  // 显示/隐藏回到顶部按钮
+  showBackToTop.value = scrollTop > 300
+
+  // 距离底部 150px 时加载更多
+  const scrollBottom = scrollTop + clientHeight
+  const threshold = scrollHeight - 150
+
+  // 检查是否需要加载更多
+  const now = Date.now()
+  const shouldLoad = messages.value.length > 0 &&
+                     pageParams.hasMore &&
+                     !loadingMore.value &&
+                     isDomReady.value &&  // DOM 必须已就绪
+                     scrollBottom >= threshold &&
+                     (now - lastLoadTime) >= MIN_LOAD_INTERVAL
+
+  if (shouldLoad) {
+    lastLoadTime = now
+    loadMoreMessages()
+  }
+}
+
+
+
+// 回到顶部
+const scrollToTop = () => {
+  const scrollContainer = getScrollContainer()
+  if (scrollContainer === window) {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  } else {
+    scrollContainer.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
   }
 }
 
 // 页面加载
 onMounted(() => {
   loadMessages()
+  // 延迟绑定滚动事件，确保 DOM 已渲染
+  setTimeout(() => {
+    const scrollContainer = getScrollContainer()
+    if (scrollContainer && scrollContainer !== window) {
+      scrollContainer.addEventListener('scroll', handleScroll)
+    } else {
+      window.addEventListener('scroll', handleScroll)
+    }
+  }, 200)
+})
+
+// 页面卸载时移除监听
+onUnmounted(() => {
+  const scrollContainer = getScrollContainer()
+  if (scrollContainer && scrollContainer !== window) {
+    scrollContainer.removeEventListener('scroll', handleScroll)
+  } else {
+    window.removeEventListener('scroll', handleScroll)
+  }
 })
 </script>
 
@@ -1115,11 +1670,18 @@ $primary-hover: #3b82f6;
 }
 
 // 头像上传组件 - 优化设计
-.avatar-upload-wrapper {
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avatar-current-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  padding: 4px; // 为删除按钮留出空间
 }
 
 .avatar-upload-area {
@@ -1131,7 +1693,7 @@ $primary-hover: #3b82f6;
   background: rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: all 0.3s ease;
-  overflow: hidden;
+  overflow: visible; // 改为 visible，让删除按钮可以超出边界
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1268,6 +1830,171 @@ $primary-hover: #3b82f6;
 .avatar-tip {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
+}
+
+// 头像选择器
+.avatar-picker {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1rem;
+  animation: slideInUp 0.2s ease;
+
+  // 风格选择标签
+  .avatar-style-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .style-tab {
+      padding: 0.4rem 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: rgba($primary-color, 0.1);
+        border-color: rgba($primary-color, 0.3);
+        color: $primary-light;
+      }
+
+      &.active {
+        background: rgba($primary-color, 0.2);
+        border-color: $primary-color;
+        color: #fff;
+      }
+    }
+  }
+
+  .avatar-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+
+    .avatar-picker-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .avatar-close-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+    }
+  }
+}
+
+// 预设头像网格
+.preset-avatars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+
+  .preset-avatar-item {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &:hover {
+      border-color: rgba($primary-color, 0.5);
+      transform: scale(1.05);
+    }
+
+    &.selected {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+// 自定义上传区域
+.custom-upload-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+
+  .custom-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    span {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    small {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:hover {
+      border-color: rgba($primary-color, 0.5);
+      background: rgba($primary-color, 0.05);
+
+      svg {
+        color: $primary-light;
+      }
+    }
+
+    &.dragging {
+      border-color: $primary-color;
+      background: rgba($primary-color, 0.1);
+    }
+  }
 }
 
 .form-input,
@@ -2124,6 +2851,20 @@ $primary-hover: #3b82f6;
       }
     }
   }
+
+  // 头像选择器移动端适配
+  .preset-avatars {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+
+    .preset-avatar-item {
+      border-radius: 10px;
+    }
+  }
+
+  .avatar-picker {
+    padding: 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2145,6 +2886,125 @@ $primary-hover: #3b82f6;
     width: 32px;
     height: 32px;
     font-size: 0.8rem;
+  }
+}
+
+// 加载更多区域
+.load-more-section {
+  padding: 2rem 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+
+  .loading-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .no-more {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+  }
+
+  .scroll-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      animation: bounce 1.5s infinite;
+    }
+  }
+}
+
+// 回到顶部按钮
+.back-to-top {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
+
+// 按钮淡入淡出动画
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+// 弹跳动画
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+// 移动端适配回到顶部按钮
+@media (max-width: 768px) {
+  .back-to-top {
+    right: 1rem;
+    bottom: 9.5rem;  // 再往上移动约 70px（从 5rem 改为 9.5rem）
+    width: 44px;
+    height: 44px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .load-more-section {
+    padding: 1.5rem 0;
   }
 }
 </style>

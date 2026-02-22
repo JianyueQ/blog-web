@@ -12,6 +12,14 @@
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix"
   },
   "dependencies": {
+    "@dicebear/adventurer": "^9.3.2",
+    "@dicebear/avataaars": "^9.3.2",
+    "@dicebear/bottts": "^9.3.2",
+    "@dicebear/core": "^9.3.2",
+    "@dicebear/fun-emoji": "^9.3.2",
+    "@dicebear/identicon": "^9.3.2",
+    "@dicebear/notionists": "^9.3.2",
+    "@dicebear/pixel-art": "^9.3.2",
     "@element-plus/icons-vue": "^2.3.2",
     "@vant/icons": "^3.0.2",
     "axios": "^1.6.8",

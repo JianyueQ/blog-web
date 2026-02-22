@@ -43,7 +43,7 @@
             <div class="message-header">
               <div class="user-info">
                 <el-avatar :size="40" :src="item.avatar" class="user-avatar">
-                  <el-icon><UserFilled /></el-icon>
+                  {{ item.nickname ? item.nickname.charAt(0).toUpperCase() : '?' }}
                 </el-avatar>
                 <div class="user-meta">
                   <div class="nickname-row">
@@ -112,7 +112,7 @@
             <div v-for="reply in item.replyList" :key="reply.guestbookId" class="reply-item">
               <div class="reply-avatar">
                 <el-avatar :size="32" :src="reply.avatar">
-                  <el-icon><UserFilled /></el-icon>
+                  {{ reply.nickname ? reply.nickname.charAt(0).toUpperCase() : '?' }}
                 </el-avatar>
               </div>
               <div class="reply-content-wrapper">
@@ -179,7 +179,7 @@
         <div class="original-message">
           <div class="original-header">
             <el-avatar :size="32" :src="currentReplyItem?.avatar">
-              <el-icon><UserFilled /></el-icon>
+              {{ currentReplyItem?.nickname ? currentReplyItem.nickname.charAt(0).toUpperCase() : '?' }}
             </el-avatar>
             <span class="original-nickname">{{ currentReplyItem?.nickname }}</span>
           </div>

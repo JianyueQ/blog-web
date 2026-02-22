@@ -38,7 +38,9 @@
                   height="40"
                   :src="item.avatar"
                 >
-                  <template #error><van-icon name="user-circle-o" size="40" /></template>
+                  <template #error>
+                    <div class="default-avatar">{{ item.nickname ? item.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                  </template>
                 </van-image>
                 <div class="user-meta">
                   <div class="nickname-row">
@@ -92,7 +94,9 @@
                   height="32"
                   :src="reply.avatar"
                 >
-                  <template #error><van-icon name="user-circle-o" size="32" /></template>
+                  <template #error>
+                    <div class="default-avatar small">{{ reply.nickname ? reply.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                  </template>
                 </van-image>
                 <div class="reply-content-wrapper">
                   <div class="reply-header">
@@ -132,7 +136,9 @@
           <div class="original-message">
             <div class="original-header">
               <van-image round width="32" height="32" :src="currentReplyItem?.avatar">
-                <template #error><van-icon name="user-circle-o" size="32" /></template>
+                <template #error>
+                  <div class="default-avatar small">{{ currentReplyItem?.nickname ? currentReplyItem.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                </template>
               </van-image>
               <span class="original-nickname">{{ currentReplyItem?.nickname }}</span>
             </div>
