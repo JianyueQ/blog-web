@@ -22,7 +22,7 @@
             </svg>
             <span>想要留言？点我来写下你的想法吧！</span>
           </button>
-<!--          <span class="message-count">共 {{ totalMessages }} 条留言</span>-->
+          <span class="message-count">共 {{ totalMessages }} 条留言</span>
         </div>
       </div>
 
@@ -777,15 +777,8 @@ const generateAvatars = (styleKey, count = 12) => {
 const presetAvatars = computed(() => generateAvatars(currentStyle.value))
 
 // 计算总留言数
-const totalMessages = computed(() => {
-  let count = messages.value.length
-  messages.value.forEach(item => {
-    if (item.replyList) {
-      count += item.replyList.length
-    }
-  })
-  return count
-})
+// 总留言数（使用后端返回的 total 字段）
+const totalMessages = computed(() => pageParams.total)
 
 // 打开留言弹窗
 const openMessageModal = () => {
@@ -1274,7 +1267,7 @@ const handleAvatarError = (e) => {
 // 分页参数
 const pageParams = reactive({
   pageNum: 1,
-  pageSize: 10,
+  pageSize: 20,  // 每页20条记录
   total: 0,
   hasMore: true
 })
@@ -1297,8 +1290,10 @@ const loadMessages = async () => {
     })
     if (res.code === 200) {
       messages.value = res.rows || []
-      // 如果返回的数据量等于 pageSize，认为还有更多
-      pageParams.hasMore = messages.value.length >= pageParams.pageSize
+      // 保存后端返回的总数
+      pageParams.total = res.total || 0
+      // 根据已加载数量和总数判断是否还有更多
+      pageParams.hasMore = messages.value.length < pageParams.total
 
       // 等待 DOM 更新完成
       await nextTick()
@@ -1357,11 +1352,10 @@ const loadMoreMessages = async () => {
       if (newMessages.length > 0) {
         messages.value.push(...newMessages)
         pageParams.pageNum = nextPage
-        // 如果返回的数据量等于 pageSize，认为还有更多
-        pageParams.hasMore = newMessages.length >= pageParams.pageSize
-      } else {
-        pageParams.hasMore = false
       }
+      // 更新总数并根据已加载数量判断是否还有更多
+      pageParams.total = res.total || 0
+      pageParams.hasMore = messages.value.length < pageParams.total
 
       // 等待 DOM 更新完成
       await nextTick()
@@ -1443,9 +1437,10 @@ const handleScroll = () => {
   // 显示/隐藏回到顶部按钮
   showBackToTop.value = scrollTop > 300
 
-  // 距离底部 150px 时加载更多
+  // 提前加载：距离底部 800px 时就开始加载下一页（约2-3屏的数据）
+  // 这样用户滚动时感觉不到加载延迟，实现无缝体验
   const scrollBottom = scrollTop + clientHeight
-  const threshold = scrollHeight - 150
+  const threshold = scrollHeight - 2000
 
   // 检查是否需要加载更多
   const now = Date.now()
