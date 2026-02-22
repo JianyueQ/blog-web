@@ -356,11 +356,25 @@
                           </button>
                         </div>
 
+                        <!-- 风格选择标签 -->
+                        <div class="avatar-style-tabs">
+                          <button
+                            v-for="(config, key) in avatarStyles"
+                            :key="key"
+                            type="button"
+                            class="style-tab"
+                            :class="{ 'active': currentStyle === key }"
+                            @click="switchAvatarStyle(key)"
+                          >
+                            {{ config.name }}
+                          </button>
+                        </div>
+
                         <!-- 预设头像网格 -->
                         <div class="preset-avatars">
                           <div
                             v-for="(avatar, index) in presetAvatars"
-                            :key="index"
+                            :key="`${currentStyle}-${index}`"
                             class="preset-avatar-item"
                             :class="{ 'selected': replyForm.avatar === avatar }"
                             @click="selectReplyPresetAvatar(avatar)"
@@ -1157,6 +1171,28 @@ const validateForm = (form, isReply = false) => {
   return isValid
 }
 
+// 静默刷新 - 保留展开状态，只更新数据
+const silentRefresh = async () => {
+  try {
+    const res = await getGuestbookList({
+      pageNum: 1,
+      pageSize: pageParams.pageNum * pageParams.pageSize
+    })
+    if (res.code === 200) {
+      const newMessages = res.rows || []
+      // 保留现有的展开状态
+      const expandedIds = [...expandedReplies.value]
+      // 更新数据，保持引用稳定
+      messages.value = newMessages
+      pageParams.total = res.total || 0
+      // 恢复展开状态
+      expandedReplies.value = expandedIds
+    }
+  } catch (error) {
+    console.error('静默刷新失败:', error)
+  }
+}
+
 // 提交留言
 const submitMessage = async () => {
   if (!validateForm(messageForm)) return
@@ -1184,7 +1220,8 @@ const submitMessage = async () => {
       messageForm.content = ''
       messageForm.avatar = ''
       closeMessageModal()
-      await loadMessages()
+      // 静默刷新获取真实ID
+      await silentRefresh()
     } else {
       ElMessage.error(res.msg || '发表失败')
     }
@@ -1215,12 +1252,13 @@ const submitReply = async () => {
     }
 
     const isRoot = replyTarget.value.isRoot === 1
+    const rootId = isRoot ? replyTarget.value.guestbookId : replyTarget.value.rootId
     const data = {
       nickname: replyForm.nickname.trim(),
       email: replyForm.email.trim(),
       content: replyForm.content.trim(),
       avatar: avatarUrl,
-      rootId: isRoot ? replyTarget.value.guestbookId : replyTarget.value.rootId,
+      rootId: rootId,
       parentId: replyTarget.value.guestbookId
     }
 
@@ -1231,7 +1269,8 @@ const submitReply = async () => {
       messageForm.nickname = replyForm.nickname
       messageForm.email = replyForm.email
       closeReplyModal()
-      await loadMessages()
+      // 静默刷新获取真实ID
+      await silentRefresh()
     } else {
       ElMessage.error(res.msg || '回复失败')
     }
