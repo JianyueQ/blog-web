@@ -66,6 +66,13 @@
           <template #title>友链中心</template>
         </el-menu-item>
 
+        <el-menu-item index="/backstage/guestbook">
+          <el-icon>
+            <ChatDotSquare/>
+          </el-icon>
+          <template #title>留言板管理</template>
+        </el-menu-item>
+
         <el-sub-menu index="system">
           <template #title>
             <el-icon>
@@ -206,6 +213,7 @@ import {useRoute, useRouter} from 'vue-router'
 import {
   ArrowDown,
   ChatDotRound,
+  ChatDotSquare,
   Document,
   Expand,
   Fold,
@@ -262,7 +270,8 @@ const currentRouteName = computed(() => {
     '/backstage/online': '在线用户',
     '/backstage/server': '服务器监控',
     '/backstage/visitor/record': '访客记录',
-    '/backstage/visitor/blacklist': '访客黑名单'
+    '/backstage/visitor/blacklist': '访客黑名单',
+    '/backstage/guestbook': '留言板管理'
   }
   return routeNameMap[route.path] || ''
 })

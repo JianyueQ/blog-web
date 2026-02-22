@@ -644,6 +644,43 @@
       }
     }
 
+    // el-radio-button 暗黑模式适配
+    .el-radio-group {
+      .el-radio-button {
+        .el-radio-button__inner {
+          background-color: #1a1a1a !important;
+          border-color: #333 !important;
+          color: rgba(255, 255, 255, 0.65) !important;
+        }
+
+        &:first-child .el-radio-button__inner {
+          border-left-color: #333 !important;
+        }
+
+        &.is-active .el-radio-button__inner {
+          background-color: var(--backstage-primary) !important;
+          border-color: var(--backstage-primary) !important;
+          color: #fff !important;
+          box-shadow: -1px 0 0 0 var(--backstage-primary) !important;
+        }
+
+        &:hover:not(.is-active) .el-radio-button__inner {
+          color: var(--backstage-primary) !important;
+        }
+      }
+    }
+
+    // el-empty 暗黑模式适配
+    .el-empty {
+      .el-empty__image {
+        filter: invert(1) brightness(0.8);
+      }
+
+      .el-empty__description {
+        color: var(--backstage-text-secondary) !important;
+      }
+    }
+
     .el-form-item__label {
       color: rgba(255, 255, 255, 0.85) !important;
     }

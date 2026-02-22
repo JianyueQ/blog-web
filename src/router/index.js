@@ -30,6 +30,7 @@ import BackstageServer from '@/views/backstage/Monitor/ServerMonitor/index.vue'
 import BackstageOnline from '@/views/backstage/Monitor/OnlineUser/index.vue'
 import BackstageVisitorRecord from '@/views/backstage/Visitor/Record/index.vue'
 import BackstageVisitorBlacklist from '@/views/backstage/Visitor/Blacklist/index.vue'
+import BackstageGuestbook from '@/views/backstage/Guestbook/index.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -199,6 +200,12 @@ const router = createRouter({
                     name: 'backstageVisitorBlacklist',
                     component: BackstageVisitorBlacklist,
                     meta: { title: '访客黑名单' }
+                },
+                {
+                    path: 'guestbook',
+                    name: 'backstageGuestbook',
+                    component: BackstageGuestbook,
+                    meta: { title: '留言板管理' }
                 }
             ]
         },
