@@ -140,6 +140,7 @@
 
         <div class="header-right">
           <div class="action-icons">
+            <MessageNotification />
             <div class="action-item" @click="toggleTheme" :title="currentTheme === 'dark' ? '切换浅色' : '切换深色'">
               <el-icon v-if="currentTheme === 'dark'">
                 <Sunny/>
@@ -229,6 +230,7 @@ import {
   SwitchButton,
   User
 } from '@element-plus/icons-vue'
+import MessageNotification from '@/components/MessageNotification.vue'
 import {removeToken} from '@/utils/auth'
 import {ElMessageBox} from "element-plus";
 import {logout} from "@/api/backstage/login.js";
@@ -271,7 +273,8 @@ const currentRouteName = computed(() => {
     '/backstage/server': '服务器监控',
     '/backstage/visitor/record': '访客记录',
     '/backstage/visitor/blacklist': '访客黑名单',
-    '/backstage/guestbook': '留言板管理'
+    '/backstage/guestbook': '留言板管理',
+    '/backstage/message': '消息通知管理'
   }
   return routeNameMap[route.path] || ''
 })

@@ -5,7 +5,9 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     user: null,
     permissions: [],
-    roles: []
+    roles: [],
+    // 消息刷新触发器 - 用于跨组件同步消息状态
+    messageRefreshTrigger: 0
   }),
   actions: {
     // 获取用户信息
@@ -26,6 +28,10 @@ export const useUserStore = defineStore('user', {
       this.user = null
       this.permissions = []
       this.roles = []
+    },
+    // 触发消息刷新 - 供消息管理页面调用
+    triggerMessageRefresh() {
+      this.messageRefreshTrigger++
     }
   },
   getters: {
