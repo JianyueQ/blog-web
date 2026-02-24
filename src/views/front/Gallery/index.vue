@@ -20,11 +20,15 @@
         </div>
       </div>
     </div>
+
+    <!-- 回到顶部按钮 -->
+    <BackToTop />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import BackToTop from '@/components/BackToTop.vue'
 
 const images = ref([])
 

@@ -2967,11 +2967,11 @@ $primary-hover: #3b82f6;
   }
 }
 
-// 回到顶部按钮
+// 回到顶部按钮 - 右下角往上移动
 .back-to-top {
   position: fixed;
   right: 2rem;
-  bottom: 2rem;
+  bottom: 8rem;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -3027,7 +3027,7 @@ $primary-hover: #3b82f6;
 @media (max-width: 768px) {
   .back-to-top {
     right: 1rem;
-    bottom: 9.5rem;  // 再往上移动约 70px（从 5rem 改为 9.5rem）
+    bottom: 8rem;
     width: 44px;
     height: 44px;
 

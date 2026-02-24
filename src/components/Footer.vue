@@ -5,7 +5,10 @@
         <p class="copyright">
           © {{ currentYear }} <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span>
         </p>
-        <p class="site-stats" v-if="siteConfig.siteStartDate">
+        <p class="site-stats" v-if="systemUptime">
+          本站苟活了 {{ systemUptime }}
+        </p>
+        <p class="site-stats" v-else-if="siteConfig.siteStartDate">
           {{ siteDateStatistics(new Date(siteConfig.siteStartDate)) }}
         </p>
       </div>
@@ -34,46 +37,138 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue'
+import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useRoute} from 'vue-router'
 import {siteDateStatistics} from '@/utils/getTime'
 import {getBlogOwnerSocialInfo} from '@/api/front/links'
+import {getSystemUptimeFormatted} from '@/api/front/system'
 
 const route = useRoute()
 const currentYear = computed(() => new Date().getFullYear())
 
-// 社交链接和网站配置
+//社交链接和网站配置
 const socialLinks = ref([])
 const siteConfig = ref({
   brandName: 'jianyue.cloud',
   siteStartDate: '2024-01-01'
 })
 
-// 悬停索引
+//系统运行时间
+const systemUptime = ref('')
+
+//定时器引用
+const uptimeTimer = ref(null)
+const localTimer = ref(null)
+
+//本地运行时间计数器
+const localUptimeSeconds = ref(0)
+
+//悬停索引
 const hoveredIndex = ref(null)
 
 // 是否收起（非首页收起）
 const isCollapsed = computed(() => route.path !== '/home')
 
-// 加载数据
+//将格式化的时间字符串转换为总秒数
+const parseUptimeToSeconds = (timeString) => {
+  if (!timeString) return 0
+  
+  let totalSeconds = 0
+  const timeParts = timeString.split('')
+  
+  //匹配天、小时、分钟、秒
+  const daysMatch = timeString.match(/(\d+)天/)
+  const hoursMatch = timeString.match(/(\d+)小时/)
+  const minutesMatch = timeString.match(/(\d+)分钟/)
+  const secondsMatch = timeString.match(/(\d+)秒/)
+  
+  if (daysMatch) totalSeconds += parseInt(daysMatch[1]) * 24 * 60 * 60
+  if (hoursMatch) totalSeconds += parseInt(hoursMatch[1]) * 60 * 60
+  if (minutesMatch) totalSeconds += parseInt(minutesMatch[1]) * 60
+  if (secondsMatch) totalSeconds += parseInt(secondsMatch[1])
+  
+  return totalSeconds
+}
+
+//将秒数格式化为中文时间字符串
+const formatSecondsToChinese = (seconds) => {
+  if (seconds <= 0) return '0秒'
+  
+  const days = Math.floor(seconds / (24 * 60 * 60))
+  const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60))
+  const minutes = Math.floor((seconds % (60 * 60)) / 60)
+  const secs = seconds % 60
+  
+  let result = ''
+  if (days > 0) result += `${days}天`
+  if (hours > 0) result += `${hours}小时`
+  if (minutes > 0) result += `${minutes}分钟`
+  if (secs > 0 || result === '') result += `${secs}秒`
+  
+  return result
+}
+
+//加载数据
+const loadUptimeData = async () => {
+  try {
+    const uptimeRes = await getSystemUptimeFormatted()
+    if (uptimeRes.code === 200) {
+      //获取服务器返回的运行时间（秒数）
+      const serverSeconds = parseUptimeToSeconds(uptimeRes.data)
+      localUptimeSeconds.value = serverSeconds
+      systemUptime.value = uptimeRes.data
+      
+      //启动本地计时器，每秒更新一次显示
+      if (localTimer.value) {
+        clearInterval(localTimer.value)
+      }
+      localTimer.value = setInterval(() => {
+        localUptimeSeconds.value++
+        systemUptime.value = formatSecondsToChinese(localUptimeSeconds.value)
+      }, 1000)
+    }
+  } catch (error) {
+    console.error('获取系统运行时间失败:', error)
+  }
+}
+
 onMounted(async () => {
   try {
-    const res = await getBlogOwnerSocialInfo()
-    if (res.code === 200) {
-      // 容错处理：如果 status 或 sortOrder 为 null，则给定默认值
-      // 这里的逻辑是：只要 url 存在，就认为是有效的社交链接
-      socialLinks.value = (res.data || [])
-        .filter(item => item.url) // 只要有跳转链接就显示
+    //并行获取社交链接和系统运行时间
+    const [socialRes] = await Promise.all([
+      getBlogOwnerSocialInfo(),
+      loadUptimeData()
+    ])
+    
+    //处理社交链接
+    if (socialRes.code === 200) {
+      //容错处理：如果 status 或 sortOrder 为 null，则给定默认值
+      //这里的逻辑是：只要 url存在，就认为是有效的社交链接
+      socialLinks.value = (socialRes.data || [])
+        .filter(item => item.url) //只要有跳转链接就显示
         .map(item => ({
           ...item,
           status: item.status === null ? '1' : String(item.status),
           sortOrder: item.sortOrder === null ? 0 : Number(item.sortOrder)
         }))
-        .filter(item => item.status === '1') // 过滤掉明确禁用的
+        .filter(item => item.status === '1') //过滤掉明确禁用的
         .sort((a, b) => a.sortOrder - b.sortOrder)
     }
+    
+    //启动定时器，每分钟更新一次系统运行时间
+    uptimeTimer.value = setInterval(loadUptimeData, 60000)
   } catch (error) {
-    console.error('获取社交链接失败:', error)
+    console.error('获取数据失败:', error)
+  }
+})
+
+//组件卸载时清理所有定时器
+onUnmounted(() => {
+  if (uptimeTimer.value) {
+    clearInterval(uptimeTimer.value)
+  }
+  if (localTimer.value) {
+    clearInterval(localTimer.value)
   }
 })
 

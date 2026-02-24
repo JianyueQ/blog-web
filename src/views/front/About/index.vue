@@ -35,6 +35,9 @@
     <div v-else class="error-container">
       <p>暂无内容</p>
     </div>
+
+    <!-- 回到顶部按钮 -->
+    <BackToTop />
   </div>
 </template>
 
@@ -42,6 +45,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { getBlogOwnerAboutMe } from '@/api/front/about'
 import { getBlogOwnerSocialInfo } from '@/api/front/links'
+import BackToTop from '@/components/BackToTop.vue'
 import MarkdownIt from 'markdown-it'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css'

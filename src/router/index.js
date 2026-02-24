@@ -24,6 +24,7 @@ import BackstageLinks from '@/views/backstage/Links/index.vue'
 import BackstageUser from '@/views/backstage/User/index.vue'
 import BackstageProfile from '@/views/backstage/User/Profile/index.vue'
 import BackstageConfig from '@/views/backstage/Config/index.vue'
+import BackstageAnnouncement from '@/views/backstage/Config/Announcement.vue'
 import BackstageOperlog from '@/views/backstage/Monitor/OperLog/index.vue'
 import BackstageAccesslog from '@/views/backstage/Monitor/AccessLog/index.vue'
 import BackstageServer from '@/views/backstage/Monitor/ServerMonitor/index.vue'
@@ -157,6 +158,12 @@ const router = createRouter({
                     name: 'backstageProfile',
                     component: BackstageProfile,
                     meta: { title: '个人中心' }
+                },
+                {
+                    path: 'announcement',
+                    name: 'backstageAnnouncement',
+                    component: BackstageAnnouncement,
+                    meta: { title: '公告管理' }
                 },
                 {
                     path: 'config',

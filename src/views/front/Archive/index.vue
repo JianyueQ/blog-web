@@ -36,11 +36,15 @@
         </div>
       </div>
     </div>
+
+    <!-- 回到顶部按钮 -->
+    <BackToTop />
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import BackToTop from '@/components/BackToTop.vue'
 
 // 示例数据，实际项目中应该从API获取
 const posts = ref([])

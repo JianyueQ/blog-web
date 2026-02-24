@@ -73,6 +73,13 @@
           <template #title>留言板管理</template>
         </el-menu-item>
 
+        <el-menu-item index="/backstage/announcement">
+          <el-icon>
+            <Bell/>
+          </el-icon>
+          <template #title>公告管理</template>
+        </el-menu-item>
+
         <el-sub-menu index="system">
           <template #title>
             <el-icon>
@@ -213,6 +220,7 @@ import {computed, onMounted, onUnmounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {
   ArrowDown,
+  Bell,
   ChatDotRound,
   ChatDotSquare,
   Document,
@@ -274,7 +282,8 @@ const currentRouteName = computed(() => {
     '/backstage/visitor/record': '访客记录',
     '/backstage/visitor/blacklist': '访客黑名单',
     '/backstage/guestbook': '留言板管理',
-    '/backstage/message': '消息通知管理'
+    '/backstage/message': '消息通知管理',
+    '/backstage/announcement': '公告管理'
   }
   return routeNameMap[route.path] || ''
 })

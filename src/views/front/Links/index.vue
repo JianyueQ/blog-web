@@ -238,6 +238,9 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- 回到顶部按钮 -->
+    <BackToTop />
   </div>
 </template>
 
@@ -245,6 +248,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getDisplayedFriendLinks, requestToAddFriendLink } from '@/api/front/friendLinks.js'
 import { uploadImage } from '@/api/front/file.js'
+import BackToTop from '@/components/BackToTop.vue'
 import { ElMessage } from 'element-plus'
 
 // 默认Logo

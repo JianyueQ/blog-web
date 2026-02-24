@@ -8,12 +8,18 @@
 
       <!-- 右侧内容区域 -->
       <div class="right-section">
-        <!-- 时光与天气卡片 -->
+        <!-- 公告计划板 -->
+        <AnnouncementBoard />
+
+        <!-- 信息卡片区域：时钟 + 统计 -->
         <div class="info-cards">
           <!-- 时钟卡片 -->
           <div class="info-card clock-card">
             <div class="card-icon">
-              <span class="icon">🕒</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
             </div>
             <div class="card-content">
               <div class="time-display">{{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}</div>
@@ -21,14 +27,30 @@
                 {{ currentTime.weekday }}
               </div>
             </div>
-            <!-- todo: 启用时钟详细信息弹窗 -->
+          </div>
+
+          <!-- 文章统计卡片 -->
+          <div class="info-card stats-card">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+            <div class="card-content">
+              <div class="stats-value">{{ articleCount }}</div>
+              <div class="stats-label">文章总数</div>
+            </div>
           </div>
         </div>
 
         <!-- 时光胶囊 -->
         <TimeCapsule/>
 
-        <!-- 欢迎语/其他内容 -->
+        <!-- 欢迎语/快速入口 -->
         <div class="welcome-section">
           <h2 class="welcome-title">欢迎来到我的技术角</h2>
           <p class="welcome-text">
@@ -37,15 +59,33 @@
           </p>
           <div class="quick-links">
             <button class="link-btn" @click="$router.push('/archive')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
               探索文章
             </button>
             <button class="link-btn secondary" @click="$router.push('/about')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
               关于我
+            </button>
+            <button class="link-btn secondary" @click="$router.push('/message')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              留言板
             </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 回到顶部按钮 -->
+    <BackToTop />
   </div>
 </template>
 
@@ -53,7 +93,10 @@
 import {onMounted, onUnmounted, ref} from 'vue'
 import ProfileCard from './ProfileCard.vue'
 import TimeCapsule from './TimeCapsule.vue'
+import AnnouncementBoard from './AnnouncementBoard.vue'
+import BackToTop from '@/components/BackToTop.vue'
 import {getCurrentTime} from '@/utils/getTime.js'
+import {listBlog} from '@/api/front/blog.js'
 
 
 const currentTime = ref({
@@ -66,6 +109,7 @@ const currentTime = ref({
   weekday: ''
 })
 
+const articleCount = ref(0)
 
 let timeInterval = null
 
@@ -73,10 +117,16 @@ const updateTime = () => {
   currentTime.value = getCurrentTime()
 }
 
+// 获取文章统计
+const fetchArticleStats = async () => {
+
+}
+
 
 onMounted(() => {
   updateTime()
   timeInterval = setInterval(updateTime, 1000)
+  fetchArticleStats()
 })
 
 onUnmounted(() => {
@@ -116,58 +166,81 @@ onUnmounted(() => {
       .info-cards {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
+        gap: 1.5rem;
 
         .info-card {
           display: flex;
           align-items: center;
-          gap: 1.5rem;
-          padding: 2rem;
+          gap: 1.25rem;
+          padding: 1.5rem;
           background: rgba(24, 24, 27, 0.4);
           backdrop-filter: blur(24px) saturate(180%);
-          border-radius: 28px;
+          border-radius: 24px;
           border: 1px solid rgba(255, 255, 255, 0.08);
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 
           &:hover {
-            transform: translateY(-5px);
+            transform: translateY(-4px);
             background: rgba(24, 24, 27, 0.6);
             border-color: rgba(37, 99, 235, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
           }
 
           &.clock-card {
-            animation-delay: 0.2s;
-          }
-
-          &.weather-card {
             animation-delay: 0.3s;
           }
 
+          &.stats-card {
+            animation-delay: 0.4s;
+          }
+
           .card-icon {
-            font-size: 2.5rem;
             background: rgba(255, 255, 255, 0.03);
-            width: 70px;
-            height: 70px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 20px;
+            border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+
+            svg {
+              width: 28px;
+              height: 28px;
+              color: #60a5fa;
+            }
           }
 
           .card-content {
-            .time-display, .weather-temp {
+            min-width: 0;
+
+            .time-display {
               font-family: 'Archivo', sans-serif;
-              font-size: 1.8rem;
+              font-size: 1.6rem;
+              font-weight: 700;
+              color: #fff;
+              margin-bottom: 0.2rem;
+              letter-spacing: 0.02em;
+            }
+
+            .date-display {
+              font-size: 0.8rem;
+              color: #71717a;
+              letter-spacing: 0.02em;
+            }
+
+            .stats-value {
+              font-family: 'Archivo', sans-serif;
+              font-size: 1.6rem;
               font-weight: 700;
               color: #fff;
               margin-bottom: 0.2rem;
             }
 
-            .date-display, .weather-desc {
-              font-size: 0.85rem;
+            .stats-label {
+              font-size: 0.8rem;
               color: #71717a;
               letter-spacing: 0.02em;
             }
@@ -176,44 +249,53 @@ onUnmounted(() => {
       }
 
       .welcome-section {
-        padding: 3rem;
+        padding: 2.5rem;
         background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(24, 24, 27, 0.4) 100%);
         backdrop-filter: blur(24px);
-        border-radius: 32px;
+        border-radius: 28px;
         border: 1px solid rgba(255, 255, 255, 0.08);
         animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
         animation-delay: 0.5s;
 
         .welcome-title {
           font-family: 'Archivo', sans-serif;
-          font-size: 2.2rem;
+          font-size: 1.9rem;
           font-weight: 800;
           color: #fff;
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
           letter-spacing: -0.02em;
         }
 
         .welcome-text {
-          font-size: 1.1rem;
+          font-size: 1rem;
           color: #a1a1aa;
           line-height: 1.7;
-          margin-bottom: 2.5rem;
+          margin-bottom: 2rem;
           max-width: 700px;
         }
 
         .quick-links {
           display: flex;
-          gap: 1.2rem;
+          flex-wrap: wrap;
+          gap: 1rem;
 
           .link-btn {
-            padding: 0.9rem 2rem;
-            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
             border: none;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Archivo', sans-serif;
+
+            svg {
+              width: 18px;
+              height: 18px;
+            }
 
             &:not(.secondary) {
               background: #2563eb;
@@ -259,19 +341,52 @@ onUnmounted(() => {
   }
 
   @media (max-width: 720px) {
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
 
     .home-grid .right-section {
+      gap: 1.5rem;
+
       .info-cards {
         grid-template-columns: 1fr;
-        gap: 1.2rem;
+        gap: 1rem;
+
+        .info-card {
+          padding: 1.25rem;
+
+          .card-icon {
+            width: 48px;
+            height: 48px;
+
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
+
+          .card-content {
+            .time-display, .stats-value {
+              font-size: 1.4rem;
+            }
+          }
+        }
       }
 
       .welcome-section {
-        padding: 2rem;
+        padding: 1.5rem;
 
         .welcome-title {
-          font-size: 1.8rem;
+          font-size: 1.5rem;
+        }
+
+        .welcome-text {
+          font-size: 0.9rem;
+        }
+
+        .quick-links {
+          .link-btn {
+            padding: 0.65rem 1.25rem;
+            font-size: 0.9rem;
+          }
         }
       }
     }
