@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-let apiPrefix = '/system/announcement'
+let apiPrefix = '/blog/announcement'
 
 /**
  * 获取公告计划（前台接口）

@@ -57,7 +57,6 @@ const siteConfig = ref({
 const systemUptime = ref('')
 
 //定时器引用
-const uptimeTimer = ref(null)
 const localTimer = ref(null)
 
 //本地运行时间计数器
@@ -155,8 +154,6 @@ onMounted(async () => {
         .sort((a, b) => a.sortOrder - b.sortOrder)
     }
     
-    //启动定时器，每分钟更新一次系统运行时间
-    uptimeTimer.value = setInterval(loadUptimeData, 60000)
   } catch (error) {
     console.error('获取数据失败:', error)
   }
@@ -164,9 +161,6 @@ onMounted(async () => {
 
 //组件卸载时清理所有定时器
 onUnmounted(() => {
-  if (uptimeTimer.value) {
-    clearInterval(uptimeTimer.value)
-  }
   if (localTimer.value) {
     clearInterval(localTimer.value)
   }
