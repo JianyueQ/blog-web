@@ -23,7 +23,10 @@
         :rules="rules"
         label-position="top"
       >
-        <el-form-item label="当前旧密码" prop="oldPassword">
+        <el-form-item
+          label="当前旧密码"
+          prop="oldPassword"
+        >
           <el-input
             v-model="form.oldPassword"
             type="password"
@@ -32,7 +35,10 @@
           />
         </el-form-item>
 
-        <el-form-item label="设置新密码" prop="newPassword">
+        <el-form-item
+          label="设置新密码"
+          prop="newPassword"
+        >
           <el-input
             v-model="form.newPassword"
             type="password"
@@ -41,7 +47,10 @@
           />
         </el-form-item>
 
-        <el-form-item label="确认新密码" prop="confirmPassword">
+        <el-form-item
+          label="确认新密码"
+          prop="confirmPassword"
+        >
           <el-input
             v-model="form.confirmPassword"
             type="password"
@@ -54,8 +63,19 @@
 
     <template #footer>
       <div class="dialog-footer button-row">
-        <el-button round @click="visible = false">取消</el-button>
-        <el-button round type="primary" @click="handleSubmit">确认修改</el-button>
+        <el-button
+          round
+          @click="visible = false"
+        >
+          取消
+        </el-button>
+        <el-button
+          round
+          type="primary"
+          @click="handleSubmit"
+        >
+          确认修改
+        </el-button>
       </div>
     </template>
   </el-dialog>

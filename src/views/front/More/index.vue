@@ -1,20 +1,30 @@
 <template>
   <div class="more-view">
     <div class="more-header">
-      <h1 class="page-title">其他</h1>
-      <p class="page-subtitle">实用的小工具</p>
+      <h1 class="page-title">
+        其他
+      </h1>
+      <p class="page-subtitle">
+        实用的小工具
+      </p>
     </div>
 
     <div class="tools-grid">
       <div
-          v-for="tool in tools"
-          :key="tool.id"
-          class="tool-card"
-          @click="useTool(tool)"
+        v-for="tool in tools"
+        :key="tool.id"
+        class="tool-card"
+        @click="useTool(tool)"
       >
-        <div class="tool-icon">{{ tool.icon }}</div>
-        <h3 class="tool-name">{{ tool.name }}</h3>
-        <p class="tool-desc">{{ tool.description }}</p>
+        <div class="tool-icon">
+          {{ tool.icon }}
+        </div>
+        <h3 class="tool-name">
+          {{ tool.name }}
+        </h3>
+        <p class="tool-desc">
+          {{ tool.description }}
+        </p>
       </div>
     </div>
 

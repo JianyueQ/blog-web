@@ -4,31 +4,74 @@
     <div class="mobile-search-card">
       <div class="time-filter">
         <span class="filter-label">时间筛选</span>
-        <el-select v-model="selectedTimeRange" placeholder="选择时间范围" size="small" @change="handleTimeRangeChange">
-          <el-option label="全部" value="" />
-          <el-option label="今天" value="today" />
-          <el-option label="昨天" value="yesterday" />
-          <el-option label="近三天" value="last3days" />
-          <el-option label="近七天" value="last7days" />
-          <el-option label="近三十天" value="last30days" />
+        <el-select
+          v-model="selectedTimeRange"
+          placeholder="选择时间范围"
+          size="small"
+          @change="handleTimeRangeChange"
+        >
+          <el-option
+            label="全部"
+            value=""
+          />
+          <el-option
+            label="今天"
+            value="today"
+          />
+          <el-option
+            label="昨天"
+            value="yesterday"
+          />
+          <el-option
+            label="近三天"
+            value="last3days"
+          />
+          <el-option
+            label="近七天"
+            value="last7days"
+          />
+          <el-option
+            label="近三十天"
+            value="last30days"
+          />
         </el-select>
       </div>
       <div class="search-actions">
-        <el-button type="primary" size="small" @click="handleQuery" :icon="Search">搜索</el-button>
-        <el-button size="small" @click="handleReset" :icon="Refresh">重置</el-button>
+        <el-button
+          type="primary"
+          size="small"
+          :icon="Search"
+          @click="handleQuery"
+        >
+          搜索
+        </el-button>
+        <el-button
+          size="small"
+          :icon="Refresh"
+          @click="handleReset"
+        >
+          重置
+        </el-button>
       </div>
     </div>
 
     <!-- 留言列表 -->
     <div class="mobile-message-list">
-      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+      <van-pull-refresh
+        v-model="refreshing"
+        @refresh="onRefresh"
+      >
         <van-list
           v-model:loading="loading"
           :finished="finished"
           finished-text="没有更多了"
           @load="onLoad"
         >
-          <div v-for="item in tableData" :key="item.guestbookId" class="mobile-message-item">
+          <div
+            v-for="item in tableData"
+            :key="item.guestbookId"
+            class="mobile-message-item"
+          >
             <!-- 根留言 -->
             <div class="mobile-root-message">
               <div class="message-header">
@@ -39,18 +82,41 @@
                   :src="item.avatar"
                 >
                   <template #error>
-                    <div class="default-avatar">{{ item.nickname ? item.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                    <div class="default-avatar">
+                      {{ item.nickname ? item.nickname.charAt(0).toUpperCase() : '?' }}
+                    </div>
                   </template>
                 </van-image>
                 <div class="user-meta">
                   <div class="nickname-row">
                     <span class="nickname">{{ item.nickname }}</span>
-                    <van-tag v-if="item.status === 0" type="danger" size="small">隐藏</van-tag>
-                    <van-tag v-else-if="item.status === 2" type="warning" size="small">审核中</van-tag>
-                    <van-tag v-else type="success" size="small">显示</van-tag>
+                    <van-tag
+                      v-if="item.status === 0"
+                      type="danger"
+                      size="small"
+                    >
+                      隐藏
+                    </van-tag>
+                    <van-tag
+                      v-else-if="item.status === 2"
+                      type="warning"
+                      size="small"
+                    >
+                      审核中
+                    </van-tag>
+                    <van-tag
+                      v-else
+                      type="success"
+                      size="small"
+                    >
+                      显示
+                    </van-tag>
                   </div>
                   <div class="meta-info">
-                    <span v-if="item.location" class="location">{{ item.location }}</span>
+                    <span
+                      v-if="item.location"
+                      class="location"
+                    >{{ item.location }}</span>
                     <span class="time">{{ item.messageTime }}</span>
                   </div>
                 </div>
@@ -59,26 +125,47 @@
                 {{ item.content }}
               </div>
               <div class="message-actions">
-                <van-button size="small" type="primary" plain @click="handleReply(item)" icon="chat-o">
+                <van-button
+                  size="small"
+                  type="primary"
+                  plain
+                  icon="chat-o"
+                  @click="handleReply(item)"
+                >
                   回复
                 </van-button>
-                <van-button size="small" type="warning" plain @click="showStatusAction(item)" icon="setting-o">
+                <van-button
+                  size="small"
+                  type="warning"
+                  plain
+                  icon="setting-o"
+                  @click="showStatusAction(item)"
+                >
                   状态
                 </van-button>
-                <van-button size="small" type="danger" plain @click="handleDelete(item)" icon="delete-o">
+                <van-button
+                  size="small"
+                  type="danger"
+                  plain
+                  icon="delete-o"
+                  @click="handleDelete(item)"
+                >
                   删除
                 </van-button>
               </div>
               
               <!-- 展开回复按钮 -->
-              <div v-if="item.replyList && item.replyList.length > 0" class="reply-toggle">
+              <div
+                v-if="item.replyList && item.replyList.length > 0"
+                class="reply-toggle"
+              >
                 <van-button 
                   size="small" 
                   type="primary" 
                   plain 
                   hairline
-                  @click="toggleReplies(item.guestbookId)"
                   :icon="expandedRows.includes(item.guestbookId) ? 'arrow-up' : 'arrow-down'"
+                  @click="toggleReplies(item.guestbookId)"
                 >
                   {{ expandedRows.includes(item.guestbookId) ? '收起回复' : `展开 ${item.replyList.length} 条回复` }}
                 </van-button>
@@ -86,8 +173,15 @@
             </div>
             
             <!-- 回复列表 -->
-            <div v-if="item.replyList && item.replyList.length > 0 && expandedRows.includes(item.guestbookId)" class="mobile-reply-list">
-              <div v-for="reply in item.replyList" :key="reply.guestbookId" class="mobile-reply-item">
+            <div
+              v-if="item.replyList && item.replyList.length > 0 && expandedRows.includes(item.guestbookId)"
+              class="mobile-reply-list"
+            >
+              <div
+                v-for="reply in item.replyList"
+                :key="reply.guestbookId"
+                class="mobile-reply-item"
+              >
                 <van-image
                   round
                   width="32"
@@ -95,27 +189,70 @@
                   :src="reply.avatar"
                 >
                   <template #error>
-                    <div class="default-avatar small">{{ reply.nickname ? reply.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                    <div class="default-avatar small">
+                      {{ reply.nickname ? reply.nickname.charAt(0).toUpperCase() : '?' }}
+                    </div>
                   </template>
                 </van-image>
                 <div class="reply-content-wrapper">
                   <div class="reply-header">
                     <span class="reply-nickname">{{ reply.nickname }}</span>
-                    <van-tag v-if="reply.status === 0" type="danger" size="small">隐藏</van-tag>
-                    <van-tag v-else-if="reply.status === 1" type="success" size="small">显示</van-tag>
-                    <span v-if="reply.location" class="reply-location">{{ reply.location }}</span>
+                    <van-tag
+                      v-if="reply.status === 0"
+                      type="danger"
+                      size="small"
+                    >
+                      隐藏
+                    </van-tag>
+                    <van-tag
+                      v-else-if="reply.status === 1"
+                      type="success"
+                      size="small"
+                    >
+                      显示
+                    </van-tag>
+                    <span
+                      v-if="reply.location"
+                      class="reply-location"
+                    >{{ reply.location }}</span>
                     <span class="reply-time">{{ reply.messageTime }}</span>
                   </div>
                   <!-- 显示回复对象 -->
-                  <div v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId" class="reply-to">
+                  <div
+                    v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId"
+                    class="reply-to"
+                  >
                     <span class="reply-to-text">回复</span>
                     <span class="reply-to-nickname">{{ getReplyToNickname(item.replyList, reply.parentId) }}</span>
                   </div>
-                  <div class="reply-content">{{ reply.content }}</div>
+                  <div class="reply-content">
+                    {{ reply.content }}
+                  </div>
                   <div class="reply-actions">
-                    <van-button size="mini" type="warning" plain @click="showStatusAction(reply)">状态</van-button>
-                    <van-button size="mini" type="primary" plain @click="handleReply(reply)">回复</van-button>
-                    <van-button size="mini" type="danger" plain @click="handleDelete(reply)">删除</van-button>
+                    <van-button
+                      size="mini"
+                      type="warning"
+                      plain
+                      @click="showStatusAction(reply)"
+                    >
+                      状态
+                    </van-button>
+                    <van-button
+                      size="mini"
+                      type="primary"
+                      plain
+                      @click="handleReply(reply)"
+                    >
+                      回复
+                    </van-button>
+                    <van-button
+                      size="mini"
+                      type="danger"
+                      plain
+                      @click="handleDelete(reply)"
+                    >
+                      删除
+                    </van-button>
                   </div>
                 </div>
               </div>
@@ -126,23 +263,40 @@
     </div>
 
     <!-- 回复弹窗 -->
-    <van-popup v-model:show="replyPopupVisible" position="bottom" round :style="{ height: '50%' }">
+    <van-popup
+      v-model:show="replyPopupVisible"
+      position="bottom"
+      round
+      :style="{ height: '50%' }"
+    >
       <div class="reply-popup">
         <div class="popup-header">
           <span class="title">回复留言</span>
-          <van-icon name="cross" @click="replyPopupVisible = false" />
+          <van-icon
+            name="cross"
+            @click="replyPopupVisible = false"
+          />
         </div>
         <div class="popup-content">
           <div class="original-message">
             <div class="original-header">
-              <van-image round width="32" height="32" :src="currentReplyItem?.avatar">
+              <van-image
+                round
+                width="32"
+                height="32"
+                :src="currentReplyItem?.avatar"
+              >
                 <template #error>
-                  <div class="default-avatar small">{{ currentReplyItem?.nickname ? currentReplyItem.nickname.charAt(0).toUpperCase() : '?' }}</div>
+                  <div class="default-avatar small">
+                    {{ currentReplyItem?.nickname ? currentReplyItem.nickname.charAt(0).toUpperCase() : '?' }}
+                  </div>
                 </template>
               </van-image>
               <span class="original-nickname">{{ currentReplyItem?.nickname }}</span>
             </div>
-            <div class="original-text">{{ currentReplyItem?.content }}</div>
+            <div class="original-text">
+              {{ currentReplyItem?.content }}
+            </div>
           </div>
           <van-field
             v-model="replyForm.content"
@@ -154,8 +308,21 @@
           />
         </div>
         <div class="popup-footer">
-          <van-button type="default" block @click="replyPopupVisible = false">取消</van-button>
-          <van-button type="primary" block @click="submitReply" :loading="replyLoading">确认回复</van-button>
+          <van-button
+            type="default"
+            block
+            @click="replyPopupVisible = false"
+          >
+            取消
+          </van-button>
+          <van-button
+            type="primary"
+            block
+            :loading="replyLoading"
+            @click="submitReply"
+          >
+            确认回复
+          </van-button>
         </div>
       </div>
     </van-popup>

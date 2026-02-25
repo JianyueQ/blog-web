@@ -7,69 +7,133 @@
         <p>这是您今天的博客概览。</p>
       </div>
       <div class="current-time">
-        <el-icon><Calendar/></el-icon>
+        <el-icon><Calendar /></el-icon>
         <span>{{ currentTime }}</span>
       </div>
     </div>
 
     <!-- 统计核心指标 -->
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :lg="6" v-for="(item, index) in statsCards" :key="index">
-        <div class="pro-card stats-card slide-in" :style="{ animationDelay: (index * 0.1) + 's' }">
+      <el-col
+        v-for="(item, index) in statsCards"
+        :key="index"
+        :xs="24"
+        :sm="12"
+        :lg="6"
+      >
+        <div
+          class="pro-card stats-card slide-in"
+          :style="{ animationDelay: (index * 0.1) + 's' }"
+        >
           <div class="card-body">
-            <div class="stats-icon" :style="{ backgroundColor: item.color + '15', color: item.color }">
+            <div
+              class="stats-icon"
+              :style="{ backgroundColor: item.color + '15', color: item.color }"
+            >
               <el-icon><component :is="item.icon" /></el-icon>
             </div>
             <div class="stats-info">
-              <div class="label">{{ item.label }}</div>
-              <div class="value">{{ item.value }}</div>
-              <div class="trend" :class="item.trend > 0 ? 'up' : 'down'">
-                <el-icon><CaretTop v-if="item.trend > 0"/><CaretBottom v-else/></el-icon>
+              <div class="label">
+                {{ item.label }}
+              </div>
+              <div class="value">
+                {{ item.value }}
+              </div>
+              <div
+                class="trend"
+                :class="item.trend > 0 ? 'up' : 'down'"
+              >
+                <el-icon><CaretTop v-if="item.trend > 0" /><CaretBottom v-else /></el-icon>
                 <span>{{ Math.abs(item.trend) }}%</span>
                 <span class="trend-label">自上周</span>
               </div>
             </div>
           </div>
           <div class="mini-chart">
-             <!-- 简单的 CSS 渐变背景作为迷你图占位 -->
-             <div class="chart-line" :style="{ background: 'linear-gradient(90deg, ' + item.color + '00 0%, ' + item.color + '44 100%)' }"></div>
+            <!-- 简单的 CSS 渐变背景作为迷你图占位 -->
+            <div
+              class="chart-line"
+              :style="{ background: 'linear-gradient(90deg, ' + item.color + '00 0%, ' + item.color + '44 100%)' }"
+            />
           </div>
         </div>
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" class="main-content-row">
+    <el-row
+      :gutter="20"
+      class="main-content-row"
+    >
       <!-- 最近动态 -->
-      <el-col :xs="24" :lg="16">
+      <el-col
+        :xs="24"
+        :lg="16"
+      >
         <div class="pro-card content-card slide-in delay-300">
           <div class="card-header">
             <div class="title-area">
               <span class="title">内容中心动态</span>
               <span class="subtitle">监控您的文章发布状态</span>
             </div>
-            <el-button link type="primary">查看全部</el-button>
+            <el-button
+              link
+              type="primary"
+            >
+              查看全部
+            </el-button>
           </div>
           <div class="card-body">
-            <el-table :data="recentArticles" style="width: 100%" class="pro-table">
-              <el-table-column label="文章标题" min-width="250">
+            <el-table
+              :data="recentArticles"
+              style="width: 100%"
+              class="pro-table"
+            >
+              <el-table-column
+                label="文章标题"
+                min-width="250"
+              >
                 <template #default="scope">
                   <div class="article-title-cell">
-                    <div class="article-icon"><Document /></div>
+                    <div class="article-icon">
+                      <Document />
+                    </div>
                     <span>{{ scope.row.title }}</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="category" label="分类" width="120">
+              <el-table-column
+                prop="category"
+                label="分类"
+                width="120"
+              >
                 <template #default="scope">
-                  <el-tag :type="getTagType(scope.row.category)" size="small" effect="light">
+                  <el-tag
+                    :type="getTagType(scope.row.category)"
+                    size="small"
+                    effect="light"
+                  >
                     {{ scope.row.category }}
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="date" label="发布时间" width="180" />
-              <el-table-column label="操作" width="100" fixed="right">
+              <el-table-column
+                prop="date"
+                label="发布时间"
+                width="180"
+              />
+              <el-table-column
+                label="操作"
+                width="100"
+                fixed="right"
+              >
                 <template #default>
-                  <el-button link type="primary" size="small">编辑</el-button>
+                  <el-button
+                    link
+                    type="primary"
+                    size="small"
+                  >
+                    编辑
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -78,16 +142,26 @@
       </el-col>
 
       <!-- 快捷指令 -->
-      <el-col :xs="24" :lg="8">
+      <el-col
+        :xs="24"
+        :lg="8"
+      >
         <div class="pro-card quick-card slide-in delay-400">
           <div class="card-header">
             <span class="title">快捷创作指令</span>
           </div>
           <div class="card-body">
             <div class="quick-grid">
-              <div v-for="(act, idx) in quickActions" :key="idx"
-                   class="quick-item" @click="handleAction(act.label)">
-                <div class="icon-box" :style="{ color: act.color, backgroundColor: act.color + '10' }">
+              <div
+                v-for="(act, idx) in quickActions"
+                :key="idx"
+                class="quick-item"
+                @click="handleAction(act.label)"
+              >
+                <div
+                  class="icon-box"
+                  :style="{ color: act.color, backgroundColor: act.color + '10' }"
+                >
                   <el-icon><component :is="act.icon" /></el-icon>
                 </div>
                 <span>{{ act.label }}</span>
@@ -97,12 +171,21 @@
             <div class="system-status">
               <div class="status-header">
                 <span>系统运行状态</span>
-                <el-tag size="small" type="success" effect="plain">实时监控</el-tag>
+                <el-tag
+                  size="small"
+                  type="success"
+                  effect="plain"
+                >
+                  实时监控
+                </el-tag>
               </div>
               <div class="status-item">
                 <div class="status-label-row">
                   <span class="label">CPU 使用率</span>
-                  <span class="percentage-value" :class="getCpuStatusClass(serverStatus.cpu)">
+                  <span
+                    class="percentage-value"
+                    :class="getCpuStatusClass(serverStatus.cpu)"
+                  >
                     {{ serverStatus.cpu.toFixed(1) }}%
                   </span>
                 </div>
@@ -116,7 +199,10 @@
               <div class="status-item">
                 <div class="status-label-row">
                   <span class="label">内存占用</span>
-                  <span class="percentage-value" :class="getMemStatusClass(serverStatus.mem)">
+                  <span
+                    class="percentage-value"
+                    :class="getMemStatusClass(serverStatus.mem)"
+                  >
                     {{ serverStatus.mem.toFixed(1) }}%
                   </span>
                 </div>
@@ -138,7 +224,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import {
-  Document, View, ChatDotRound, Link, Edit,
+  Document, View, ChatDotRound, Link,
   Upload, Setting, Calendar, CaretTop, CaretBottom,
   Plus, Monitor, Collection, Operation
 } from '@element-plus/icons-vue'
@@ -226,8 +312,8 @@ const getTagType = (cat) => {
   return map[cat] || 'info'
 }
 
-const handleAction = (action) => {
-  // TODO: 之后根据需要添加交互, 目前使用 ElMessage.info(`${action}模块正在加载...`)
+const handleAction = () => {
+  // TODO: 执行操作
 }
 
 // CPU 状态颜色判断

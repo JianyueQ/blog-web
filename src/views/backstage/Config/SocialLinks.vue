@@ -1,26 +1,78 @@
 <template>
-  <MobileSocialLinks v-if="isMobile" ref="mobileRef" />
-  <div v-else class="social-links-panel">
+  <MobileSocialLinks
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="social-links-panel"
+  >
     <div class="pro-card">
       <div class="card-header-actions">
-        <el-button type="primary" icon="Plus" round @click="handleAdd">新增链接</el-button>
+        <el-button
+          type="primary"
+          icon="Plus"
+          round
+          @click="handleAdd"
+        >
+          新增链接
+        </el-button>
       </div>
       <div class="card-body">
-        <el-table :data="socialList" v-loading="loading" style="width: 100%" border stripe class="social-table">
-          <el-table-column prop="name" label="名称" width="120" />
-          <el-table-column label="图标" width="80" align="center">
+        <el-table
+          v-loading="loading"
+          :data="socialList"
+          style="width: 100%"
+          border
+          stripe
+          class="social-table"
+        >
+          <el-table-column
+            prop="name"
+            label="名称"
+            width="120"
+          />
+          <el-table-column
+            label="图标"
+            width="80"
+            align="center"
+          >
             <template #default="scope">
               <div class="icon-preview">
-                <i v-if="scope.row.icon.startsWith('el-icon-')" :class="scope.row.icon"></i>
-                <img v-else-if="scope.row.icon.startsWith('/') || scope.row.icon.startsWith('http')" :src="scope.row.icon" class="icon-img theme-icon" />
+                <i
+                  v-if="scope.row.icon.startsWith('el-icon-')"
+                  :class="scope.row.icon"
+                />
+                <img
+                  v-else-if="scope.row.icon.startsWith('/') || scope.row.icon.startsWith('http')"
+                  :src="scope.row.icon"
+                  class="icon-img theme-icon"
+                >
                 <span v-else>{{ scope.row.icon }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="tip" label="提示文本" show-overflow-tooltip />
-          <el-table-column prop="url" label="跳转链接" show-overflow-tooltip />
-          <el-table-column prop="sortOrder" label="排序" width="80" align="center" />
-          <el-table-column label="状态" width="100" align="center">
+          <el-table-column
+            prop="tip"
+            label="提示文本"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="url"
+            label="跳转链接"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="sortOrder"
+            label="排序"
+            width="80"
+            align="center"
+          />
+          <el-table-column
+            label="状态"
+            width="100"
+            align="center"
+          >
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -30,10 +82,26 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="150" align="center">
+          <el-table-column
+            label="操作"
+            width="150"
+            align="center"
+          >
             <template #default="scope">
-              <el-button type="primary" link @click="handleEdit(scope.row)">编辑</el-button>
-              <el-button type="danger" link @click="handleDelete(scope.row)">删除</el-button>
+              <el-button
+                type="primary"
+                link
+                @click="handleEdit(scope.row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                type="danger"
+                link
+                @click="handleDelete(scope.row)"
+              >
+                删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -49,51 +117,97 @@
       destroy-on-close
       class="theme-dialog"
     >
-      <el-form :model="socialForm" label-width="80px" label-position="left">
-        <el-form-item label="名称" required>
-          <el-input v-model="socialForm.name" placeholder="请输入社交平台名称" />
+      <el-form
+        :model="socialForm"
+        label-width="80px"
+        label-position="left"
+      >
+        <el-form-item
+          label="名称"
+          required
+        >
+          <el-input
+            v-model="socialForm.name"
+            placeholder="请输入社交平台名称"
+          />
         </el-form-item>
-        <el-form-item label="图标方式" required>
+        <el-form-item
+          label="图标方式"
+          required
+        >
           <el-radio-group v-model="iconType">
-            <el-radio label="class">图标类名</el-radio>
-            <el-radio label="upload">本地上传</el-radio>
+            <el-radio label="class">
+              图标类名
+            </el-radio>
+            <el-radio label="upload">
+              本地上传
+            </el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="图标内容" required>
+        <el-form-item
+          label="图标内容"
+          required
+        >
           <!-- 类名输入 -->
-          <el-input v-if="iconType === 'class'" v-model="socialForm.icon" placeholder="例如: /images/icon/github.png" />
+          <el-input
+            v-if="iconType === 'class'"
+            v-model="socialForm.icon"
+            placeholder="例如: /images/icon/github.png"
+          />
 
           <!-- 上传占位 -->
-          <div v-if="iconType === 'upload'" class="upload-placeholder">
+          <div
+            v-if="iconType === 'upload'"
+            class="upload-placeholder"
+          >
             <el-upload
               class="icon-uploader"
               action="#"
               :auto-upload="false"
               disabled
             >
-              <el-icon class="uploader-icon"><Plus /></el-icon>
+              <el-icon class="uploader-icon">
+                <Plus />
+              </el-icon>
               <template #tip>
-                <div class="el-upload__tip">上传接口暂未实现，请先使用预设图标或类名</div>
+                <div class="el-upload__tip">
+                  上传接口暂未实现，请先使用预设图标或类名
+                </div>
               </template>
             </el-upload>
           </div>
         </el-form-item>
 
         <el-form-item label="提示文本">
-          <el-input v-model="socialForm.tip" placeholder="请输入悬浮提示文本" />
+          <el-input
+            v-model="socialForm.tip"
+            placeholder="请输入悬浮提示文本"
+          />
         </el-form-item>
-        <el-form-item label="链接地址" required>
-          <el-input v-model="socialForm.url" placeholder="请输入跳转链接" />
+        <el-form-item
+          label="链接地址"
+          required
+        >
+          <el-input
+            v-model="socialForm.url"
+            placeholder="请输入跳转链接"
+          />
         </el-form-item>
         <el-form-item label="排序序号">
-          <el-input-number v-model="socialForm.sortOrder" :min="0" />
+          <el-input-number
+            v-model="socialForm.sortOrder"
+            :min="0"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitSocialForm">确定</el-button>
+          <el-button
+            type="primary"
+            @click="submitSocialForm"
+          >确定</el-button>
         </span>
       </template>
     </el-dialog>

@@ -1,123 +1,184 @@
 <template>
-  <el-container class="backstage-layout" :data-theme="currentTheme">
+  <el-container
+    class="backstage-layout"
+    :data-theme="currentTheme"
+  >
     <!-- 侧边栏 -->
-    <el-aside :width="isCollapse ? '64px' : '210px'" class="aside-container">
+    <el-aside
+      :width="isCollapse ? '64px' : '210px'"
+      class="aside-container"
+    >
       <div class="logo-container">
         <transition name="fade">
-          <div v-if="!isCollapse" class="logo-content">
-            <img src="/images/icon/logo.png" alt="Logo" class="logo-image"/>
+          <div
+            v-if="!isCollapse"
+            class="logo-content"
+          >
+            <img
+              src="/images/icon/logo.png"
+              alt="Logo"
+              class="logo-image"
+            >
             <span class="logo-text"> 站点后台</span>
           </div>
-          <div v-else class="logo-content-collapsed">
-            <img src="/images/icon/logo.png" alt="Logo" class="logo-image-collapsed"/>
+          <div
+            v-else
+            class="logo-content-collapsed"
+          >
+            <img
+              src="/images/icon/logo.png"
+              alt="Logo"
+              class="logo-image-collapsed"
+            >
           </div>
         </transition>
       </div>
 
       <el-menu
-          class="sidebar-menu"
-          :collapse="isCollapse"
-          :collapse-transition="false"
-          :default-active="activeMenu"
-          router
-          unique-opened
+        class="sidebar-menu"
+        :collapse="isCollapse"
+        :collapse-transition="false"
+        :default-active="activeMenu"
+        router
+        unique-opened
       >
         <el-menu-item index="/backstage/home">
           <el-icon>
-            <HomeFilled/>
+            <HomeFilled />
           </el-icon>
-          <template #title>工作台</template>
+          <template #title>
+            工作台
+          </template>
         </el-menu-item>
 
         <el-sub-menu index="content">
           <template #title>
             <el-icon>
-              <Document/>
+              <Document />
             </el-icon>
             <span>内容发布</span>
           </template>
-          <el-menu-item index="/backstage/article">文章创作</el-menu-item>
-          <el-menu-item index="/backstage/category">分类配置</el-menu-item>
-          <el-menu-item index="/backstage/tag">标签索引</el-menu-item>
+          <el-menu-item index="/backstage/article">
+            文章创作
+          </el-menu-item>
+          <el-menu-item index="/backstage/category">
+            分类配置
+          </el-menu-item>
+          <el-menu-item index="/backstage/tag">
+            标签索引
+          </el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="media">
           <template #title>
             <el-icon>
-              <Picture/>
+              <Picture />
             </el-icon>
             <span>资源中心</span>
           </template>
-          <el-menu-item index="/backstage/gallery">视觉素材</el-menu-item>
-          <el-menu-item index="/backstage/upload">文件托管</el-menu-item>
+          <el-menu-item index="/backstage/gallery">
+            视觉素材
+          </el-menu-item>
+          <el-menu-item index="/backstage/upload">
+            文件托管
+          </el-menu-item>
         </el-sub-menu>
 
         <el-menu-item index="/backstage/comment">
           <el-icon>
-            <ChatDotRound/>
+            <ChatDotRound />
           </el-icon>
-          <template #title>互动管理</template>
+          <template #title>
+            互动管理
+          </template>
         </el-menu-item>
 
         <el-menu-item index="/backstage/links">
           <el-icon>
-            <Link/>
+            <Link />
           </el-icon>
-          <template #title>友链中心</template>
+          <template #title>
+            友链中心
+          </template>
         </el-menu-item>
 
         <el-menu-item index="/backstage/guestbook">
           <el-icon>
-            <ChatDotSquare/>
+            <ChatDotSquare />
           </el-icon>
-          <template #title>留言板管理</template>
+          <template #title>
+            留言板管理
+          </template>
         </el-menu-item>
 
         <el-menu-item index="/backstage/announcement">
           <el-icon>
-            <Bell/>
+            <Bell />
           </el-icon>
-          <template #title>公告管理</template>
+          <template #title>
+            公告管理
+          </template>
         </el-menu-item>
 
         <el-sub-menu index="system">
           <template #title>
             <el-icon>
-              <Setting/>
+              <Setting />
             </el-icon>
             <span>系统控制</span>
           </template>
-          <el-menu-item index="/backstage/user">成员准入</el-menu-item>
-          <el-menu-item index="/backstage/config">核心配置</el-menu-item>
+          <el-menu-item index="/backstage/user">
+            成员准入
+          </el-menu-item>
+          <el-menu-item index="/backstage/config">
+            核心配置
+          </el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="monitor">
           <template #title>
             <el-icon>
-              <Monitor/>
+              <Monitor />
             </el-icon>
             <span>监控管理</span>
           </template>
-          <el-menu-item index="/backstage/operlog">操作日志</el-menu-item>
-          <el-menu-item index="/backstage/accesslog">系统登录记录</el-menu-item>
-          <el-menu-item index="/backstage/online">在线用户</el-menu-item>
-          <el-menu-item index="/backstage/server">服务器监控</el-menu-item>
+          <el-menu-item index="/backstage/operlog">
+            操作日志
+          </el-menu-item>
+          <el-menu-item index="/backstage/accesslog">
+            系统登录记录
+          </el-menu-item>
+          <el-menu-item index="/backstage/online">
+            在线用户
+          </el-menu-item>
+          <el-menu-item index="/backstage/server">
+            服务器监控
+          </el-menu-item>
         </el-sub-menu>
 
         <el-sub-menu index="visitor">
           <template #title>
             <el-icon>
-              <User/>
+              <User />
             </el-icon>
             <span>访客管理</span>
           </template>
-          <el-menu-item index="/backstage/visitor/record">访客记录</el-menu-item>
-          <el-menu-item index="/backstage/visitor/blacklist">访客黑名单</el-menu-item>
+          <el-menu-item index="/backstage/visitor/record">
+            访客记录
+          </el-menu-item>
+          <el-menu-item index="/backstage/visitor/blacklist">
+            访客黑名单
+          </el-menu-item>
         </el-sub-menu>
       </el-menu>
 
-      <div class="sidebar-footer" v-if="!isCollapse">
-        <div class="version">{{ version }}</div>
+      <div
+        v-if="!isCollapse"
+        class="sidebar-footer"
+      >
+        <div class="version">
+          {{ version }}
+        </div>
       </div>
     </el-aside>
 
@@ -126,67 +187,97 @@
       <!-- 头部 -->
       <el-header class="header-container">
         <div class="header-left">
-          <div class="collapse-trigger" @click="toggleCollapse">
+          <div
+            class="collapse-trigger"
+            @click="toggleCollapse"
+          >
             <el-icon v-if="isCollapse">
-              <Expand/>
+              <Expand />
             </el-icon>
             <el-icon v-else>
-              <Fold/>
+              <Fold />
             </el-icon>
           </div>
 
-          <el-breadcrumb separator="/" class="breadcrumb">
+          <el-breadcrumb
+            separator="/"
+            class="breadcrumb"
+          >
             <el-breadcrumb-item :to="{ path: '/backstage/home' }">
               <el-icon class="breadcrumb-home">
-                <HomeFilled/>
+                <HomeFilled />
               </el-icon>
             </el-breadcrumb-item>
-            <el-breadcrumb-item v-if="currentRouteName">{{ currentRouteName }}</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="currentRouteName">
+              {{ currentRouteName }}
+            </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
 
         <div class="header-right">
           <div class="action-icons">
             <MessageNotification />
-            <div class="action-item" @click="toggleTheme" :title="currentTheme === 'dark' ? '切换浅色' : '切换深色'">
+            <div
+              class="action-item"
+              :title="currentTheme === 'dark' ? '切换浅色' : '切换深色'"
+              @click="toggleTheme"
+            >
               <el-icon v-if="currentTheme === 'dark'">
-                <Sunny/>
+                <Sunny />
               </el-icon>
               <el-icon v-else>
-                <Moon/>
+                <Moon />
               </el-icon>
             </div>
-            <div class="action-item" @click="refreshPage" title="刷新">
+            <div
+              class="action-item"
+              title="刷新"
+              @click="refreshPage"
+            >
               <el-icon>
-                <Refresh/>
+                <Refresh />
               </el-icon>
             </div>
-            <div class="action-item" @click="toggleFullscreen" title="全屏">
+            <div
+              class="action-item"
+              title="全屏"
+              @click="toggleFullscreen"
+            >
               <el-icon>
-                <FullScreen/>
+                <FullScreen />
               </el-icon>
             </div>
           </div>
 
-          <el-dropdown @command="handleCommand" trigger="click">
+          <el-dropdown
+            trigger="click"
+            @command="handleCommand"
+          >
             <div class="user-profile">
-              <el-avatar :size="32" :src="userStore.avatar || '/images/icon/logo.png'"/>
+              <el-avatar
+                :size="32"
+                :src="userStore.avatar || '/images/icon/logo.png'"
+              />
               <span class="user-name">{{ userStore.nickname }}</span>
               <el-icon>
-                <ArrowDown/>
+                <ArrowDown />
               </el-icon>
             </div>
             <template #dropdown>
               <el-dropdown-menu class="pro-dropdown-menu">
                 <el-dropdown-item command="profile">
                   <el-icon>
-                    <User/>
+                    <User />
                   </el-icon>
                   个人中心
                 </el-dropdown-item>
-                <el-dropdown-item command="logout" divided class="logout-item">
+                <el-dropdown-item
+                  command="logout"
+                  divided
+                  class="logout-item"
+                >
                   <el-icon>
-                    <SwitchButton/>
+                    <SwitchButton />
                   </el-icon>
                   退出系统
                 </el-dropdown-item>
@@ -197,7 +288,10 @@
       </el-header>
 
       <!-- 主内容区 -->
-      <el-main class="content-container" :class="{ 'is-transitioning': isTransitioning }">
+      <el-main
+        class="content-container"
+        :class="{ 'is-transitioning': isTransitioning }"
+      >
         <router-view v-slot="{ Component }">
           <transition 
             name="page-fade" 
@@ -205,8 +299,11 @@
             @before-leave="handleBeforeLeave"
             @after-enter="handleAfterEnter"
           >
-            <div class="page-wrapper">
-              <component :is="Component"/>
+            <div
+              :key="route.path"
+              class="page-wrapper"
+            >
+              <component :is="Component" />
             </div>
           </transition>
         </router-view>
@@ -323,7 +420,7 @@ const handleCommand = (command) => {
         userStore.clearUser()
         removeToken()
         router.push('/backstage/login')
-      }).catch((error) => {
+      }).catch(() => {
         userStore.clearUser()
         removeToken()
         router.push('/backstage/login')

@@ -2,22 +2,37 @@
   <div class="mobile-server-monitor">
     <!-- 实时状态卡片 -->
     <div class="status-header">
-      <div class="status-item" :class="connectionStatus">
-        <span class="status-dot"></span>
+      <div
+        class="status-item"
+        :class="connectionStatus"
+      >
+        <span class="status-dot" />
         <span class="status-text">{{ statusText }}</span>
       </div>
-      <el-button circle size="small" @click="handleManualRefresh" :icon="Refresh" :loading="loading" />
+      <el-button
+        circle
+        size="small"
+        :icon="Refresh"
+        :loading="loading"
+        @click="handleManualRefresh"
+      />
     </div>
 
     <!-- 核心指标卡片 -->
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-icon" :style="{ background: getCpuColor(serverData.cpu?.used, true) }">
+        <div
+          class="metric-icon"
+          :style="{ background: getCpuColor(serverData.cpu?.used, true) }"
+        >
           <el-icon><Monitor /></el-icon>
         </div>
         <div class="metric-info">
           <span class="metric-label">CPU</span>
-          <span class="metric-value" :style="{ color: getCpuColor(serverData.cpu?.used) }">
+          <span
+            class="metric-value"
+            :style="{ color: getCpuColor(serverData.cpu?.used) }"
+          >
             {{ serverData.cpu?.used || 0 }}%
           </span>
         </div>
@@ -33,12 +48,18 @@
       </div>
 
       <div class="metric-card">
-        <div class="metric-icon" :style="{ background: getMemColor(serverData.mem?.usage, true) }">
+        <div
+          class="metric-icon"
+          :style="{ background: getMemColor(serverData.mem?.usage, true) }"
+        >
           <el-icon><Coin /></el-icon>
         </div>
         <div class="metric-info">
           <span class="metric-label">内存</span>
-          <span class="metric-value" :style="{ color: getMemColor(serverData.mem?.usage) }">
+          <span
+            class="metric-value"
+            :style="{ color: getMemColor(serverData.mem?.usage) }"
+          >
             {{ serverData.mem?.usage || 0 }}%
           </span>
         </div>
@@ -54,12 +75,18 @@
       </div>
 
       <div class="metric-card">
-        <div class="metric-icon" :style="{ background: getJvmColor(serverData.jvm?.usage, true) }">
+        <div
+          class="metric-icon"
+          :style="{ background: getJvmColor(serverData.jvm?.usage, true) }"
+        >
           <el-icon><SetUp /></el-icon>
         </div>
         <div class="metric-info">
           <span class="metric-label">JVM</span>
-          <span class="metric-value" :style="{ color: getJvmColor(serverData.jvm?.usage) }">
+          <span
+            class="metric-value"
+            :style="{ color: getJvmColor(serverData.jvm?.usage) }"
+          >
             {{ serverData.jvm?.usage || 0 }}%
           </span>
         </div>
@@ -75,12 +102,20 @@
       </div>
 
       <div class="metric-card">
-        <div class="metric-icon" style="background: rgba(19, 194, 194, 0.15);">
-          <el-icon style="color: #13c2c2;"><Clock /></el-icon>
+        <div
+          class="metric-icon"
+          style="background: rgba(19, 194, 194, 0.15);"
+        >
+          <el-icon style="color: #13c2c2;">
+            <Clock />
+          </el-icon>
         </div>
         <div class="metric-info">
           <span class="metric-label">运行时长</span>
-          <span class="metric-value" style="font-size: 14px;">{{ serverData.jvm?.runTime || '--' }}</span>
+          <span
+            class="metric-value"
+            style="font-size: 14px;"
+          >{{ serverData.jvm?.runTime || '--' }}</span>
         </div>
         <div class="metric-detail">
           <span>启动: {{ formatStartTime(serverData.jvm?.startTime) }}</span>
@@ -90,7 +125,9 @@
 
     <!-- 服务器信息 -->
     <div class="info-section">
-      <div class="section-title">服务器信息</div>
+      <div class="section-title">
+        服务器信息
+      </div>
       <div class="info-card">
         <div class="info-item">
           <span class="info-label">主机名称</span>
@@ -113,7 +150,9 @@
 
     <!-- JVM信息 -->
     <div class="info-section">
-      <div class="section-title">Java 虚拟机</div>
+      <div class="section-title">
+        Java 虚拟机
+      </div>
       <div class="info-card">
         <div class="info-item">
           <span class="info-label">JVM 名称</span>
@@ -153,7 +192,10 @@
             </div>
             <div class="disk-info">
               <span class="disk-name">{{ disk.typeName }}</span>
-              <span class="disk-usage" :style="{ color: getDiskColor(disk.usage) }">{{ disk.usage }}%</span>
+              <span
+                class="disk-usage"
+                :style="{ color: getDiskColor(disk.usage) }"
+              >{{ disk.usage }}%</span>
             </div>
           </div>
           <el-progress

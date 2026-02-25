@@ -9,7 +9,11 @@
         :prefix-icon="Search"
         @keyup.enter="handleSearch"
       />
-      <el-button type="primary" :icon="Search" @click="handleSearch" />
+      <el-button
+        type="primary"
+        :icon="Search"
+        @click="handleSearch"
+      />
     </div>
 
     <!-- 统计卡片 -->
@@ -33,7 +37,10 @@
             <el-icon><Location /></el-icon>
             <span>{{ item.ipaddr }}</span>
           </div>
-          <el-tag :type="item.abnormalFlag === 0 ? 'success' : 'danger'" size="small">
+          <el-tag
+            :type="item.abnormalFlag === 0 ? 'success' : 'danger'"
+            size="small"
+          >
             {{ item.abnormalFlag === 0 ? '正常' : '异常' }}
           </el-tag>
         </div>
@@ -48,10 +55,22 @@
           </div>
         </div>
         <div class="item-footer">
-          <el-button type="primary" link size="small" :icon="View" @click.stop="handleViewDetail(item)">
+          <el-button
+            type="primary"
+            link
+            size="small"
+            :icon="View"
+            @click.stop="handleViewDetail(item)"
+          >
             详情
           </el-button>
-          <el-button type="danger" link size="small" :icon="CircleClose" @click.stop="handleAddToBlacklist(item)">
+          <el-button
+            type="danger"
+            link
+            size="small"
+            :icon="CircleClose"
+            @click.stop="handleAddToBlacklist(item)"
+          >
             拉黑
           </el-button>
         </div>
@@ -60,10 +79,19 @@
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else class="no-more">没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >没有更多了</span>
     </div>
 
     <!-- 详情抽屉 -->
@@ -74,7 +102,10 @@
       direction="btt"
       destroy-on-close
     >
-      <div v-if="currentDetail" class="detail-content">
+      <div
+        v-if="currentDetail"
+        class="detail-content"
+      >
         <div class="detail-section">
           <div class="detail-item">
             <span class="detail-label">IP地址</span>
@@ -104,8 +135,12 @@
           </div>
         </div>
         <div class="detail-section">
-          <div class="detail-label">用户代理</div>
-          <div class="user-agent-box">{{ currentDetail.userAgent }}</div>
+          <div class="detail-label">
+            用户代理
+          </div>
+          <div class="user-agent-box">
+            {{ currentDetail.userAgent }}
+          </div>
         </div>
       </div>
     </el-drawer>

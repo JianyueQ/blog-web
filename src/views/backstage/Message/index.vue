@@ -32,69 +32,133 @@
       <div class="card-body">
         <!-- 筛选栏 -->
         <div class="filter-bar">
-          <el-radio-group v-model="filterStatus" @change="handleFilterChange">
-            <el-radio-button value="all">全部消息</el-radio-button>
+          <el-radio-group
+            v-model="filterStatus"
+            @change="handleFilterChange"
+          >
+            <el-radio-button value="all">
+              全部消息
+            </el-radio-button>
             <el-radio-button value="unread">
               未读消息
-              <el-badge v-if="unreadCount > 0" :value="unreadCount" class="filter-badge" />
+              <el-badge
+                v-if="unreadCount > 0"
+                :value="unreadCount"
+                class="filter-badge"
+              />
             </el-radio-button>
-            <el-radio-button value="read">已读消息</el-radio-button>
+            <el-radio-button value="read">
+              已读消息
+            </el-radio-button>
           </el-radio-group>
-          <el-button type="danger" link :icon="DeleteFilled" @click="handleCleanAll">
+          <el-button
+            type="danger"
+            link
+            :icon="DeleteFilled"
+            @click="handleCleanAll"
+          >
             清空全部
           </el-button>
         </div>
 
         <!-- 消息列表 -->
         <el-table
+          v-loading="loading"
           :data="tableData"
           style="width: 100%"
           @selection-change="handleSelectionChange"
-          v-loading="loading"
         >
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="消息类型" width="120">
+          <el-table-column
+            type="selection"
+            width="55"
+          />
+          <el-table-column
+            label="消息类型"
+            width="120"
+          >
             <template #default="scope">
               <div class="message-type">
-                <el-icon :size="16" :color="getMessageTypeColor(scope.row.messageType)">
+                <el-icon
+                  :size="16"
+                  :color="getMessageTypeColor(scope.row.messageType)"
+                >
                   <component :is="getMessageTypeIcon(scope.row.messageType)" />
                 </el-icon>
-                <el-tag :type="getMessageTypeTag(scope.row.messageType)" size="small">
+                <el-tag
+                  :type="getMessageTypeTag(scope.row.messageType)"
+                  size="small"
+                >
                   {{ getMessageTypeText(scope.row.messageType) }}
                 </el-tag>
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="消息标题" min-width="200">
+          <el-table-column
+            label="消息标题"
+            min-width="200"
+          >
             <template #default="scope">
-              <div class="message-title" :class="{ unread: scope.row.isRead === 0 }">
+              <div
+                class="message-title"
+                :class="{ unread: scope.row.isRead === 0 }"
+              >
                 {{ scope.row.messageTitle }}
-                <el-tag v-if="scope.row.isRead === 0" type="danger" size="small" effect="dark">
+                <el-tag
+                  v-if="scope.row.isRead === 0"
+                  type="danger"
+                  size="small"
+                  effect="dark"
+                >
                   未读
                 </el-tag>
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="消息内容" min-width="300">
+          <el-table-column
+            label="消息内容"
+            min-width="300"
+          >
             <template #default="scope">
-              <div class="message-content">{{ scope.row.messageContent }}</div>
+              <div class="message-content">
+                {{ scope.row.messageContent }}
+              </div>
             </template>
           </el-table-column>
-          <el-table-column label="状态" width="120">
+          <el-table-column
+            label="状态"
+            width="120"
+          >
             <template #default="scope">
-              <el-tag :type="scope.row.isRead === 1 ? 'success' : 'warning'" size="small">
+              <el-tag
+                :type="scope.row.isRead === 1 ? 'success' : 'warning'"
+                size="small"
+              >
                 {{ scope.row.isRead === 1 ? '已读' : '未读' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="180" />
-          <el-table-column label="阅读时间" width="180">
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            width="180"
+          />
+          <el-table-column
+            label="阅读时间"
+            width="180"
+          >
             <template #default="scope">
               <span v-if="scope.row.readTime">{{ scope.row.readTime }}</span>
-              <span v-else class="text-placeholder">--</span>
+              <span
+                v-else
+                class="text-placeholder"
+              >--</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="200" fixed="right">
+          <el-table-column
+            label="操作"
+            width="200"
+            fixed="right"
+          >
             <template #default="scope">
               <div class="button-row">
                 <el-button
@@ -149,14 +213,23 @@
       width="500px"
       destroy-on-close
     >
-      <div class="message-detail" v-if="currentMessage">
+      <div
+        v-if="currentMessage"
+        class="message-detail"
+      >
         <div class="detail-header">
-          <el-icon :size="24" :color="getMessageTypeColor(currentMessage.messageType)">
+          <el-icon
+            :size="24"
+            :color="getMessageTypeColor(currentMessage.messageType)"
+          >
             <component :is="getMessageTypeIcon(currentMessage.messageType)" />
           </el-icon>
           <div class="detail-title">
             <h3>{{ currentMessage.messageTitle }}</h3>
-            <el-tag :type="getMessageTypeTag(currentMessage.messageType)" size="small">
+            <el-tag
+              :type="getMessageTypeTag(currentMessage.messageType)"
+              size="small"
+            >
               {{ getMessageTypeText(currentMessage.messageType) }}
             </el-tag>
           </div>
@@ -173,7 +246,9 @@
       </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="detailDialogVisible = false">关闭</el-button>
+          <el-button @click="detailDialogVisible = false">
+            关闭
+          </el-button>
           <el-button
             v-if="currentMessage && currentMessage.isRead === 0"
             type="primary"
@@ -194,20 +269,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user.js'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Check,
   Delete,
   DeleteFilled,
-  View,
-  InfoFilled,
-  ChatDotRound,
-  Link,
-  Message
+  View
 } from '@element-plus/icons-vue'
 import WebSocketManager from '@/utils/websocket.js'
 import {

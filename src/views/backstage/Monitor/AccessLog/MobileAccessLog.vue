@@ -9,29 +9,33 @@
         :prefix-icon="Search"
         @keyup.enter="handleSearch"
       />
-      <el-button type="primary" :icon="Search" @click="handleSearch" />
+      <el-button
+        type="primary"
+        :icon="Search"
+        @click="handleSearch"
+      />
     </div>
 
     <!-- 筛选标签 -->
     <div class="filter-tags">
       <el-tag 
         :type="statusFilter === '' ? 'primary' : 'info'" 
-        @click="statusFilter = ''; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = ''; handleSearch()"
       >
         全部
       </el-tag>
       <el-tag 
         :type="statusFilter === '0' ? 'success' : 'info'" 
-        @click="statusFilter = '0'; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = '0'; handleSearch()"
       >
         成功
       </el-tag>
       <el-tag 
         :type="statusFilter === '1' ? 'danger' : 'info'" 
-        @click="statusFilter = '1'; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = '1'; handleSearch()"
       >
         失败
       </el-tag>
@@ -47,10 +51,16 @@
       >
         <div class="item-header">
           <div class="user-info">
-            <el-avatar :size="32" :icon="UserFilled" />
+            <el-avatar
+              :size="32"
+              :icon="UserFilled"
+            />
             <span class="username">{{ item.userName }}</span>
           </div>
-          <el-tag :type="item.status === '0' ? 'success' : 'danger'" size="small">
+          <el-tag
+            :type="item.status === '0' ? 'success' : 'danger'"
+            size="small"
+          >
             {{ item.status === '0' ? '成功' : '失败' }}
           </el-tag>
         </div>
@@ -73,7 +83,13 @@
           </div>
         </div>
         <div class="item-footer">
-          <el-button type="danger" link size="small" :icon="Delete" @click="handleDelete(item)">
+          <el-button
+            type="danger"
+            link
+            size="small"
+            :icon="Delete"
+            @click="handleDelete(item)"
+          >
             删除
           </el-button>
         </div>
@@ -82,11 +98,23 @@
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else-if="tableData.length > 0" class="no-more">没有更多了</span>
-      <span v-else class="no-more">暂无数据</span>
+      <span
+        v-else-if="tableData.length > 0"
+        class="no-more"
+      >没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >暂无数据</span>
     </div>
   </div>
 </template>

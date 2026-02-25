@@ -1,0 +1,7 @@
+blog/
+dist/
+node_modules/
+public/
+.idea/
+.vscode/
+*.min.js

@@ -3,11 +3,16 @@
     <button
       v-show="showBackToTop"
       class="back-to-top"
-      @click="scrollToTop"
       title="回到顶部"
+      @click="scrollToTop"
     >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="18 15 12 9 6 15"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <polyline points="18 15 12 9 6 15" />
       </svg>
     </button>
   </Transition>

@@ -1,15 +1,21 @@
 <template>
-  <div class="login-pro" :class="{ 'is-dark': isDarkMode }">
+  <div
+    class="login-pro"
+    :class="{ 'is-dark': isDarkMode }"
+  >
     <!-- 动态背景网格 -->
-    <div class="bg-grid"></div>
+    <div class="bg-grid" />
 
     <!-- 背景光效 -->
-    <div class="glow-effect glow-1"></div>
-    <div class="glow-effect glow-2"></div>
+    <div class="glow-effect glow-1" />
+    <div class="glow-effect glow-2" />
 
     <!-- 顶部工具栏 -->
     <div class="top-bar">
-      <div class="theme-switch" @click="toggleTheme">
+      <div
+        class="theme-switch"
+        @click="toggleTheme"
+      >
         <el-icon><Sunny v-if="isDarkMode" /><Moon v-else /></el-icon>
       </div>
     </div>
@@ -48,7 +54,10 @@
           />
         </el-form-item>
 
-        <el-form-item prop="code" v-if="captchaEnabled">
+        <el-form-item
+          v-if="captchaEnabled"
+          prop="code"
+        >
           <div class="code-row">
             <el-input
               v-model="loginForm.code"
@@ -58,16 +67,36 @@
               :prefix-icon="Key"
               @keyup.enter="handleLogin"
             />
-            <div class="code-display" @click="refreshCode">
-              <img v-if="codeUrl" :src="codeUrl" alt="CAPTCHA" />
-              <el-icon v-else class="is-loading"><Loading /></el-icon>
+            <div
+              class="code-display"
+              @click="refreshCode"
+            >
+              <img
+                v-if="codeUrl"
+                :src="codeUrl"
+                alt="CAPTCHA"
+              >
+              <el-icon
+                v-else
+                class="is-loading"
+              >
+                <Loading />
+              </el-icon>
             </div>
           </div>
         </el-form-item>
 
         <div class="form-options">
-          <el-checkbox v-model="loginForm.rememberMe">保持登录状态</el-checkbox>
-          <el-button link type="primary" size="small">忘记密码？</el-button>
+          <el-checkbox v-model="loginForm.rememberMe">
+            保持登录状态
+          </el-checkbox>
+          <el-button
+            link
+            type="primary"
+            size="small"
+          >
+            忘记密码？
+          </el-button>
         </div>
 
         <el-button

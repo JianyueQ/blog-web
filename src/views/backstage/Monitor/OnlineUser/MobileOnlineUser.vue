@@ -9,13 +9,19 @@
         :prefix-icon="Search"
         @keyup.enter="handleSearch"
       />
-      <el-button type="primary" :icon="Search" @click="handleSearch" />
+      <el-button
+        type="primary"
+        :icon="Search"
+        @click="handleSearch"
+      />
     </div>
 
     <!-- 统计卡片 -->
     <div class="mobile-stats-card">
       <div class="stats-item">
-        <el-icon class="stats-icon"><User /></el-icon>
+        <el-icon class="stats-icon">
+          <User />
+        </el-icon>
         <div class="stats-content">
           <span class="stats-label">在线用户</span>
           <span class="stats-value">{{ total }}</span>
@@ -41,7 +47,7 @@
             </div>
           </div>
           <div class="online-indicator">
-            <span class="dot"></span>
+            <span class="dot" />
             <span class="text">在线</span>
           </div>
         </div>
@@ -52,15 +58,33 @@
           </div>
           <div class="info-row">
             <el-icon><Monitor /></el-icon>
-            <el-tag type="success" effect="plain" size="small">{{ item.browser }}</el-tag>
+            <el-tag
+              type="success"
+              effect="plain"
+              size="small"
+            >
+              {{ item.browser }}
+            </el-tag>
           </div>
           <div class="info-row">
             <el-icon><Platform /></el-icon>
-            <el-tag type="warning" effect="plain" size="small">{{ item.os }}</el-tag>
+            <el-tag
+              type="warning"
+              effect="plain"
+              size="small"
+            >
+              {{ item.os }}
+            </el-tag>
           </div>
         </div>
         <div class="item-footer">
-          <el-button type="danger" plain size="small" :icon="SwitchButton" @click="handleForceLogout(item)">
+          <el-button
+            type="danger"
+            plain
+            size="small"
+            :icon="SwitchButton"
+            @click="handleForceLogout(item)"
+          >
             强制下线
           </el-button>
         </div>
@@ -69,11 +93,23 @@
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else-if="tableData.length > 0" class="no-more">没有更多了</span>
-      <span v-else class="no-more">暂无在线用户</span>
+      <span
+        v-else-if="tableData.length > 0"
+        class="no-more"
+      >没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >暂无在线用户</span>
     </div>
   </div>
 </template>

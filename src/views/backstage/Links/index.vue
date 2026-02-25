@@ -1,9 +1,16 @@
 <template>
   <div class="links-manage">
     <!-- Tab 切换 -->
-    <el-tabs v-model="activeTab" class="links-tabs" type="border-card">
+    <el-tabs
+      v-model="activeTab"
+      class="links-tabs"
+      type="border-card"
+    >
       <!-- 友链管理 Tab -->
-      <el-tab-pane label="友链管理" name="manage">
+      <el-tab-pane
+        label="友链管理"
+        name="manage"
+      >
         <div class="pro-card table-card">
           <div class="card-header">
             <div class="header-left">
@@ -11,24 +18,44 @@
               <span class="subtitle">管理您的博客朋友圈</span>
             </div>
             <div class="header-right">
-              <el-button type="primary" round :icon="Plus" @click="handleAdd">新增友链</el-button>
+              <el-button
+                type="primary"
+                round
+                :icon="Plus"
+                @click="handleAdd"
+              >
+                新增友链
+              </el-button>
             </div>
           </div>
           <div class="card-body">
             <el-table
+              v-loading="loading"
               :data="tableData"
               style="width: 100%"
-              v-loading="loading"
             >
-              <el-table-column label="站点" min-width="180">
+              <el-table-column
+                label="站点"
+                min-width="180"
+              >
                 <template #default="scope">
                   <div class="site-info">
-                    <el-avatar :size="40" :src="scope.row.logo" class="site-logo">
+                    <el-avatar
+                      :size="40"
+                      :src="scope.row.logo"
+                      class="site-logo"
+                    >
                       <el-icon><Picture /></el-icon>
                     </el-avatar>
                     <div class="details">
                       <span class="name">{{ scope.row.name }}</span>
-                      <el-link :href="scope.row.url" target="_blank" type="info" :underline="false" class="site-url">
+                      <el-link
+                        :href="scope.row.url"
+                        target="_blank"
+                        type="info"
+                        :underline="false"
+                        class="site-url"
+                      >
                         <el-icon><Link /></el-icon>
                         {{ scope.row.url }}
                       </el-link>
@@ -36,11 +63,27 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="description" label="站点描述" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="email" label="联系邮箱" width="190" show-overflow-tooltip />
-              <el-table-column label="状态" width="140">
+              <el-table-column
+                prop="description"
+                label="站点描述"
+                min-width="200"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="email"
+                label="联系邮箱"
+                width="190"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                label="状态"
+                width="140"
+              >
                 <template #default="scope">
-                  <el-dropdown @command="(cmd) => handleStatusChange(scope.row, cmd)" trigger="click">
+                  <el-dropdown
+                    trigger="click"
+                    @command="(cmd) => handleStatusChange(scope.row, cmd)"
+                  >
                     <el-tag
                       :type="getStatusType(scope.row.status)"
                       size="small"
@@ -49,19 +92,31 @@
                       :class="{ 'is-active': scope.row.status === 1 }"
                     >
                       <div class="status-content">
-                        <el-icon v-if="scope.row.status === 1"><View /></el-icon>
-                        <el-icon v-else><Hide /></el-icon>
+                        <el-icon v-if="scope.row.status === 1">
+                          <View />
+                        </el-icon>
+                        <el-icon v-else>
+                          <Hide />
+                        </el-icon>
                         <span>{{ getStatusText(scope.row.status) }}</span>
-                        <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+                        <el-icon class="dropdown-icon">
+                          <ArrowDown />
+                        </el-icon>
                       </div>
                     </el-tag>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item command="1" :disabled="scope.row.status === 1">
+                        <el-dropdown-item
+                          command="1"
+                          :disabled="scope.row.status === 1"
+                        >
                           <el-icon><View /></el-icon>
                           <span>显示</span>
                         </el-dropdown-item>
-                        <el-dropdown-item command="0" :disabled="scope.row.status === 0">
+                        <el-dropdown-item
+                          command="0"
+                          :disabled="scope.row.status === 0"
+                        >
                           <el-icon><Hide /></el-icon>
                           <span>隐藏</span>
                         </el-dropdown-item>
@@ -70,12 +125,34 @@
                   </el-dropdown>
                 </template>
               </el-table-column>
-              <el-table-column prop="joinTime" label="加入时间" width="160" />
-              <el-table-column label="操作" width="120" fixed="right">
+              <el-table-column
+                prop="joinTime"
+                label="加入时间"
+                width="160"
+              />
+              <el-table-column
+                label="操作"
+                width="120"
+                fixed="right"
+              >
                 <template #default="scope">
                   <div class="button-row">
-                    <el-button link type="primary" :icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                    <el-button link type="danger" :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                    <el-button
+                      link
+                      type="primary"
+                      :icon="Edit"
+                      @click="handleEdit(scope.row)"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button
+                      link
+                      type="danger"
+                      :icon="Delete"
+                      @click="handleDelete(scope.row)"
+                    >
+                      删除
+                    </el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -100,7 +177,11 @@
       <el-tab-pane name="pending">
         <template #label>
           <span>申请审核</span>
-          <el-badge :value="pendingCount" :hidden="pendingCount === 0" class="tab-badge" />
+          <el-badge
+            :value="pendingCount"
+            :hidden="pendingCount === 0"
+            class="tab-badge"
+          />
         </template>
         <div class="pro-card table-card">
           <div class="card-header">
@@ -111,19 +192,32 @@
           </div>
           <div class="card-body">
             <el-table
+              v-loading="pendingLoading"
               :data="pendingData"
               style="width: 100%"
-              v-loading="pendingLoading"
             >
-              <el-table-column label="站点" min-width="220">
+              <el-table-column
+                label="站点"
+                min-width="220"
+              >
                 <template #default="scope">
                   <div class="site-info">
-                    <el-avatar :size="40" :src="scope.row.logo" class="site-logo">
+                    <el-avatar
+                      :size="40"
+                      :src="scope.row.logo"
+                      class="site-logo"
+                    >
                       <el-icon><Picture /></el-icon>
                     </el-avatar>
                     <div class="details">
                       <span class="name">{{ scope.row.name }}</span>
-                      <el-link :href="scope.row.url" target="_blank" type="info" :underline="false" class="site-url">
+                      <el-link
+                        :href="scope.row.url"
+                        target="_blank"
+                        type="info"
+                        :underline="false"
+                        class="site-url"
+                      >
                         <el-icon><Link /></el-icon>
                         {{ scope.row.url }}
                       </el-link>
@@ -131,14 +225,46 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column prop="description" label="站点描述" min-width="200" show-overflow-tooltip />
-              <el-table-column prop="email" label="联系邮箱" width="160" show-overflow-tooltip />
-              <el-table-column prop="joinTime" label="申请时间" width="160" />
-              <el-table-column label="操作" width="180" fixed="right">
+              <el-table-column
+                prop="description"
+                label="站点描述"
+                min-width="200"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="email"
+                label="联系邮箱"
+                width="160"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="joinTime"
+                label="申请时间"
+                width="160"
+              />
+              <el-table-column
+                label="操作"
+                width="180"
+                fixed="right"
+              >
                 <template #default="scope">
                   <div class="button-row">
-                    <el-button link type="success" :icon="CircleCheck" @click="handleApprove(scope.row)">通过</el-button>
-                    <el-button link type="danger" :icon="Delete" @click="handleReject(scope.row)">拒绝</el-button>
+                    <el-button
+                      link
+                      type="success"
+                      :icon="CircleCheck"
+                      @click="handleApprove(scope.row)"
+                    >
+                      通过
+                    </el-button>
+                    <el-button
+                      link
+                      type="danger"
+                      :icon="Delete"
+                      @click="handleReject(scope.row)"
+                    >
+                      拒绝
+                    </el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -175,7 +301,10 @@
         label-width="90px"
         class="friend-link-form"
       >
-        <el-form-item label="站点Logo" prop="logo">
+        <el-form-item
+          label="站点Logo"
+          prop="logo"
+        >
           <div class="logo-upload-wrapper">
             <el-upload
               class="logo-uploader"
@@ -186,15 +315,24 @@
               accept="image/*"
               :disabled="logoUploading"
             >
-              <div class="upload-content" v-loading="logoUploading" element-loading-text="上传中...">
+              <div
+                v-loading="logoUploading"
+                class="upload-content"
+                element-loading-text="上传中..."
+              >
                 <el-avatar
                   v-if="formData.logo && !logoUploading"
                   :size="80"
                   :src="formData.logo"
                   class="uploaded-logo"
                 />
-                <div v-else-if="!logoUploading" class="upload-placeholder">
-                  <el-icon :size="24"><Plus /></el-icon>
+                <div
+                  v-else-if="!logoUploading"
+                  class="upload-placeholder"
+                >
+                  <el-icon :size="24">
+                    <Plus />
+                  </el-icon>
                   <span>点击上传</span>
                 </div>
               </div>
@@ -214,16 +352,40 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="站点名称" prop="name">
-          <el-input v-model="formData.name" placeholder="请输入站点名称" show-word-limit />
+        <el-form-item
+          label="站点名称"
+          prop="name"
+        >
+          <el-input
+            v-model="formData.name"
+            placeholder="请输入站点名称"
+            show-word-limit
+          />
         </el-form-item>
-        <el-form-item label="站点地址" prop="url">
-          <el-input v-model="formData.url" placeholder="请输入站点地址，如 https://example.com"  show-word-limit />
+        <el-form-item
+          label="站点地址"
+          prop="url"
+        >
+          <el-input
+            v-model="formData.url"
+            placeholder="请输入站点地址，如 https://example.com"
+            show-word-limit
+          />
         </el-form-item>
-        <el-form-item label="联系邮箱" prop="email">
-          <el-input v-model="formData.email" placeholder="请输入联系邮箱" maxlength="100" />
+        <el-form-item
+          label="联系邮箱"
+          prop="email"
+        >
+          <el-input
+            v-model="formData.email"
+            placeholder="请输入联系邮箱"
+            maxlength="100"
+          />
         </el-form-item>
-        <el-form-item label="站点描述" prop="description">
+        <el-form-item
+          label="站点描述"
+          prop="description"
+        >
           <el-input
             v-model="formData.description"
             type="textarea"
@@ -236,8 +398,16 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+          <el-button @click="dialogVisible = false">
+            取消
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="submitLoading"
+            @click="handleSubmit"
+          >
+            确定
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -245,9 +415,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { Plus, Edit, Delete, View, Hide, Link, Picture, CircleCheck } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import {
   getFriendLinksList,
   getApprovedFriendLinksList,
@@ -332,7 +502,7 @@ const fetchFriendLinksList = async () => {
       total.value = res.total || 0
     }
   } catch (error) {
-
+    console.error(error)
   } finally {
     loading.value = false
   }
@@ -349,7 +519,7 @@ const fetchPendingList = async () => {
       pendingCount.value = res.total || 0
     }
   } catch (error) {
-
+    console.error(error)
   } finally {
     pendingLoading.value = false
   }

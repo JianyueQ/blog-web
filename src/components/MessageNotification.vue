@@ -6,7 +6,10 @@
       :hide-on-click="false"
       @visible-change="handleDropdownVisible"
     >
-      <div class="message-icon-wrapper" :class="{ 'has-unread': unreadCount > 0 }">
+      <div
+        class="message-icon-wrapper"
+        :class="{ 'has-unread': unreadCount > 0 }"
+      >
         <el-icon :size="20">
           <Bell />
         </el-icon>
@@ -27,7 +30,12 @@
                 @click="handleTabChange('unread')"
               >
                 未读消息
-                <el-tag v-if="unreadCount > 0" size="small" type="danger" class="tab-badge">
+                <el-tag
+                  v-if="unreadCount > 0"
+                  size="small"
+                  type="danger"
+                  class="tab-badge"
+                >
                   {{ unreadCount }}
                 </el-tag>
               </span>
@@ -60,7 +68,10 @@
               </el-button>
             </div>
           </div>
-          <div class="message-list" v-loading="loading">
+          <div
+            v-loading="loading"
+            class="message-list"
+          >
             <template v-if="messageList.length > 0">
               <div
                 v-for="msg in messageList"
@@ -70,19 +81,30 @@
                 @click="handleMessageClick(msg)"
               >
                 <div class="message-icon">
-                  <el-icon :size="16" :color="getMessageTypeColor(msg.messageType)">
+                  <el-icon
+                    :size="16"
+                    :color="getMessageTypeColor(msg.messageType)"
+                  >
                     <component :is="getMessageTypeIcon(msg.messageType)" />
                   </el-icon>
                 </div>
                 <div class="message-content">
                   <div class="message-title">
                     {{ msg.messageTitle }}
-                    <el-tag size="small" :type="getMessageTypeTag(msg.messageType)" class="type-tag">
+                    <el-tag
+                      size="small"
+                      :type="getMessageTypeTag(msg.messageType)"
+                      class="type-tag"
+                    >
                       {{ getMessageTypeText(msg.messageType) }}
                     </el-tag>
                   </div>
-                  <div class="message-desc">{{ msg.messageContent }}</div>
-                  <div class="message-time">{{ msg.createTime }}</div>
+                  <div class="message-desc">
+                    {{ msg.messageContent }}
+                  </div>
+                  <div class="message-time">
+                    {{ msg.createTime }}
+                  </div>
                 </div>
                 <div class="message-actions">
                   <el-button
@@ -105,10 +127,18 @@
                 </div>
               </div>
             </template>
-            <el-empty v-else description="暂无消息" :image-size="60" />
+            <el-empty
+              v-else
+              description="暂无消息"
+              :image-size="60"
+            />
           </div>
           <div class="message-footer">
-            <el-button link type="primary" @click="goToMessagePage">
+            <el-button
+              link
+              type="primary"
+              @click="goToMessagePage"
+            >
               查看全部
             </el-button>
           </div>
@@ -125,11 +155,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/stores/user.js'
 import {
-  Bell,
-  ChatDotRound,
-  Link,
-  InfoFilled,
-  Message
+  Bell
 } from '@element-plus/icons-vue'
 import WebSocketManager from '@/utils/websocket.js'
 import {
@@ -150,8 +176,6 @@ const messageList = ref([])
 const unreadCount = ref(0)
 const loading = ref(false)
 const wsManager = ref(null)
-// WebSocket待处理请求队列
-const wsPendingRequests = ref(new Map())
 // 是否已经加载过数据（用于控制首次打开时才请求）
 const hasLoaded = ref(false)
 
@@ -406,11 +430,6 @@ const initWebSocket = () => {
 
   // 连接WebSocket
   wsManager.value.connect()
-}
-
-// 监听标签变化
-const watchTab = () => {
-  fetchMessageList()
 }
 
 // 监听消息刷新触发器 - 当消息管理页面操作后同步刷新

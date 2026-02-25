@@ -1,32 +1,95 @@
 <template>
-  <MobileOperLog v-if="isMobile" ref="mobileRef" />
-  <div v-else class="operlog-manage">
+  <MobileOperLog
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="operlog-manage"
+  >
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
-      <el-form :model="queryParams" inline label-width="auto">
+      <el-form
+        :model="queryParams"
+        inline
+        label-width="auto"
+      >
         <el-form-item label="操作标题">
-          <el-input v-model="queryParams.title" placeholder="请输入操作标题" clearable style="width: 200px" />
+          <el-input
+            v-model="queryParams.title"
+            placeholder="请输入操作标题"
+            clearable
+            style="width: 200px"
+          />
         </el-form-item>
         <el-form-item label="操作人员">
-          <el-input v-model="queryParams.operName" placeholder="请输入操作人员" clearable style="width: 200px" />
+          <el-input
+            v-model="queryParams.operName"
+            placeholder="请输入操作人员"
+            clearable
+            style="width: 200px"
+          />
         </el-form-item>
         <el-form-item label="业务类型">
-          <el-select v-model="queryParams.businessType" placeholder="请选择业务类型" clearable style="width: 200px">
-            <el-option label="其他" :value="0" />
-            <el-option label="新增" :value="1" />
-            <el-option label="修改" :value="2" />
-            <el-option label="删除" :value="3" />
-            <el-option label="授权" :value="4" />
-            <el-option label="导出" :value="5" />
-            <el-option label="导入" :value="6" />
-            <el-option label="强退" :value="7" />
-            <el-option label="清空" :value="8" />
+          <el-select
+            v-model="queryParams.businessType"
+            placeholder="请选择业务类型"
+            clearable
+            style="width: 200px"
+          >
+            <el-option
+              label="其他"
+              :value="0"
+            />
+            <el-option
+              label="新增"
+              :value="1"
+            />
+            <el-option
+              label="修改"
+              :value="2"
+            />
+            <el-option
+              label="删除"
+              :value="3"
+            />
+            <el-option
+              label="授权"
+              :value="4"
+            />
+            <el-option
+              label="导出"
+              :value="5"
+            />
+            <el-option
+              label="导入"
+              :value="6"
+            />
+            <el-option
+              label="强退"
+              :value="7"
+            />
+            <el-option
+              label="清空"
+              :value="8"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="操作状态">
-          <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-            <el-option label="成功" :value="0" />
-            <el-option label="失败" :value="1" />
+          <el-select
+            v-model="queryParams.status"
+            placeholder="请选择状态"
+            clearable
+            style="width: 200px"
+          >
+            <el-option
+              label="成功"
+              :value="0"
+            />
+            <el-option
+              label="失败"
+              :value="1"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="操作时间">
@@ -41,8 +104,19 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+          <el-button
+            type="primary"
+            :icon="Search"
+            @click="handleQuery"
+          >
+            搜索
+          </el-button>
+          <el-button
+            :icon="Refresh"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -50,13 +124,30 @@
     <!-- 操作按钮 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
-        <el-button type="danger" @click="handleDelete" :disabled="selectedIds.length === 0" :icon="Delete">
+        <el-button
+          type="danger"
+          :disabled="selectedIds.length === 0"
+          :icon="Delete"
+          @click="handleDelete"
+        >
           删除
         </el-button>
-        <el-button type="danger" plain @click="handleClean" :icon="Delete">清空</el-button>
+        <el-button
+          type="danger"
+          plain
+          :icon="Delete"
+          @click="handleClean"
+        >
+          清空
+        </el-button>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="刷新" />
+        <el-button
+          circle
+          :icon="Refresh"
+          title="刷新"
+          @click="fetchData"
+        />
       </div>
     </div>
 
@@ -65,44 +156,120 @@
       <el-table
         v-loading="loading"
         :data="tableData"
-        @selection-change="handleSelectionChange"
         border
         style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="operId" label="编号" width="80" align="center" />
-        <el-table-column prop="title" label="操作标题" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="businessType" label="业务类型" width="120" align="center">
+        <el-table-column
+          type="selection"
+          width="55"
+          align="center"
+        />
+        <el-table-column
+          prop="operId"
+          label="编号"
+          width="80"
+          align="center"
+        />
+        <el-table-column
+          prop="title"
+          label="操作标题"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="businessType"
+          label="业务类型"
+          width="120"
+          align="center"
+        >
           <template #default="{ row }">
             <el-tag :type="getBusinessTypeTag(row.businessType)">
               {{ getBusinessTypeText(row.businessType) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="requestMethod" label="请求方式" width="126" align="center">
+        <el-table-column
+          prop="requestMethod"
+          label="请求方式"
+          width="126"
+          align="center"
+        >
           <template #default="{ row }">
-            <el-tag :type="getMethodTag(row.requestMethod)" size="small">
+            <el-tag
+              :type="getMethodTag(row.requestMethod)"
+              size="small"
+            >
               {{ row.requestMethod }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="operName" label="操作人员" width="180" show-overflow-tooltip />
-        <el-table-column prop="operIp" label="操作IP" width="120" align="center" />
-        <el-table-column prop="operLocation" label="操作地点" width="120" align="center" />
-        <el-table-column prop="status" label="状态" width="110" align="center">
+        <el-table-column
+          prop="operName"
+          label="操作人员"
+          width="180"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="operIp"
+          label="操作IP"
+          width="120"
+          align="center"
+        />
+        <el-table-column
+          prop="operLocation"
+          label="操作地点"
+          width="120"
+          align="center"
+        />
+        <el-table-column
+          prop="status"
+          label="状态"
+          width="110"
+          align="center"
+        >
           <template #default="{ row }">
             <el-tag :type="row.status === 0 ? 'success' : 'danger'">
               {{ row.status === 0 ? '成功' : '失败' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="costTime" label="耗时" width="80" align="center" />
-        <el-table-column prop="operTime" label="操作时间" width="180" align="center" />
-        <el-table-column label="操作" width="150" align="center" fixed="right">
+        <el-table-column
+          prop="costTime"
+          label="耗时"
+          width="80"
+          align="center"
+        />
+        <el-table-column
+          prop="operTime"
+          label="操作时间"
+          width="180"
+          align="center"
+        />
+        <el-table-column
+          label="操作"
+          width="150"
+          align="center"
+          fixed="right"
+        >
           <template #default="{ row }">
             <div class="button-row">
-              <el-button type="primary" link @click="handleDetail(row)" :icon="View">详情</el-button>
-              <el-button type="danger" link @click="handleDeleteSingle(row)" :icon="Delete">删除</el-button>
+              <el-button
+                type="primary"
+                link
+                :icon="View"
+                @click="handleDetail(row)"
+              >
+                详情
+              </el-button>
+              <el-button
+                type="danger"
+                link
+                :icon="Delete"
+                @click="handleDeleteSingle(row)"
+              >
+                删除
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -130,28 +297,66 @@
       append-to-body
       destroy-on-close
     >
-      <el-descriptions :column="2" border v-if="detailData">
-        <el-descriptions-item label="日志编号">{{ detailData.operId }}</el-descriptions-item>
-        <el-descriptions-item label="操作标题">{{ detailData.title }}</el-descriptions-item>
+      <el-descriptions
+        v-if="detailData"
+        :column="2"
+        border
+      >
+        <el-descriptions-item label="日志编号">
+          {{ detailData.operId }}
+        </el-descriptions-item>
+        <el-descriptions-item label="操作标题">
+          {{ detailData.title }}
+        </el-descriptions-item>
         <el-descriptions-item label="业务类型">
           <el-tag :type="getBusinessTypeTag(detailData.businessType)">
             {{ getBusinessTypeText(detailData.businessType) }}
           </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="请求方式">
-          <el-tag :type="getMethodTag(detailData.requestMethod)" size="small">
+          <el-tag
+            :type="getMethodTag(detailData.requestMethod)"
+            size="small"
+          >
             {{ detailData.requestMethod }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="操作人员">{{ detailData.operName }}</el-descriptions-item>
-        <el-descriptions-item label="操作IP">{{ detailData.operIp }}</el-descriptions-item>
-        <el-descriptions-item label="操作地点" :span="2">{{ detailData.operLocation }}</el-descriptions-item>
-        <el-descriptions-item label="操作时间" :span="2">{{ detailData.operTime }}</el-descriptions-item>
-        <el-descriptions-item label="请求URL" :span="2">{{ detailData.operUrl }}</el-descriptions-item>
-        <el-descriptions-item label="调用方法" :span="2">
-          <div class="code-text">{{ detailData.method }}</div>
+        <el-descriptions-item label="操作人员">
+          {{ detailData.operName }}
         </el-descriptions-item>
-        <el-descriptions-item label="请求参数" :span="2">
+        <el-descriptions-item label="操作IP">
+          {{ detailData.operIp }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="操作地点"
+          :span="2"
+        >
+          {{ detailData.operLocation }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="操作时间"
+          :span="2"
+        >
+          {{ detailData.operTime }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="请求URL"
+          :span="2"
+        >
+          {{ detailData.operUrl }}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="调用方法"
+          :span="2"
+        >
+          <div class="code-text">
+            {{ detailData.method }}
+          </div>
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="请求参数"
+          :span="2"
+        >
           <el-input
             type="textarea"
             :value="formatJson(detailData.operParam)"
@@ -160,7 +365,10 @@
             class="json-input"
           />
         </el-descriptions-item>
-        <el-descriptions-item label="返回结果" :span="2">
+        <el-descriptions-item
+          label="返回结果"
+          :span="2"
+        >
           <el-input
             type="textarea"
             :value="formatJson(detailData.jsonResult)"
@@ -174,9 +382,17 @@
             {{ detailData.status === 0 ? '成功' : '失败' }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="执行耗时">{{ detailData.costTime }} ms</el-descriptions-item>
-        <el-descriptions-item label="错误信息" :span="2" v-if="detailData.errorMsg">
-          <div class="error-msg">{{ detailData.errorMsg }}</div>
+        <el-descriptions-item label="执行耗时">
+          {{ detailData.costTime }} ms
+        </el-descriptions-item>
+        <el-descriptions-item
+          v-if="detailData.errorMsg"
+          label="错误信息"
+          :span="2"
+        >
+          <div class="error-msg">
+            {{ detailData.errorMsg }}
+          </div>
         </el-descriptions-item>
       </el-descriptions>
     </el-dialog>

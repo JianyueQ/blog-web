@@ -9,29 +9,33 @@
         :prefix-icon="Search"
         @keyup.enter="handleSearch"
       />
-      <el-button type="primary" :icon="Search" @click="handleSearch" />
+      <el-button
+        type="primary"
+        :icon="Search"
+        @click="handleSearch"
+      />
     </div>
 
     <!-- 筛选标签 -->
     <div class="filter-tags">
       <el-tag 
         :type="statusFilter === '' ? 'primary' : 'info'" 
-        @click="statusFilter = ''; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = ''; handleSearch()"
       >
         全部
       </el-tag>
       <el-tag 
         :type="statusFilter === '0' ? 'success' : 'info'" 
-        @click="statusFilter = '0'; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = '0'; handleSearch()"
       >
         成功
       </el-tag>
       <el-tag 
         :type="statusFilter === '1' ? 'danger' : 'info'" 
-        @click="statusFilter = '1'; handleSearch()"
         class="filter-tag"
+        @click="statusFilter = '1'; handleSearch()"
       >
         失败
       </el-tag>
@@ -48,12 +52,18 @@
       >
         <div class="item-header">
           <div class="oper-title">
-            <el-tag :type="getBusinessTypeTag(item.businessType)" size="small">
+            <el-tag
+              :type="getBusinessTypeTag(item.businessType)"
+              size="small"
+            >
               {{ getBusinessTypeText(item.businessType) }}
             </el-tag>
             <span class="title-text">{{ item.title }}</span>
           </div>
-          <el-tag :type="item.status === 0 ? 'success' : 'danger'" size="small">
+          <el-tag
+            :type="item.status === 0 ? 'success' : 'danger'"
+            size="small"
+          >
             {{ item.status === 0 ? '成功' : '失败' }}
           </el-tag>
         </div>
@@ -67,7 +77,11 @@
             <span class="info-text">{{ item.operIp }} {{ item.operLocation ? `· ${item.operLocation}` : '' }}</span>
           </div>
           <div class="info-row">
-            <el-tag :type="getMethodTag(item.requestMethod)" size="small" effect="plain">
+            <el-tag
+              :type="getMethodTag(item.requestMethod)"
+              size="small"
+              effect="plain"
+            >
               {{ item.requestMethod }}
             </el-tag>
             <span class="cost-time">{{ item.costTime }}ms</span>
@@ -78,10 +92,22 @@
           </div>
         </div>
         <div class="item-footer">
-          <el-button type="primary" link size="small" :icon="View" @click.stop="handleDetail(item)">
+          <el-button
+            type="primary"
+            link
+            size="small"
+            :icon="View"
+            @click.stop="handleDetail(item)"
+          >
             详情
           </el-button>
-          <el-button type="danger" link size="small" :icon="Delete" @click.stop="handleDelete(item)">
+          <el-button
+            type="danger"
+            link
+            size="small"
+            :icon="Delete"
+            @click.stop="handleDelete(item)"
+          >
             删除
           </el-button>
         </div>
@@ -90,11 +116,23 @@
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else-if="tableData.length > 0" class="no-more">没有更多了</span>
-      <span v-else class="no-more">暂无数据</span>
+      <span
+        v-else-if="tableData.length > 0"
+        class="no-more"
+      >没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >暂无数据</span>
     </div>
 
     <!-- 详情抽屉 -->
@@ -105,7 +143,10 @@
       direction="btt"
       destroy-on-close
     >
-      <div v-if="detailData" class="detail-content">
+      <div
+        v-if="detailData"
+        class="detail-content"
+      >
         <div class="detail-section">
           <div class="detail-item">
             <span class="detail-label">日志编号</span>
@@ -123,7 +164,10 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">请求方式</span>
-            <el-tag :type="getMethodTag(detailData.requestMethod)" size="small">
+            <el-tag
+              :type="getMethodTag(detailData.requestMethod)"
+              size="small"
+            >
               {{ detailData.requestMethod }}
             </el-tag>
           </div>
@@ -159,19 +203,37 @@
           </div>
         </div>
         
-        <div class="detail-section" v-if="detailData.errorMsg">
-          <div class="detail-label" style="color: var(--backstage-danger); margin-bottom: 8px;">错误信息</div>
-          <div class="error-box">{{ detailData.errorMsg }}</div>
+        <div
+          v-if="detailData.errorMsg"
+          class="detail-section"
+        >
+          <div
+            class="detail-label"
+            style="color: var(--backstage-danger); margin-bottom: 8px;"
+          >
+            错误信息
+          </div>
+          <div class="error-box">
+            {{ detailData.errorMsg }}
+          </div>
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">请求参数</div>
-          <div class="code-box">{{ formatJson(detailData.operParam) }}</div>
+          <div class="detail-label">
+            请求参数
+          </div>
+          <div class="code-box">
+            {{ formatJson(detailData.operParam) }}
+          </div>
         </div>
 
         <div class="detail-section">
-          <div class="detail-label">返回结果</div>
-          <div class="code-box">{{ formatJson(detailData.jsonResult) }}</div>
+          <div class="detail-label">
+            返回结果
+          </div>
+          <div class="code-box">
+            {{ formatJson(detailData.jsonResult) }}
+          </div>
         </div>
       </div>
     </el-drawer>

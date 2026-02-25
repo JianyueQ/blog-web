@@ -7,7 +7,14 @@
           <span class="subtitle">管理文章关联的所有标签</span>
         </div>
         <div class="header-right">
-          <el-button type="primary" round :icon="Plus" @click="handleAdd">新增标签</el-button>
+          <el-button
+            type="primary"
+            round
+            :icon="Plus"
+            @click="handleAdd"
+          >
+            新增标签
+          </el-button>
         </div>
       </div>
       <div class="card-body">
@@ -24,19 +31,54 @@
           </el-tag>
         </div>
 
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="name" label="标签名称" min-width="150" />
-          <el-table-column prop="count" label="使用频次" width="120" align="center" sortable>
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            prop="name"
+            label="标签名称"
+            min-width="150"
+          />
+          <el-table-column
+            prop="count"
+            label="使用频次"
+            width="120"
+            align="center"
+            sortable
+          >
             <template #default="scope">
               <span class="count-badge">{{ scope.row.count }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="180" />
-          <el-table-column label="操作" width="180" fixed="right">
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            width="180"
+          />
+          <el-table-column
+            label="操作"
+            width="180"
+            fixed="right"
+          >
             <template #default="scope">
               <div class="button-row">
-                <el-button link type="primary" :icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button link type="danger" :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button
+                  link
+                  type="primary"
+                  :icon="Edit"
+                  @click="handleEdit(scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  @click="handleDelete(scope.row)"
+                >
+                  删除
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -62,11 +104,11 @@ const handleAdd = () => {
   // TODO: 使用 ElDialog 弹出新增标签表单
 }
 
-const handleEdit = (tag) => {
+const handleEdit = () => {
   // TODO: 使用 ElDialog 弹出编辑标签表单
 }
 
-const handleDelete = (tag) => {
+const handleDelete = () => {
   // TODO: 使用 ElMessageBox.confirm 确认删除标签
 }
 </script>

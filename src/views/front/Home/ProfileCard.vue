@@ -2,15 +2,23 @@
   <div class="profile-card">
     <!-- 头像区域 -->
     <div class="avatar-container">
-      <img :src="profile.avatar || '/images/icon/logo.png'" alt="Avatar" class="avatar"/>
-      <div class="avatar-ring"></div>
+      <img
+        :src="profile.avatar || '/images/icon/logo.png'"
+        alt="Avatar"
+        class="avatar"
+      >
+      <div class="avatar-ring" />
       <!--todo 添加状态点添加头像-->
       <!--      <div class="status-dot"></div>-->
     </div>
 
     <!-- 基本信息 -->
-    <h1 class="name">{{ profile.nickname || '加载中...' }}</h1>
-    <p class="description">{{ profile.description || '这家伙很懒，什么都没写...' }}</p>
+    <h1 class="name">
+      {{ profile.nickname || '加载中...' }}
+    </h1>
+    <p class="description">
+      {{ profile.description || '这家伙很懒，什么都没写...' }}
+    </p>
 
     <!-- 登录信息/统计 -->
     <div class="info-stats">
@@ -23,7 +31,6 @@
         <span class="value">{{ profile.lastLoginIp === '内网IP' ? '未知' : (profile.lastLoginIp || '未知') }}</span>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -49,11 +56,6 @@ const fetchProfile = async () => {
   } catch (error) {
     console.error('获取博客主资料失败:', error)
   }
-}
-
-const handleContact = () => {
-  // todo: 启用 Element Plus 弹窗进行反馈或查看更多联系方式
-  console.log('联系我按钮被点击')
 }
 
 onMounted(() => {

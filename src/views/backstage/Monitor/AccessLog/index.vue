@@ -1,20 +1,51 @@
 <template>
-  <MobileAccessLog v-if="isMobile" ref="mobileRef" />
-  <div v-else class="accesslog-manage">
+  <MobileAccessLog
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="accesslog-manage"
+  >
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
-      <el-form :model="queryParams" inline label-width="auto">
+      <el-form
+        :model="queryParams"
+        inline
+        label-width="auto"
+      >
         <el-form-item label="用户名">
-          <el-input v-model="queryParams.userName" placeholder="请输入用户名" clearable style="width: 200px" />
+          <el-input
+            v-model="queryParams.userName"
+            placeholder="请输入用户名"
+            clearable
+            style="width: 200px"
+          />
         </el-form-item>
         <el-form-item label="登录状态">
-          <el-select v-model="queryParams.status" placeholder="请选择状态" clearable style="width: 200px">
-            <el-option label="成功" value="0" />
-            <el-option label="失败" value="1" />
+          <el-select
+            v-model="queryParams.status"
+            placeholder="请选择状态"
+            clearable
+            style="width: 200px"
+          >
+            <el-option
+              label="成功"
+              value="0"
+            />
+            <el-option
+              label="失败"
+              value="1"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="登录IP">
-          <el-input v-model="queryParams.ipaddr" placeholder="请输入登录IP" clearable style="width: 200px" />
+          <el-input
+            v-model="queryParams.ipaddr"
+            placeholder="请输入登录IP"
+            clearable
+            style="width: 200px"
+          />
         </el-form-item>
         <el-form-item label="登录时间">
           <el-date-picker
@@ -28,8 +59,19 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+          <el-button
+            type="primary"
+            :icon="Search"
+            @click="handleQuery"
+          >
+            搜索
+          </el-button>
+          <el-button
+            :icon="Refresh"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -37,13 +79,30 @@
     <!-- 操作按钮 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
-        <el-button type="danger" @click="handleDelete" :disabled="selectedIds.length === 0" :icon="Delete">
+        <el-button
+          type="danger"
+          :disabled="selectedIds.length === 0"
+          :icon="Delete"
+          @click="handleDelete"
+        >
           删除
         </el-button>
-        <el-button type="danger" plain @click="handleClean" :icon="Delete">清空</el-button>
+        <el-button
+          type="danger"
+          plain
+          :icon="Delete"
+          @click="handleClean"
+        >
+          清空
+        </el-button>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="刷新" />
+        <el-button
+          circle
+          :icon="Refresh"
+          title="刷新"
+          @click="fetchData"
+        />
       </div>
     </div>
 
@@ -52,29 +111,91 @@
       <el-table
         v-loading="loading"
         :data="tableData"
-        @selection-change="handleSelectionChange"
         border
         style="width: 100%"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="infoId" label="访问编号" width="100" align="center" />
-        <el-table-column prop="userName" label="用户名" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="ipaddr" label="登录IP" width="140" align="center" />
-        <el-table-column prop="loginLocation" label="登录地点" width="140" align="center" />
-        <el-table-column prop="browser" label="浏览器" width="120" align="center" show-overflow-tooltip />
-        <el-table-column prop="os" label="操作系统" width="120" align="center" />
-        <el-table-column prop="status" label="登录状态" width="110" align="center">
+        <el-table-column
+          type="selection"
+          width="55"
+          align="center"
+        />
+        <el-table-column
+          prop="infoId"
+          label="访问编号"
+          width="100"
+          align="center"
+        />
+        <el-table-column
+          prop="userName"
+          label="用户名"
+          min-width="180"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="ipaddr"
+          label="登录IP"
+          width="140"
+          align="center"
+        />
+        <el-table-column
+          prop="loginLocation"
+          label="登录地点"
+          width="140"
+          align="center"
+        />
+        <el-table-column
+          prop="browser"
+          label="浏览器"
+          width="120"
+          align="center"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="os"
+          label="操作系统"
+          width="120"
+          align="center"
+        />
+        <el-table-column
+          prop="status"
+          label="登录状态"
+          width="110"
+          align="center"
+        >
           <template #default="{ row }">
             <el-tag :type="row.status === '0' ? 'success' : 'danger'">
               {{ row.status === '0' ? '成功' : '失败' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="msg" label="提示信息" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="loginTime" label="登录时间" width="180" align="center" />
-        <el-table-column label="操作" width="100" align="center" fixed="right">
+        <el-table-column
+          prop="msg"
+          label="提示信息"
+          min-width="120"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="loginTime"
+          label="登录时间"
+          width="180"
+          align="center"
+        />
+        <el-table-column
+          label="操作"
+          width="100"
+          align="center"
+          fixed="right"
+        >
           <template #default="{ row }">
-            <el-button type="danger" link @click="handleDeleteSingle(row)" :icon="Delete">删除</el-button>
+            <el-button
+              type="danger"
+              link
+              :icon="Delete"
+              @click="handleDeleteSingle(row)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>

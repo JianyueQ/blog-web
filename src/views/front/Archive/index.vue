@@ -1,8 +1,12 @@
 <template>
   <div class="archive-view">
     <div class="archive-header">
-      <h1 class="page-title">文章</h1>
-      <p class="page-subtitle">记录成长的每一步</p>
+      <h1 class="page-title">
+        文章
+      </h1>
+      <p class="page-subtitle">
+        记录成长的每一步
+      </p>
       <div class="archive-stats">
         <span class="stat-item">共 {{ totalPosts }} 篇文章</span>
       </div>
@@ -10,26 +14,38 @@
 
     <div class="archive-timeline">
       <div
-        v-for="(posts, year) in groupedPosts"
+        v-for="(yearPosts, year) in groupedPosts"
         :key="year"
         class="year-group"
       >
-        <div class="year-title">{{ year }}</div>
+        <div class="year-title">
+          {{ year }}
+        </div>
 
         <div class="posts-list">
           <div
-            v-for="post in posts"
+            v-for="post in yearPosts"
             :key="post.id"
             class="post-item"
             @click="goToPost(post)"
           >
-            <div class="post-dot"></div>
+            <div class="post-dot" />
             <div class="post-content">
-              <div class="post-date">{{ post.date }}</div>
-              <h3 class="post-title">{{ post.title }}</h3>
-              <p class="post-desc">{{ post.description }}</p>
+              <div class="post-date">
+                {{ post.date }}
+              </div>
+              <h3 class="post-title">
+                {{ post.title }}
+              </h3>
+              <p class="post-desc">
+                {{ post.description }}
+              </p>
               <div class="post-tags">
-                <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
+                <span
+                  v-for="tag in post.tags"
+                  :key="tag"
+                  class="tag"
+                >{{ tag }}</span>
               </div>
             </div>
           </div>

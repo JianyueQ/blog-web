@@ -1,6 +1,12 @@
 <template>
-  <MobileUser v-if="isMobile" ref="mobileRef" />
-  <div v-else class="user-manage">
+  <MobileUser
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="user-manage"
+  >
     <div class="pro-card table-card">
       <div class="card-header">
         <div class="header-left">
@@ -8,15 +14,32 @@
           <span class="subtitle">管理系统访问权限与用户信息</span>
         </div>
         <div class="header-right">
-          <el-button type="primary" round :icon="Plus" @click="handleAdd">添加协作者</el-button>
+          <el-button
+            type="primary"
+            round
+            :icon="Plus"
+            @click="handleAdd"
+          >
+            添加协作者
+          </el-button>
         </div>
       </div>
       <div class="card-body">
-        <el-table v-loading="loading" :data="tableData" style="width: 100%">
-          <el-table-column label="用户" min-width="200">
+        <el-table
+          v-loading="loading"
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            label="用户"
+            min-width="200"
+          >
             <template #default="scope">
               <div class="user-cell">
-                <el-avatar :size="32" :src="scope.row.avatar" />
+                <el-avatar
+                  :size="32"
+                  :src="scope.row.avatar"
+                />
                 <div class="details">
                   <span class="username">{{ scope.row.nickname || scope.row.username }}</span>
                   <span class="email">{{ scope.row.email }}</span>
@@ -24,26 +47,73 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="username" label="登录账号" width="180" />
-          <el-table-column prop="userType" label="角色" width="120">
+          <el-table-column
+            prop="username"
+            label="登录账号"
+            width="180"
+          />
+          <el-table-column
+            prop="userType"
+            label="角色"
+            width="120"
+          >
             <template #default="scope">
-              <el-tag :type="scope.row.userType === 'admin' ? 'danger' : 'success'" size="small">
+              <el-tag
+                :type="scope.row.userType === 'admin' ? 'danger' : 'success'"
+                size="small"
+              >
                 {{ scope.row.userType === 'admin' ? '管理员' : '协作者' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="lastLoginTime" label="最后登录" width="180">
+          <el-table-column
+            prop="lastLoginTime"
+            label="最后登录"
+            width="180"
+          >
             <template #default="scope">
               {{ scope.row.lastLoginTime || '从未登录' }}
             </template>
           </el-table-column>
-          <el-table-column prop="lastLoginIp" label="登录IP" width="140" />
-          <el-table-column label="操作" width="220" fixed="right">
+          <el-table-column
+            prop="lastLoginIp"
+            label="登录IP"
+            width="140"
+          />
+          <el-table-column
+            label="操作"
+            width="220"
+            fixed="right"
+          >
             <template #default="scope">
               <div class="button-row">
-                <el-button link type="primary" :icon="Edit" @click="handleUpdate(scope.row)" :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'">资料</el-button>
-                <el-button link type="primary" :icon="Lock" @click="handleResetPwd(scope.row)" :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'">密码</el-button>
-                <el-button link type="danger" :icon="Delete" @click="handleDelete(scope.row)" :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'">移除</el-button>
+                <el-button
+                  link
+                  type="primary"
+                  :icon="Edit"
+                  :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'"
+                  @click="handleUpdate(scope.row)"
+                >
+                  资料
+                </el-button>
+                <el-button
+                  link
+                  type="primary"
+                  :icon="Lock"
+                  :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'"
+                  @click="handleResetPwd(scope.row)"
+                >
+                  密码
+                </el-button>
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  :disabled="scope.row.adminId === 1 || scope.row.adminId === '1'"
+                  @click="handleDelete(scope.row)"
+                >
+                  移除
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -65,28 +135,80 @@
     </div>
 
     <!-- 添加或修改用户对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
-      <el-form ref="userRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="登录账号" prop="username">
-          <el-input v-model="form.username" placeholder="请输入登录账号" :disabled="form.adminId !== undefined" />
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="500px"
+      append-to-body
+    >
+      <el-form
+        ref="userRef"
+        :model="form"
+        :rules="rules"
+        label-width="80px"
+      >
+        <el-form-item
+          label="登录账号"
+          prop="username"
+        >
+          <el-input
+            v-model="form.username"
+            placeholder="请输入登录账号"
+            :disabled="form.adminId !== undefined"
+          />
         </el-form-item>
-        <el-form-item label="登录密码" prop="password" v-if="form.adminId === undefined && title === '添加协作者'">
-          <el-input v-model="form.password" placeholder="请输入登录密码" type="password" show-password />
+        <el-form-item
+          v-if="form.adminId === undefined && title === '添加协作者'"
+          label="登录密码"
+          prop="password"
+        >
+          <el-input
+            v-model="form.password"
+            placeholder="请输入登录密码"
+            type="password"
+            show-password
+          />
         </el-form-item>
-        <el-form-item label="用户昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入用户昵称" />
+        <el-form-item
+          label="用户昵称"
+          prop="nickname"
+        >
+          <el-input
+            v-model="form.nickname"
+            placeholder="请输入用户昵称"
+          />
         </el-form-item>
-        <el-form-item label="用户邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入用户邮箱" />
+        <el-form-item
+          label="用户邮箱"
+          prop="email"
+        >
+          <el-input
+            v-model="form.email"
+            placeholder="请输入用户邮箱"
+          />
         </el-form-item>
-        <el-form-item label="备注描述" prop="description">
-          <el-input v-model="form.description" type="textarea" placeholder="请输入内容" />
+        <el-form-item
+          label="备注描述"
+          prop="description"
+        >
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            placeholder="请输入内容"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
+          <el-button
+            type="primary"
+            @click="submitForm"
+          >
+            确 定
+          </el-button>
+          <el-button @click="cancel">
+            取 消
+          </el-button>
         </div>
       </template>
     </el-dialog>
@@ -248,7 +370,7 @@ function handleResetPwd(row) {
     inputPattern: /^.{5,20}$/,
     inputErrorMessage: "密码长度必须介于 5 和 20 之间"
   }).then(({ value }) => {
-    resetUserPwd(row.adminId, value).then(response => {
+    resetUserPwd(row.adminId, value).then(() => {
       ElMessage.success("修改成功，新密码是：" + value)
     })
   }).catch(() => {})

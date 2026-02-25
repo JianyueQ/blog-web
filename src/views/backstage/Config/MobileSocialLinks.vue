@@ -2,11 +2,20 @@
   <div class="mobile-social-links">
     <!-- 新增按钮 -->
     <div class="action-bar">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">新增链接</el-button>
+      <el-button
+        type="primary"
+        :icon="Plus"
+        @click="handleAdd"
+      >
+        新增链接
+      </el-button>
     </div>
 
     <!-- 社交链接列表 -->
-    <div class="social-list" v-loading="loading">
+    <div
+      v-loading="loading"
+      class="social-list"
+    >
       <div
         v-for="item in socialList"
         :key="item.socialLinkId"
@@ -15,8 +24,15 @@
         <div class="social-header">
           <div class="social-info">
             <div class="icon-wrapper">
-              <i v-if="item.icon.startsWith('el-icon-')" :class="item.icon"></i>
-              <img v-else-if="item.icon.startsWith('/') || item.icon.startsWith('http')" :src="item.icon" class="icon-img" />
+              <i
+                v-if="item.icon.startsWith('el-icon-')"
+                :class="item.icon"
+              />
+              <img
+                v-else-if="item.icon.startsWith('/') || item.icon.startsWith('http')"
+                :src="item.icon"
+                class="icon-img"
+              >
               <span v-else>{{ item.icon }}</span>
             </div>
             <div class="social-meta">
@@ -42,20 +58,44 @@
           </div>
         </div>
         <div class="social-footer">
-          <el-button type="primary" link size="small" :icon="Edit" @click="handleEdit(item)">
+          <el-button
+            type="primary"
+            link
+            size="small"
+            :icon="Edit"
+            @click="handleEdit(item)"
+          >
             编辑
           </el-button>
-          <el-button type="danger" link size="small" :icon="Delete" @click="handleDelete(item)">
+          <el-button
+            type="danger"
+            link
+            size="small"
+            :icon="Delete"
+            @click="handleDelete(item)"
+          >
             删除
           </el-button>
         </div>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="!loading && socialList.length === 0" class="empty-state">
-        <el-icon class="empty-icon"><Link /></el-icon>
-        <p class="empty-text">暂无社交链接</p>
-        <el-button type="primary" @click="handleAdd">新增第一个链接</el-button>
+      <div
+        v-if="!loading && socialList.length === 0"
+        class="empty-state"
+      >
+        <el-icon class="empty-icon">
+          <Link />
+        </el-icon>
+        <p class="empty-text">
+          暂无社交链接
+        </p>
+        <el-button
+          type="primary"
+          @click="handleAdd"
+        >
+          新增第一个链接
+        </el-button>
       </div>
     </div>
 
@@ -67,37 +107,83 @@
       direction="btt"
       destroy-on-close
     >
-      <el-form :model="socialForm" label-position="top">
-        <el-form-item label="名称" required>
-          <el-input v-model="socialForm.name" placeholder="请输入社交平台名称" />
+      <el-form
+        :model="socialForm"
+        label-position="top"
+      >
+        <el-form-item
+          label="名称"
+          required
+        >
+          <el-input
+            v-model="socialForm.name"
+            placeholder="请输入社交平台名称"
+          />
         </el-form-item>
-        <el-form-item label="图标方式" required>
+        <el-form-item
+          label="图标方式"
+          required
+        >
           <el-radio-group v-model="iconType">
-            <el-radio label="class">图标类名</el-radio>
-            <el-radio label="upload">本地上传</el-radio>
+            <el-radio label="class">
+              图标类名
+            </el-radio>
+            <el-radio label="upload">
+              本地上传
+            </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="图标内容" required>
-          <el-input v-if="iconType === 'class'" v-model="socialForm.icon" placeholder="例如: /images/icon/github.png" />
-          <div v-else class="upload-hint">
+        <el-form-item
+          label="图标内容"
+          required
+        >
+          <el-input
+            v-if="iconType === 'class'"
+            v-model="socialForm.icon"
+            placeholder="例如: /images/icon/github.png"
+          />
+          <div
+            v-else
+            class="upload-hint"
+          >
             <el-icon><InfoFilled /></el-icon>
             <span>上传接口暂未实现，请先使用预设图标或类名</span>
           </div>
         </el-form-item>
         <el-form-item label="提示文本">
-          <el-input v-model="socialForm.tip" placeholder="请输入悬浮提示文本" />
+          <el-input
+            v-model="socialForm.tip"
+            placeholder="请输入悬浮提示文本"
+          />
         </el-form-item>
-        <el-form-item label="链接地址" required>
-          <el-input v-model="socialForm.url" placeholder="请输入跳转链接" />
+        <el-form-item
+          label="链接地址"
+          required
+        >
+          <el-input
+            v-model="socialForm.url"
+            placeholder="请输入跳转链接"
+          />
         </el-form-item>
         <el-form-item label="排序序号">
-          <el-input-number v-model="socialForm.sortOrder" :min="0" style="width: 100%;" />
+          <el-input-number
+            v-model="socialForm.sortOrder"
+            :min="0"
+            style="width: 100%;"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="drawer-footer">
-          <el-button @click="drawerVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitSocialForm">确定</el-button>
+          <el-button @click="drawerVisible = false">
+            取消
+          </el-button>
+          <el-button
+            type="primary"
+            @click="submitSocialForm"
+          >
+            确定
+          </el-button>
         </div>
       </template>
     </el-drawer>

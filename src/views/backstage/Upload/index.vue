@@ -16,7 +16,9 @@
           :on-success="handleSuccess"
           :on-error="handleError"
         >
-          <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+          <el-icon class="el-icon--upload">
+            <upload-filled />
+          </el-icon>
           <div class="el-upload__text">
             将文件拖到此处，或 <em>点击上传</em>
           </div>
@@ -32,16 +34,32 @@
             <el-row :gutter="40">
               <el-col :span="12">
                 <el-form-item label="默认分类">
-                  <el-select v-model="uploadConfig.category" placeholder="请选择资源分类" style="width: 100%">
-                    <el-option label="默认库" value="default" />
-                    <el-option label="文章配图" value="article" />
-                    <el-option label="系统资源" value="system" />
+                  <el-select
+                    v-model="uploadConfig.category"
+                    placeholder="请选择资源分类"
+                    style="width: 100%"
+                  >
+                    <el-option
+                      label="默认库"
+                      value="default"
+                    />
+                    <el-option
+                      label="文章配图"
+                      value="article"
+                    />
+                    <el-option
+                      label="系统资源"
+                      value="system"
+                    />
                   </el-select>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="水印设置">
-                  <el-switch v-model="uploadConfig.watermark" active-text="自动添加文字水印" />
+                  <el-switch
+                    v-model="uploadConfig.watermark"
+                    active-text="自动添加文字水印"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -56,20 +74,46 @@
         <span class="title">本次上传记录</span>
       </div>
       <div class="card-body">
-        <el-table :data="recentUploads" style="width: 100%">
-          <el-table-column prop="name" label="文件名" min-width="200" />
-          <el-table-column prop="size" label="大小" width="120" />
-          <el-table-column prop="status" label="状态" width="120">
+        <el-table
+          :data="recentUploads"
+          style="width: 100%"
+        >
+          <el-table-column
+            prop="name"
+            label="文件名"
+            min-width="200"
+          />
+          <el-table-column
+            prop="size"
+            label="大小"
+            width="120"
+          />
+          <el-table-column
+            prop="status"
+            label="状态"
+            width="120"
+          >
             <template #default="scope">
-              <el-tag :type="scope.row.status === 'success' ? 'success' : 'info'" size="small">
+              <el-tag
+                :type="scope.row.status === 'success' ? 'success' : 'info'"
+                size="small"
+              >
                 {{ scope.row.status === 'success' ? '已完成' : '等待中' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column
+            label="操作"
+            width="120"
+          >
             <template #default>
               <div class="button-row">
-                <el-button link type="primary">复制链接</el-button>
+                <el-button
+                  link
+                  type="primary"
+                >
+                  复制链接
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -93,11 +137,11 @@ const recentUploads = ref([
   { name: 'hero-image-new.jpg', size: '2.4MB', status: 'success' }
 ])
 
-const handleSuccess = (res, file) => {
+const handleSuccess = () => {
   // TODO: 使用 ElMessage.success('文件上传成功')
 }
 
-const handleError = (err) => {
+const handleError = () => {
   // TODO: 使用 ElMessage.error('上传失败，请重试')
 }
 </script>

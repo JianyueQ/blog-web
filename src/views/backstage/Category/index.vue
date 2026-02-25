@@ -7,25 +7,80 @@
           <span class="subtitle">管理您的内容分类体系</span>
         </div>
         <div class="header-right">
-          <el-button type="primary" round :icon="Plus" @click="handleAdd">新增分类</el-button>
+          <el-button
+            type="primary"
+            round
+            :icon="Plus"
+            @click="handleAdd"
+          >
+            新增分类
+          </el-button>
         </div>
       </div>
       <div class="card-body">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="name" label="分类名称" min-width="150" />
-          <el-table-column prop="slug" label="别名 (Slug)" width="150" />
-          <el-table-column prop="description" label="描述" min-width="250" show-overflow-tooltip />
-          <el-table-column prop="count" label="文章数量" width="120" align="center">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            prop="name"
+            label="分类名称"
+            min-width="150"
+          />
+          <el-table-column
+            prop="slug"
+            label="别名 (Slug)"
+            width="150"
+          />
+          <el-table-column
+            prop="description"
+            label="描述"
+            min-width="250"
+            show-overflow-tooltip
+          />
+          <el-table-column
+            prop="count"
+            label="文章数量"
+            width="120"
+            align="center"
+          >
             <template #default="scope">
-              <el-tag size="small" type="info">{{ scope.row.count }}</el-tag>
+              <el-tag
+                size="small"
+                type="info"
+              >
+                {{ scope.row.count }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="180" />
-          <el-table-column label="操作" width="180" fixed="right">
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            width="180"
+          />
+          <el-table-column
+            label="操作"
+            width="180"
+            fixed="right"
+          >
             <template #default="scope">
               <div class="button-row">
-                <el-button link type="primary" :icon="Edit" @click="handleEdit(scope.row)">编辑</el-button>
-                <el-button link type="danger" :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button
+                  link
+                  type="primary"
+                  :icon="Edit"
+                  @click="handleEdit(scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  @click="handleDelete(scope.row)"
+                >
+                  删除
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -62,11 +117,11 @@ const handleAdd = () => {
   // TODO: 使用 ElDialog 打开新增分类表单
 }
 
-const handleEdit = (row) => {
+const handleEdit = () => {
   // TODO: 使用 ElDialog 打开编辑分类表单
 }
 
-const handleDelete = (row) => {
+const handleDelete = () => {
   // TODO: 使用 ElMessageBox.confirm 确认删除
 }
 </script>

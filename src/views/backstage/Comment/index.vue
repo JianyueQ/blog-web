@@ -7,16 +7,36 @@
           <span class="subtitle">管理全站读者的留言与反馈</span>
         </div>
         <div class="header-right">
-          <el-button type="danger" round :icon="Delete" plain @click="handleBatchDelete">批量删除</el-button>
+          <el-button
+            type="danger"
+            round
+            :icon="Delete"
+            plain
+            @click="handleBatchDelete"
+          >
+            批量删除
+          </el-button>
         </div>
       </div>
       <div class="card-body">
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column type="selection" width="55" />
-          <el-table-column label="评论者" width="180">
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+        >
+          <el-table-column
+            type="selection"
+            width="55"
+          />
+          <el-table-column
+            label="评论者"
+            width="180"
+          >
             <template #default="scope">
               <div class="user-info">
-                <el-avatar :size="32" :src="scope.row.avatar" />
+                <el-avatar
+                  :size="32"
+                  :src="scope.row.avatar"
+                />
                 <div class="details">
                   <span class="name">{{ scope.row.nickname }}</span>
                   <span class="ip">{{ scope.row.ip }}</span>
@@ -24,28 +44,77 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="评论内容" min-width="300">
+          <el-table-column
+            label="评论内容"
+            min-width="300"
+          >
             <template #default="scope">
               <div class="comment-content">
-                <div class="text">{{ scope.row.content }}</div>
-                <div class="target">源自文章：<el-link type="primary" :underline="false">《{{ scope.row.articleTitle }}》</el-link></div>
+                <div class="text">
+                  {{ scope.row.content }}
+                </div>
+                <div class="target">
+                  源自文章：<el-link
+                    type="primary"
+                    :underline="false"
+                  >
+                    《{{ scope.row.articleTitle }}》
+                  </el-link>
+                </div>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
+          <el-table-column
+            prop="status"
+            label="状态"
+            width="100"
+          >
             <template #default="scope">
-              <el-tag :type="scope.row.status === 'approved' ? 'success' : 'warning'" size="small">
+              <el-tag
+                :type="scope.row.status === 'approved' ? 'success' : 'warning'"
+                size="small"
+              >
                 {{ scope.row.status === 'approved' ? '已通过' : '待审核' }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="时间" width="180" />
-          <el-table-column label="操作" width="220" fixed="right">
+          <el-table-column
+            prop="createTime"
+            label="时间"
+            width="180"
+          />
+          <el-table-column
+            label="操作"
+            width="220"
+            fixed="right"
+          >
             <template #default="scope">
               <div class="button-row">
-                <el-button link type="primary" :icon="Check" v-if="scope.row.status === 'pending'" @click="handleApprove(scope.row)">通过</el-button>
-                <el-button link type="primary" :icon="ChatLineRound" @click="handleReply(scope.row)">回复</el-button>
-                <el-button link type="danger" :icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button
+                  v-if="scope.row.status === 'pending'"
+                  link
+                  type="primary"
+                  :icon="Check"
+                  @click="handleApprove(scope.row)"
+                >
+                  通过
+                </el-button>
+                <el-button
+                  link
+                  type="primary"
+                  :icon="ChatLineRound"
+                  @click="handleReply(scope.row)"
+                >
+                  回复
+                </el-button>
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  @click="handleDelete(scope.row)"
+                >
+                  删除
+                </el-button>
               </div>
             </template>
           </el-table-column>
@@ -96,15 +165,15 @@ const tableData = ref([
   }
 ])
 
-const handleApprove = (row) => {
+const handleApprove = () => {
   // TODO: 调用后端接口通过审核
 }
 
-const handleReply = (row) => {
+const handleReply = () => {
   // TODO: 弹出对话框输入回复内容
 }
 
-const handleDelete = (row) => {
+const handleDelete = () => {
   // TODO: 使用 ElMessageBox.confirm 确认删除
 }
 

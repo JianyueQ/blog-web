@@ -2,11 +2,20 @@
   <div class="mobile-system-settings">
     <!-- 新增按钮 -->
     <div class="action-bar">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">新增配置</el-button>
+      <el-button
+        type="primary"
+        :icon="Plus"
+        @click="handleAdd"
+      >
+        新增配置
+      </el-button>
     </div>
 
     <!-- 配置列表 -->
-    <div class="config-list" v-loading="loading">
+    <div
+      v-loading="loading"
+      class="config-list"
+    >
       <div
         v-for="config in configList"
         :key="config.configId"
@@ -15,10 +24,17 @@
       >
         <div class="config-header">
           <div class="config-title">
-            <el-icon class="config-icon"><Setting /></el-icon>
+            <el-icon class="config-icon">
+              <Setting />
+            </el-icon>
             <span class="config-name">{{ config.configName }}</span>
           </div>
-          <el-icon class="delete-btn" @click.stop="handleDelete(config)"><Delete /></el-icon>
+          <el-icon
+            class="delete-btn"
+            @click.stop="handleDelete(config)"
+          >
+            <Delete />
+          </el-icon>
         </div>
         <div class="config-body">
           <div class="config-row">
@@ -29,7 +45,10 @@
             <span class="row-label">参数值</span>
             <span class="row-value value-text">{{ config.configValue }}</span>
           </div>
-          <div class="config-row" v-if="config.remark">
+          <div
+            v-if="config.remark"
+            class="config-row"
+          >
             <span class="row-label">备注</span>
             <span class="row-value remark-text">{{ config.remark }}</span>
           </div>
@@ -37,10 +56,22 @@
       </div>
 
       <!-- 空状态 -->
-      <div v-if="!loading && configList.length === 0" class="empty-state">
-        <el-icon class="empty-icon"><FolderOpened /></el-icon>
-        <p class="empty-text">暂无系统配置</p>
-        <el-button type="primary" @click="handleAdd">新增第一个配置</el-button>
+      <div
+        v-if="!loading && configList.length === 0"
+        class="empty-state"
+      >
+        <el-icon class="empty-icon">
+          <FolderOpened />
+        </el-icon>
+        <p class="empty-text">
+          暂无系统配置
+        </p>
+        <el-button
+          type="primary"
+          @click="handleAdd"
+        >
+          新增第一个配置
+        </el-button>
       </div>
     </div>
 
@@ -52,19 +83,38 @@
       direction="btt"
       destroy-on-close
     >
-      <el-form :model="configForm" :rules="formRules" ref="formRef" label-position="top">
-        <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="configForm.configName" placeholder="请输入参数名称" />
+      <el-form
+        ref="formRef"
+        :model="configForm"
+        :rules="formRules"
+        label-position="top"
+      >
+        <el-form-item
+          label="参数名称"
+          prop="configName"
+        >
+          <el-input
+            v-model="configForm.configName"
+            placeholder="请输入参数名称"
+          />
         </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
+        <el-form-item
+          label="参数键名"
+          prop="configKey"
+        >
           <el-input
             v-model="configForm.configKey"
             placeholder="请输入参数键名（需唯一）"
             :disabled="isEdit"
           />
-          <div class="form-tip">参数键名用于系统识别，创建后不可修改</div>
+          <div class="form-tip">
+            参数键名用于系统识别，创建后不可修改
+          </div>
         </el-form-item>
-        <el-form-item label="参数值" prop="configValue">
+        <el-form-item
+          label="参数值"
+          prop="configValue"
+        >
           <el-input
             v-model="configForm.configValue"
             type="textarea"
@@ -83,8 +133,16 @@
       </el-form>
       <template #footer>
         <div class="drawer-footer">
-          <el-button @click="drawerVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitting">确定</el-button>
+          <el-button @click="drawerVisible = false">
+            取消
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+          >
+            确定
+          </el-button>
         </div>
       </template>
     </el-drawer>

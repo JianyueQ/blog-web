@@ -1,30 +1,51 @@
 <template>
-  <MobileOnlineUser v-if="isMobile" ref="mobileRef" />
-  <div v-else class="online-user-manage">
+  <MobileOnlineUser
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="online-user-manage"
+  >
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
-      <el-form :model="queryParams" inline label-width="auto">
+      <el-form
+        :model="queryParams"
+        inline
+        label-width="auto"
+      >
         <el-form-item label="用户名">
           <el-input
-              v-model="queryParams.userName"
-              placeholder="请输入用户名"
-              clearable
-              style="width: 200px"
-              @keyup.enter="handleQuery"
+            v-model="queryParams.userName"
+            placeholder="请输入用户名"
+            clearable
+            style="width: 200px"
+            @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item label="登录IP">
           <el-input
-              v-model="queryParams.ipaddr"
-              placeholder="请输入登录IP"
-              clearable
-              style="width: 200px"
-              @keyup.enter="handleQuery"
+            v-model="queryParams.ipaddr"
+            placeholder="请输入登录IP"
+            clearable
+            style="width: 200px"
+            @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+          <el-button
+            type="primary"
+            :icon="Search"
+            @click="handleQuery"
+          >
+            搜索
+          </el-button>
+          <el-button
+            :icon="Refresh"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -34,72 +55,126 @@
       <div class="toolbar-left">
         <div class="stats-info">
           <el-icon class="stats-icon">
-            <User/>
+            <User />
           </el-icon>
           <span class="stats-text">在线用户总数：<span class="stats-number">{{ total }}</span></span>
         </div>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="刷新" :loading="loading"/>
+        <el-button
+          circle
+          :icon="Refresh"
+          title="刷新"
+          :loading="loading"
+          @click="fetchData"
+        />
       </div>
     </div>
 
     <!-- 表格区域 -->
     <div class="pro-card table-card">
       <el-table
-          v-loading="loading"
-          :data="tableData"
-          border
-          style="width: 100%"
+        v-loading="loading"
+        :data="tableData"
+        border
+        style="width: 100%"
       >
-        <el-table-column type="index" label="序号" width="90" align="center"/>
-        <el-table-column prop="userName" label="用户名" min-width="150" show-overflow-tooltip>
+        <el-table-column
+          type="index"
+          label="序号"
+          width="90"
+          align="center"
+        />
+        <el-table-column
+          prop="userName"
+          label="用户名"
+          min-width="150"
+          show-overflow-tooltip
+        >
           <template #default="{ row }">
             <div class="user-cell">
               <el-icon class="user-icon">
-                <Avatar/>
+                <Avatar />
               </el-icon>
               <span class="user-name">{{ row.userName }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="ipaddr" label="登录IP" width="130" align="center">
+        <el-table-column
+          prop="ipaddr"
+          label="登录IP"
+          width="130"
+          align="center"
+        >
           <template #default="{ row }">
             <span class="ip-text">{{ row.ipaddr }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="loginLocation" label="登录地点" width="160" align="center"/>
-        <el-table-column prop="browser" label="浏览器" width="140" align="center" >
+        <el-table-column
+          prop="loginLocation"
+          label="登录地点"
+          width="160"
+          align="center"
+        />
+        <el-table-column
+          prop="browser"
+          label="浏览器"
+          width="140"
+          align="center"
+        >
           <template #default="{ row }">
-            <el-tag type="success" effect="plain" size="small">
+            <el-tag
+              type="success"
+              effect="plain"
+              size="small"
+            >
               {{ row.browser }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="os" label="操作系统" width="150" align="center">
+        <el-table-column
+          prop="os"
+          label="操作系统"
+          width="150"
+          align="center"
+        >
           <template #default="{ row }">
-            <el-tag type="warning" effect="plain" size="small">
+            <el-tag
+              type="warning"
+              effect="plain"
+              size="small"
+            >
               {{ row.os }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="loginTime" label="登录时间" width="180" align="center">
+        <el-table-column
+          prop="loginTime"
+          label="登录时间"
+          width="180"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="time-cell">
               <el-icon style="margin-right: 4px; color: var(--backstage-text-secondary);">
-                <Clock/>
+                <Clock />
               </el-icon>
               <span>{{ formatLoginTime(row.loginTime) }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" align="center" fixed="right">
+        <el-table-column
+          label="操作"
+          width="120"
+          align="center"
+          fixed="right"
+        >
           <template #default="{ row }">
             <el-button
-                type="danger"
-                link
-                @click="handleForceLogout(row)"
-                :icon="SwitchButton"
+              type="danger"
+              link
+              :icon="SwitchButton"
+              @click="handleForceLogout(row)"
             >
               强退
             </el-button>
@@ -110,13 +185,13 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-            v-model:current-page="queryParams.pageNum"
-            v-model:page-size="queryParams.pageSize"
-            :total="total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="fetchData"
-            @current-change="fetchData"
+          v-model:current-page="queryParams.pageNum"
+          v-model:page-size="queryParams.pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="fetchData"
+          @current-change="fetchData"
         />
       </div>
     </div>
@@ -132,7 +207,6 @@ import {
   Refresh,
   User,
   Avatar,
-  Location,
   Clock,
   SwitchButton
 } from '@element-plus/icons-vue'
@@ -162,6 +236,7 @@ const fetchData = async () => {
     tableData.value = res.rows || []
     total.value = res.total || 0
   } catch (error) {
+    console.error(error)
   } finally {
     loading.value = false
   }

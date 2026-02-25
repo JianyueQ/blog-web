@@ -2,11 +2,20 @@
   <div class="mobile-user-manage">
     <!-- 新增按钮 -->
     <div class="action-bar">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">添加协作者</el-button>
+      <el-button
+        type="primary"
+        :icon="Plus"
+        @click="handleAdd"
+      >
+        添加协作者
+      </el-button>
     </div>
 
     <!-- 用户列表 -->
-    <div class="user-list" v-loading="loading">
+    <div
+      v-loading="loading"
+      class="user-list"
+    >
       <div
         v-for="user in tableData"
         :key="user.adminId"
@@ -14,13 +23,19 @@
       >
         <div class="user-header">
           <div class="user-info">
-            <el-avatar :size="40" :src="user.avatar" />
+            <el-avatar
+              :size="40"
+              :src="user.avatar"
+            />
             <div class="user-meta">
               <span class="user-name">{{ user.nickname || user.username }}</span>
               <span class="user-email">{{ user.email }}</span>
             </div>
           </div>
-          <el-tag :type="user.userType === 'admin' ? 'danger' : 'success'" size="small">
+          <el-tag
+            :type="user.userType === 'admin' ? 'danger' : 'success'"
+            size="small"
+          >
             {{ user.userType === 'admin' ? '管理员' : '协作者' }}
           </el-tag>
         </div>
@@ -33,7 +48,10 @@
             <span class="info-label">最后登录</span>
             <span class="info-value">{{ user.lastLoginTime || '从未登录' }}</span>
           </div>
-          <div class="info-row" v-if="user.lastLoginIp">
+          <div
+            v-if="user.lastLoginIp"
+            class="info-row"
+          >
             <span class="info-label">登录IP</span>
             <span class="info-value ip-text">{{ user.lastLoginIp }}</span>
           </div>
@@ -44,8 +62,8 @@
             link 
             size="small" 
             :icon="Edit" 
-            @click="handleUpdate(user)"
             :disabled="user.adminId === 1 || user.adminId === '1'"
+            @click="handleUpdate(user)"
           >
             资料
           </el-button>
@@ -54,8 +72,8 @@
             link 
             size="small" 
             :icon="Lock" 
-            @click="handleResetPwd(user)"
             :disabled="user.adminId === 1 || user.adminId === '1'"
+            @click="handleResetPwd(user)"
           >
             密码
           </el-button>
@@ -64,8 +82,8 @@
             link 
             size="small" 
             :icon="Delete" 
-            @click="handleDelete(user)"
             :disabled="user.adminId === 1 || user.adminId === '1'"
+            @click="handleDelete(user)"
           >
             移除
           </el-button>
@@ -73,18 +91,37 @@
       </div>
 
       <!-- 空状态 -->
-      <div v-if="!loading && tableData.length === 0" class="empty-state">
-        <el-icon class="empty-icon"><User /></el-icon>
-        <p class="empty-text">暂无用户数据</p>
+      <div
+        v-if="!loading && tableData.length === 0"
+        class="empty-state"
+      >
+        <el-icon class="empty-icon">
+          <User />
+        </el-icon>
+        <p class="empty-text">
+          暂无用户数据
+        </p>
       </div>
     </div>
 
     <!-- 加载更多 -->
-    <div class="load-more" v-if="tableData.length > 0">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+    <div
+      v-if="tableData.length > 0"
+      class="load-more"
+    >
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else class="no-more">没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >没有更多了</span>
     </div>
 
     <!-- 添加/编辑用户抽屉 -->
@@ -95,27 +132,76 @@
       direction="btt"
       destroy-on-close
     >
-      <el-form ref="userRef" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="登录账号" prop="username">
-          <el-input v-model="form.username" placeholder="请输入登录账号" :disabled="form.adminId !== undefined" />
+      <el-form
+        ref="userRef"
+        :model="form"
+        :rules="rules"
+        label-position="top"
+      >
+        <el-form-item
+          label="登录账号"
+          prop="username"
+        >
+          <el-input
+            v-model="form.username"
+            placeholder="请输入登录账号"
+            :disabled="form.adminId !== undefined"
+          />
         </el-form-item>
-        <el-form-item label="登录密码" prop="password" v-if="form.adminId === undefined && title === '添加协作者'">
-          <el-input v-model="form.password" placeholder="请输入登录密码" type="password" show-password />
+        <el-form-item
+          v-if="form.adminId === undefined && title === '添加协作者'"
+          label="登录密码"
+          prop="password"
+        >
+          <el-input
+            v-model="form.password"
+            placeholder="请输入登录密码"
+            type="password"
+            show-password
+          />
         </el-form-item>
-        <el-form-item label="用户昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入用户昵称" />
+        <el-form-item
+          label="用户昵称"
+          prop="nickname"
+        >
+          <el-input
+            v-model="form.nickname"
+            placeholder="请输入用户昵称"
+          />
         </el-form-item>
-        <el-form-item label="用户邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入用户邮箱" />
+        <el-form-item
+          label="用户邮箱"
+          prop="email"
+        >
+          <el-input
+            v-model="form.email"
+            placeholder="请输入用户邮箱"
+          />
         </el-form-item>
-        <el-form-item label="备注描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入内容" />
+        <el-form-item
+          label="备注描述"
+          prop="description"
+        >
+          <el-input
+            v-model="form.description"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入内容"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="drawer-footer">
-          <el-button @click="drawerVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitting">确定</el-button>
+          <el-button @click="drawerVisible = false">
+            取消
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+          >
+            确定
+          </el-button>
         </div>
       </template>
     </el-drawer>
@@ -289,7 +375,7 @@ function handleResetPwd(row) {
     inputPattern: /^.{5,20}$/,
     inputErrorMessage: '密码长度必须介于 5 和 20 之间'
   }).then(({ value }) => {
-    resetUserPwd(row.adminId, value).then(response => {
+    resetUserPwd(row.adminId, value).then(() => {
       ElMessage.success('修改成功，新密码是：' + value)
     })
   }).catch(() => {})

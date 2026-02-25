@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {getToken, removeToken} from "@/utils/auth.js"
+import {getToken} from "@/utils/auth.js"
 import {ElMessage} from 'element-plus'
 import {useUserStore} from "@/stores/user.js";
 

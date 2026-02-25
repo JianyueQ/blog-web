@@ -1,41 +1,62 @@
 <template>
-  <MobileBlacklist v-if="isMobile" ref="mobileRef" />
-  <div v-else class="visitor-blacklist-manage">
+  <MobileBlacklist
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="visitor-blacklist-manage"
+  >
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
-      <el-form :model="queryParams" inline label-width="auto">
+      <el-form
+        :model="queryParams"
+        inline
+        label-width="auto"
+      >
         <el-form-item label="IP地址">
           <el-input
-              v-model="queryParams.ipaddr"
-              placeholder="请输入IP地址"
-              clearable
-              style="width: 200px"
-              @keyup.enter="handleQuery"
+            v-model="queryParams.ipaddr"
+            placeholder="请输入IP地址"
+            clearable
+            style="width: 200px"
+            @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item label="地区位置">
           <el-input
-              v-model="queryParams.location"
-              placeholder="请输入地区位置"
-              clearable
-              style="width: 200px"
-              @keyup.enter="handleQuery"
+            v-model="queryParams.location"
+            placeholder="请输入地区位置"
+            clearable
+            style="width: 200px"
+            @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item label="拉黑时间">
           <el-date-picker
-              v-model="dateRange"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              style="width: 360px"
+            v-model="dateRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 360px"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+          <el-button
+            type="primary"
+            :icon="Search"
+            @click="handleQuery"
+          >
+            搜索
+          </el-button>
+          <el-button
+            :icon="Refresh"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -45,45 +66,90 @@
       <div class="toolbar-left">
         <div class="stats-info danger">
           <el-icon class="stats-icon">
-            <Warning/>
+            <Warning />
           </el-icon>
           <span class="stats-text">黑名单总数：<span class="stats-number">{{ total }}</span></span>
         </div>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="刷新" :loading="loading"/>
+        <el-button
+          circle
+          :icon="Refresh"
+          title="刷新"
+          :loading="loading"
+          @click="fetchData"
+        />
       </div>
     </div>
 
     <!-- 表格区域 -->
     <div class="pro-card table-card">
       <el-table
-          v-loading="loading"
-          :data="tableData"
-          style="width: 100%"
+        v-loading="loading"
+        :data="tableData"
+        style="width: 100%"
       >
-        <el-table-column type="index" label="序号" width="100" align="center"/>
-        <el-table-column prop="ipaddr" label="IP地址" width="150" align="center">
+        <el-table-column
+          type="index"
+          label="序号"
+          width="100"
+          align="center"
+        />
+        <el-table-column
+          prop="ipaddr"
+          label="IP地址"
+          width="150"
+          align="center"
+        >
           <template #default="{ row }">
             <span class="ip-text danger">{{ row.ipaddr }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="location" label="地区位置" min-width="180" show-overflow-tooltip/>
-        <el-table-column prop="visitTime" label="拉黑时间" width="180" align="center">
+        <el-table-column
+          prop="location"
+          label="地区位置"
+          min-width="180"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="visitTime"
+          label="拉黑时间"
+          width="180"
+          align="center"
+        >
           <template #default="{ row }">
             <div class="time-cell">
               <el-icon style="margin-right: 4px; color: var(--backstage-danger);">
-                <Clock/>
+                <Clock />
               </el-icon>
               <span>{{ row.visitTime }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" align="center" fixed="right">
+        <el-table-column
+          label="操作"
+          width="200"
+          align="center"
+          fixed="right"
+        >
           <template #default="{ row }">
             <div class="action-cell">
-              <el-button type="primary" link @click="handleViewDetail(row)" :icon="View">详情</el-button>
-              <el-button type="success" link @click="handleRemoveFromBlacklist(row)" :icon="CircleCheck">移除</el-button>
+              <el-button
+                type="primary"
+                link
+                :icon="View"
+                @click="handleViewDetail(row)"
+              >
+                详情
+              </el-button>
+              <el-button
+                type="success"
+                link
+                :icon="CircleCheck"
+                @click="handleRemoveFromBlacklist(row)"
+              >
+                移除
+              </el-button>
             </div>
           </template>
         </el-table-column>
@@ -92,49 +158,75 @@
       <!-- 分页 -->
       <div class="pagination-container">
         <el-pagination
-            v-model:current-page="queryParams.pageNum"
-            v-model:page-size="queryParams.pageSize"
-            :total="total"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next, jumper"
-            @size-change="fetchData"
-            @current-change="fetchData"
+          v-model:current-page="queryParams.pageNum"
+          v-model:page-size="queryParams.pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="fetchData"
+          @current-change="fetchData"
         />
       </div>
     </div>
 
     <!-- 详情弹窗 -->
     <el-dialog
-        v-model="detailDialogVisible"
-        title="黑名单详情"
-        width="600px"
-        destroy-on-close
+      v-model="detailDialogVisible"
+      title="黑名单详情"
+      width="600px"
+      destroy-on-close
     >
-      <el-descriptions :column="1" border v-if="currentDetail">
+      <el-descriptions
+        v-if="currentDetail"
+        :column="1"
+        border
+      >
         <el-descriptions-item label="IP地址">
           <span class="ip-text danger">{{ currentDetail.ipaddr }}</span>
         </el-descriptions-item>
-        <el-descriptions-item label="地区位置">{{ currentDetail.location }}</el-descriptions-item>
-        <el-descriptions-item label="浏览器">{{ currentDetail.browser }}</el-descriptions-item>
-        <el-descriptions-item label="操作系统">{{ currentDetail.os }}</el-descriptions-item>
-        <el-descriptions-item label="拉黑时间">{{ currentDetail.visitTime }}</el-descriptions-item>
+        <el-descriptions-item label="地区位置">
+          {{ currentDetail.location }}
+        </el-descriptions-item>
+        <el-descriptions-item label="浏览器">
+          {{ currentDetail.browser }}
+        </el-descriptions-item>
+        <el-descriptions-item label="操作系统">
+          {{ currentDetail.os }}
+        </el-descriptions-item>
+        <el-descriptions-item label="拉黑时间">
+          {{ currentDetail.visitTime }}
+        </el-descriptions-item>
         <el-descriptions-item label="拉黑原因">
-          <el-tag type="danger" effect="dark">{{ currentDetail.reason || '未填写' }}</el-tag>
+          <el-tag
+            type="danger"
+            effect="dark"
+          >
+            {{ currentDetail.reason || '未填写' }}
+          </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="异常状态">
           <el-tag :type="currentDetail.abnormalFlag === 0 ? 'success' : 'danger'">
             {{ currentDetail.abnormalFlag === 0 ? '正常' : '异常' }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="异常类型" v-if="currentDetail.abnormalType">
-          <el-tag type="warning">{{ currentDetail.abnormalType }}</el-tag>
+        <el-descriptions-item
+          v-if="currentDetail.abnormalType"
+          label="异常类型"
+        >
+          <el-tag type="warning">
+            {{ currentDetail.abnormalType }}
+          </el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="用户代理">
-          <div class="user-agent-text">{{ currentDetail.userAgent }}</div>
+          <div class="user-agent-text">
+            {{ currentDetail.userAgent }}
+          </div>
         </el-descriptions-item>
       </el-descriptions>
       <template #footer>
-        <el-button @click="detailDialogVisible = false">关闭</el-button>
+        <el-button @click="detailDialogVisible = false">
+          关闭
+        </el-button>
       </template>
     </el-dialog>
   </div>

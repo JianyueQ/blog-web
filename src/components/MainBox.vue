@@ -1,22 +1,25 @@
 <template>
   <div class="main-box">
     <div class="background-container">
-      <div class="background-image" :style="{ backgroundImage: `url(${currentBackground})` }"></div>
-      <div class="background-overlay"></div>
+      <div
+        class="background-image"
+        :style="{ backgroundImage: `url(${currentBackground})` }"
+      />
+      <div class="background-overlay" />
     </div>
 
     <Header />
 
     <main
+      ref="mainContentRef"
       class="main-content"
       :class="{ 'is-transitioning': isTransitioning, 'is-swiping': isSwiping }"
-      ref="mainContentRef"
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
     >
       <div class="content-wrapper">
-        <router-view v-slot="{ Component, route }">
+        <router-view v-slot="{ Component, route: slotRoute }">
           <transition
             name="fade-transform"
             mode="out-in"
@@ -24,7 +27,10 @@
             @after-enter="handleAfterEnter"
           >
             <keep-alive :include="cachedViews">
-              <component :is="Component" :key="route.path" />
+              <component
+                :is="Component"
+                :key="slotRoute.path"
+              />
             </keep-alive>
           </transition>
         </router-view>
@@ -34,14 +40,28 @@
     <Footer />
 
     <!-- 滑动提示指示器 -->
-    <div v-if="showSwipeHint" class="swipe-hint" :class="{ 'fade-out': !showSwipeHint }">
+    <div
+      v-if="showSwipeHint"
+      class="swipe-hint"
+      :class="{ 'fade-out': !showSwipeHint }"
+    >
       <div class="swipe-hint-content">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="15 18 9 12 15 6"/>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="15 18 9 12 15 6" />
         </svg>
         <span>左右滑动切换页面</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="9 18 15 12 9 6"/>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="9 18 15 12 9 6" />
         </svg>
       </div>
     </div>
@@ -49,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Header from './Header.vue'
 import Footer from './Footer.vue'

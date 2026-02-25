@@ -2,19 +2,32 @@
   <div class="profile-container">
     <el-row :gutter="20">
       <!-- 左侧：用户信息卡片 -->
-      <el-col :xs="24" :md="8">
+      <el-col
+        :xs="24"
+        :md="8"
+      >
         <div class="pro-card user-card">
           <div class="card-body">
             <div class="avatar-section">
-              <div class="avatar-wrapper" @click="handleOpenCropper">
-                <el-avatar :size="120" :src="userStore.avatar || '/images/icon/logo.png'" />
+              <div
+                class="avatar-wrapper"
+                @click="handleOpenCropper"
+              >
+                <el-avatar
+                  :size="120"
+                  :src="userStore.avatar || '/images/icon/logo.png'"
+                />
                 <div class="avatar-edit-overlay">
                   <el-icon><Camera /></el-icon>
                   <span>更换头像</span>
                 </div>
               </div>
-              <h2 class="nickname">{{ userStore.nickname }}</h2>
-              <p class="username">{{ userStore.username }}</p>
+              <h2 class="nickname">
+                {{ userStore.nickname }}
+              </h2>
+              <p class="username">
+                {{ userStore.username }}
+              </p>
             </div>
 
             <div class="user-meta">
@@ -32,44 +45,95 @@
       </el-col>
 
       <!-- 右侧：设置面板 -->
-      <el-col :xs="24" :md="16">
+      <el-col
+        :xs="24"
+        :md="16"
+      >
         <div class="pro-card settings-card">
-          <el-tabs v-model="activeTab" class="pro-tabs">
-            <el-tab-pane label="基本资料" name="basic">
+          <el-tabs
+            v-model="activeTab"
+            class="pro-tabs"
+          >
+            <el-tab-pane
+              label="基本资料"
+              name="basic"
+            >
               <div class="pane-content">
-                <el-form :model="userForm" label-position="top" class="pro-form">
+                <el-form
+                  :model="userForm"
+                  label-position="top"
+                  class="pro-form"
+                >
                   <el-form-item label="用户昵称">
-                    <el-input v-model="userForm.nickname" placeholder="请输入您的公开昵称" />
+                    <el-input
+                      v-model="userForm.nickname"
+                      placeholder="请输入您的公开昵称"
+                    />
                   </el-form-item>
                   <el-form-item label="电子邮箱">
-                    <el-input v-model="userForm.email" placeholder="请输入您的常用邮箱" />
+                    <el-input
+                      v-model="userForm.email"
+                      placeholder="请输入您的常用邮箱"
+                    />
                   </el-form-item>
                   <el-form-item label="个人简介">
-                    <el-input v-model="userForm.description" type="textarea" :rows="4" placeholder="向大家介绍一下自己吧" />
+                    <el-input
+                      v-model="userForm.description"
+                      type="textarea"
+                      :rows="4"
+                      placeholder="向大家介绍一下自己吧"
+                    />
                   </el-form-item>
                   <div class="form-actions mt-20">
-                    <el-button type="primary" round @click="handleUpdateProfile">保存基本资料</el-button>
+                    <el-button
+                      type="primary"
+                      round
+                      @click="handleUpdateProfile"
+                    >
+                      保存基本资料
+                    </el-button>
                   </div>
                 </el-form>
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="账户安全" name="security">
+            <el-tab-pane
+              label="账户安全"
+              name="security"
+            >
               <div class="pane-content">
                 <div class="security-list">
                   <div class="security-item">
                     <div class="item-info">
-                      <div class="item-title">登录密码</div>
-                      <div class="item-desc">定期更换密码可以提高账户安全性</div>
+                      <div class="item-title">
+                        登录密码
+                      </div>
+                      <div class="item-desc">
+                        定期更换密码可以提高账户安全性
+                      </div>
                     </div>
-                    <el-button round @click="handleOpenResetPwd">修改密码</el-button>
+                    <el-button
+                      round
+                      @click="handleOpenResetPwd"
+                    >
+                      修改密码
+                    </el-button>
                   </div>
                   <div class="security-item">
                     <div class="item-info">
-                      <div class="item-title">双重身份验证</div>
-                      <div class="item-desc">未开启</div>
+                      <div class="item-title">
+                        双重身份验证
+                      </div>
+                      <div class="item-desc">
+                        未开启
+                      </div>
                     </div>
-                    <el-button link type="primary">立即开启</el-button>
+                    <el-button
+                      link
+                      type="primary"
+                    >
+                      立即开启
+                    </el-button>
                   </div>
                 </div>
               </div>
@@ -80,7 +144,10 @@
     </el-row>
 
     <!-- 头像裁剪对话框 -->
-    <AvatarCropper ref="cropperRef" @success="handleAvatarSuccess" />
+    <AvatarCropper
+      ref="cropperRef"
+      @success="handleAvatarSuccess"
+    />
 
     <!-- 修改密码对话框 -->
     <ResetPwd ref="resetPwdRef" />
@@ -134,7 +201,7 @@ const handleUpdateProfile = () => {
     userStore.user.description = userForm.description
     // 弹窗提示
     ElMessage.success(res.message || '更新资料成功')
-  }).catch((error) => {
+  }).catch(() => {
 
   })
 }

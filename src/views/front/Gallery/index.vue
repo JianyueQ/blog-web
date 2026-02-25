@@ -1,8 +1,12 @@
 <template>
   <div class="gallery-view">
     <div class="gallery-header">
-      <h1 class="page-title">相册</h1>
-      <p class="page-subtitle">记录生活中的美好瞬间</p>
+      <h1 class="page-title">
+        相册
+      </h1>
+      <p class="page-subtitle">
+        记录生活中的美好瞬间
+      </p>
     </div>
 
     <div class="gallery-grid">
@@ -13,10 +17,17 @@
         :style="{ animationDelay: `${0.1 + index * 0.05}s` }"
         @click="viewImage(image)"
       >
-        <img :src="image.url" :alt="image.title" />
+        <img
+          :src="image.url"
+          :alt="image.title"
+        >
         <div class="image-overlay">
-          <div class="image-title">{{ image.title }}</div>
-          <div class="image-date">{{ image.date }}</div>
+          <div class="image-title">
+            {{ image.title }}
+          </div>
+          <div class="image-date">
+            {{ image.date }}
+          </div>
         </div>
       </div>
     </div>

@@ -9,13 +9,19 @@
         :prefix-icon="Search"
         @keyup.enter="handleSearch"
       />
-      <el-button type="primary" :icon="Search" @click="handleSearch" />
+      <el-button
+        type="primary"
+        :icon="Search"
+        @click="handleSearch"
+      />
     </div>
 
     <!-- 统计卡片 -->
     <div class="mobile-stats-card danger">
       <div class="stats-item">
-        <el-icon class="stats-icon"><Warning /></el-icon>
+        <el-icon class="stats-icon">
+          <Warning />
+        </el-icon>
         <div class="stats-content">
           <span class="stats-label">黑名单总数</span>
           <span class="stats-value">{{ total }}</span>
@@ -36,7 +42,12 @@
             <el-icon><CircleClose /></el-icon>
             <span>{{ item.ipaddr }}</span>
           </div>
-          <el-tag type="danger" size="small">已拉黑</el-tag>
+          <el-tag
+            type="danger"
+            size="small"
+          >
+            已拉黑
+          </el-tag>
         </div>
         <div class="item-body">
           <div class="info-row">
@@ -47,16 +58,31 @@
             <el-icon><Clock /></el-icon>
             <span class="info-text">{{ item.visitTime }}</span>
           </div>
-          <div class="info-row reason-row" v-if="item.reason">
+          <div
+            v-if="item.reason"
+            class="info-row reason-row"
+          >
             <el-icon><Warning /></el-icon>
             <span class="info-text reason">{{ item.reason }}</span>
           </div>
         </div>
         <div class="item-footer">
-          <el-button type="primary" link size="small" :icon="View" @click.stop="handleViewDetail(item)">
+          <el-button
+            type="primary"
+            link
+            size="small"
+            :icon="View"
+            @click.stop="handleViewDetail(item)"
+          >
             详情
           </el-button>
-          <el-button type="success" link size="small" :icon="CircleCheck" @click.stop="handleRemoveFromBlacklist(item)">
+          <el-button
+            type="success"
+            link
+            size="small"
+            :icon="CircleCheck"
+            @click.stop="handleRemoveFromBlacklist(item)"
+          >
             移除
           </el-button>
         </div>
@@ -65,10 +91,19 @@
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else class="no-more">没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >没有更多了</span>
     </div>
 
     <!-- 详情抽屉 -->
@@ -79,7 +114,10 @@
       direction="btt"
       destroy-on-close
     >
-      <div v-if="currentDetail" class="detail-content">
+      <div
+        v-if="currentDetail"
+        class="detail-content"
+      >
         <div class="detail-section">
           <div class="detail-item">
             <span class="detail-label">IP地址</span>
@@ -103,7 +141,12 @@
           </div>
           <div class="detail-item">
             <span class="detail-label">拉黑原因</span>
-            <el-tag type="danger" effect="dark">{{ currentDetail.reason || '未填写' }}</el-tag>
+            <el-tag
+              type="danger"
+              effect="dark"
+            >
+              {{ currentDetail.reason || '未填写' }}
+            </el-tag>
           </div>
           <div class="detail-item">
             <span class="detail-label">异常状态</span>
@@ -113,8 +156,12 @@
           </div>
         </div>
         <div class="detail-section">
-          <div class="detail-label">用户代理</div>
-          <div class="user-agent-box">{{ currentDetail.userAgent }}</div>
+          <div class="detail-label">
+            用户代理
+          </div>
+          <div class="user-agent-box">
+            {{ currentDetail.userAgent }}
+          </div>
         </div>
       </div>
     </el-drawer>

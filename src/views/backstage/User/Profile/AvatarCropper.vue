@@ -10,51 +10,92 @@
     <div class="cropper-container">
       <el-row :gutter="20">
         <el-col :span="16">
-            <div class="cropper-main">
+          <div class="cropper-main">
             <vue-cropper
               v-if="imageUrl"
               ref="cropper"
               :img="imageUrl"
               :info="true"
-              :autoCrop="options.autoCrop"
-              :autoCropWidth="options.autoCropWidth"
-              :autoCropHeight="options.autoCropHeight"
-              :fixedBox="options.fixedBox"
-              :outputType="options.outputType"
-              :centerBox="options.centerBox"
-              @realTime="realTime"
+              :auto-crop="options.autoCrop"
+              :auto-crop-width="options.autoCropWidth"
+              :auto-crop-height="options.autoCropHeight"
+              :fixed-box="options.fixedBox"
+              :output-type="options.outputType"
+              :center-box="options.centerBox"
+              @real-time="realTime"
             />
-            <div class="cropper-upload-placeholder" v-else @click="triggerUpload">
+            <div
+              v-else
+              class="cropper-upload-placeholder"
+              @click="triggerUpload"
+            >
               <el-icon><Plus /></el-icon>
               <span>选择图片</span>
             </div>
           </div>
 
-          <div class="cropper-toolbar mt-20" v-if="imageUrl">
+          <div
+            v-if="imageUrl"
+            class="cropper-toolbar mt-20"
+          >
             <el-button-group class="button-row">
-              <el-button :icon="ZoomIn" circle @click="handleZoom(0.1)" title="放大" />
-              <el-button :icon="ZoomOut" circle @click="handleZoom(-0.1)" title="缩小" />
-              <el-button :icon="RefreshLeft" circle @click="handleRotate(-90)" title="左旋转" />
-              <el-button :icon="RefreshRight" circle @click="handleRotate(90)" title="右旋转" />
+              <el-button
+                :icon="ZoomIn"
+                circle
+                title="放大"
+                @click="handleZoom(0.1)"
+              />
+              <el-button
+                :icon="ZoomOut"
+                circle
+                title="缩小"
+                @click="handleZoom(-0.1)"
+              />
+              <el-button
+                :icon="RefreshLeft"
+                circle
+                title="左旋转"
+                @click="handleRotate(-90)"
+              />
+              <el-button
+                :icon="RefreshRight"
+                circle
+                title="右旋转"
+                @click="handleRotate(90)"
+              />
             </el-button-group>
-            <el-button link type="primary" @click="triggerUpload">重新选择</el-button>
+            <el-button
+              link
+              type="primary"
+              @click="triggerUpload"
+            >
+              重新选择
+            </el-button>
           </div>
         </el-col>
 
         <el-col :span="8">
           <div class="preview-section">
-            <div class="preview-label">预览</div>
+            <div class="preview-label">
+              预览
+            </div>
             <div class="preview-list">
               <div class="preview-item circle">
                 <div class="preview-img-wrapper">
-                  <div v-if="previews.url" class="preview-cropper">
+                  <div
+                    v-if="previews.url"
+                    class="preview-cropper"
+                  >
                     <div :style="previewStyle">
                       <div :style="previews.div">
-                        <img :src="previews.url" :style="previews.img" />
+                        <img
+                          :src="previews.url"
+                          :style="previews.img"
+                        >
                       </div>
                     </div>
                   </div>
-<!--                  <img v-else src="/images/icon/logo.png" class="default-avatar" />-->
+                  <!--                  <img v-else src="/images/icon/logo.png" class="default-avatar" />-->
                 </div>
                 <span>120x120</span>
               </div>
@@ -66,12 +107,30 @@
 
     <template #footer>
       <div class="dialog-footer button-row">
-        <el-button round @click="visible = false">取消</el-button>
-        <el-button round type="primary" :disabled="!imageUrl" @click="handleSave">确认保存</el-button>
+        <el-button
+          round
+          @click="visible = false"
+        >
+          取消
+        </el-button>
+        <el-button
+          round
+          type="primary"
+          :disabled="!imageUrl"
+          @click="handleSave"
+        >
+          确认保存
+        </el-button>
       </div>
     </template>
 
-    <input type="file" ref="fileInput" hidden accept="image/*" @change="onFileChange" />
+    <input
+      ref="fileInput"
+      type="file"
+      hidden
+      accept="image/*"
+      @change="onFileChange"
+    >
   </el-dialog>
 </template>
 
@@ -159,7 +218,7 @@ const handleSave = () => {
       ElMessage.success('头像上传成功')
       emit('success', res.imgUrl)
       visible.value = false
-    }).catch(err => {
+    }).catch(() => {
 
     })
   })

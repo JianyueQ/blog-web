@@ -1,13 +1,29 @@
 <template>
-  <MobileSystemSettings v-if="isMobile" ref="mobileRef" />
-  <div v-else class="system-settings-panel">
+  <MobileSystemSettings
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="system-settings-panel"
+  >
     <div class="pro-card">
       <div class="card-header-actions">
-        <el-button type="primary" icon="Plus" round @click="handleAdd">新增配置</el-button>
+        <el-button
+          type="primary"
+          icon="Plus"
+          round
+          @click="handleAdd"
+        >
+          新增配置
+        </el-button>
       </div>
       <div class="card-body">
         <!-- 配置卡片网格 -->
-        <div class="config-grid" v-loading="loading">
+        <div
+          v-loading="loading"
+          class="config-grid"
+        >
           <div
             v-for="config in configList"
             :key="config.configId"
@@ -16,14 +32,19 @@
           >
             <div class="config-card-header">
               <div class="config-name">
-                <el-icon class="config-icon"><Setting /></el-icon>
+                <el-icon class="config-icon">
+                  <Setting />
+                </el-icon>
                 <span>{{ config.configName }}</span>
               </div>
-              <div class="config-actions" @click.stop>
+              <div
+                class="config-actions"
+                @click.stop
+              >
                 <el-icon
                   class="delete-btn"
-                  @click="handleDelete(config)"
                   title="删除配置"
+                  @click="handleDelete(config)"
                 >
                   <Delete />
                 </el-icon>
@@ -36,9 +57,15 @@
               </div>
               <div class="config-item">
                 <span class="config-label">参数值</span>
-                <span class="config-value" :title="config.configValue">{{ config.configValue }}</span>
+                <span
+                  class="config-value"
+                  :title="config.configValue"
+                >{{ config.configValue }}</span>
               </div>
-              <div class="config-item" v-if="config.remark">
+              <div
+                v-if="config.remark"
+                class="config-item"
+              >
                 <span class="config-label">备注</span>
                 <span class="config-value config-remark">{{ config.remark }}</span>
               </div>
@@ -46,10 +73,22 @@
           </div>
 
           <!-- 空状态 -->
-          <div v-if="!loading && configList.length === 0" class="empty-state">
-            <el-icon class="empty-icon"><FolderOpened /></el-icon>
-            <p class="empty-text">暂无系统配置</p>
-            <el-button type="primary" @click="handleAdd">新增第一个配置</el-button>
+          <div
+            v-if="!loading && configList.length === 0"
+            class="empty-state"
+          >
+            <el-icon class="empty-icon">
+              <FolderOpened />
+            </el-icon>
+            <p class="empty-text">
+              暂无系统配置
+            </p>
+            <el-button
+              type="primary"
+              @click="handleAdd"
+            >
+              新增第一个配置
+            </el-button>
           </div>
         </div>
       </div>
@@ -64,11 +103,26 @@
       destroy-on-close
       class="theme-dialog"
     >
-      <el-form :model="configForm" :rules="formRules" ref="formRef" label-width="100px" label-position="left">
-        <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="configForm.configName" placeholder="请输入参数名称" />
+      <el-form
+        ref="formRef"
+        :model="configForm"
+        :rules="formRules"
+        label-width="100px"
+        label-position="left"
+      >
+        <el-form-item
+          label="参数名称"
+          prop="configName"
+        >
+          <el-input
+            v-model="configForm.configName"
+            placeholder="请输入参数名称"
+          />
         </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
+        <el-form-item
+          label="参数键名"
+          prop="configKey"
+        >
           <el-input
             v-model="configForm.configKey"
             placeholder="请输入参数键名（需唯一）"
@@ -78,7 +132,10 @@
             <span class="form-tip">参数键名用于系统识别，创建后不可修改</span>
           </template>
         </el-form-item>
-        <el-form-item label="参数值" prop="configValue">
+        <el-form-item
+          label="参数值"
+          prop="configValue"
+        >
           <el-input
             v-model="configForm.configValue"
             type="textarea"
@@ -98,7 +155,11 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="submitting">确定</el-button>
+          <el-button
+            type="primary"
+            :loading="submitting"
+            @click="submitForm"
+          >确定</el-button>
         </span>
       </template>
     </el-dialog>

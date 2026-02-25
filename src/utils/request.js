@@ -6,7 +6,6 @@ import errorCode from "@/utils/errorCode.js";
 import {ElMessage, ElNotification, ElMessageBox} from "element-plus";
 import cache from '@/plugins/cache'
 
-let downloadLoadingInstance
 // 是否显示重新登录
 export let isRelogin = {show: false}
 

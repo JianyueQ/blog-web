@@ -1,8 +1,12 @@
 <template>
   <div class="time-capsule">
     <div class="capsule-header-main">
-      <h3 class="capsule-title">时光胶囊</h3>
-      <div class="capsule-subtitle">{{ currentSubtitle }}</div>
+      <h3 class="capsule-title">
+        时光胶囊
+      </h3>
+      <div class="capsule-subtitle">
+        {{ currentSubtitle }}
+      </div>
     </div>
 
     <div class="capsule-grid">
@@ -16,7 +20,10 @@
           <span class="capsule-percentage">{{ item.percentage }}%</span>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: `${item.percentage}%` }"></div>
+          <div
+            class="progress-fill"
+            :style="{ width: `${item.percentage}%` }"
+          />
         </div>
         <div class="capsule-info">
           <span>已过 <b>{{ item.passed }}</b> / 共 {{ item.total }}</span>

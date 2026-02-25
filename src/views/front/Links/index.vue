@@ -2,8 +2,12 @@
   <div class="links-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">友链</h1>
-      <p class="page-subtitle">志同道合的朋友们，一起交流成长</p>
+      <h1 class="page-title">
+        友链
+      </h1>
+      <p class="page-subtitle">
+        志同道合的朋友们，一起交流成长
+      </p>
     </div>
 
     <div class="links-container">
@@ -11,16 +15,30 @@
       <div class="links-section">
         <div class="section-header">
           <h2 class="section-title">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
             </svg>
             我的朋友们
           </h2>
           <div class="header-actions">
-            <button class="apply-trigger-btn" @click="openApplyModal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12h14"/>
+            <button
+              class="apply-trigger-btn"
+              @click="openApplyModal"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" />
               </svg>
               <span>想要交换友链？点我来申请吧！</span>
             </button>
@@ -29,18 +47,27 @@
         </div>
 
         <!-- 加载状态 -->
-        <div v-if="loading" class="loading-state">
-          <div class="loading-spinner"></div>
+        <div
+          v-if="loading"
+          class="loading-state"
+        >
+          <div class="loading-spinner" />
           <p>加载中...</p>
         </div>
 
         <!-- 空状态 -->
-        <div v-else-if="friendLinks.length === 0" class="empty-state">
+        <div
+          v-else-if="friendLinks.length === 0"
+          class="empty-state"
+        >
           <p>暂无友链，快来申请成为第一个吧</p>
         </div>
 
         <!-- 友链网格 -->
-        <div v-else class="links-grid">
+        <div
+          v-else
+          class="links-grid"
+        >
           <div
             v-for="(link, index) in friendLinks"
             :key="link.friendLinksId"
@@ -53,19 +80,31 @@
                 :src="link.logo || defaultLogo"
                 :alt="link.name"
                 @error="handleImageError"
-              />
+              >
             </div>
             <div class="link-info">
-              <h3 class="link-name">{{ link.name }}</h3>
-              <p class="link-desc">{{ link.description || '暂无描述' }}</p>
+              <h3 class="link-name">
+                {{ link.name }}
+              </h3>
+              <p class="link-desc">
+                {{ link.description || '暂无描述' }}
+              </p>
               <div class="link-meta">
                 <span class="link-url">{{ formatUrl(link.url) }}</span>
-                <span v-if="link.joinTime" class="join-time">{{ formatJoinTime(link.joinTime) }}</span>
+                <span
+                  v-if="link.joinTime"
+                  class="join-time"
+                >{{ formatJoinTime(link.joinTime) }}</span>
               </div>
             </div>
             <div class="link-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M7 17L17 7M17 7H7M17 7V17" />
               </svg>
             </div>
           </div>
@@ -76,10 +115,29 @@
       <div class="info-section">
         <div class="info-card">
           <h3 class="info-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="16" x2="12" y2="12"/>
-              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <line
+                x1="12"
+                y1="16"
+                x2="12"
+                y2="12"
+              />
+              <line
+                x1="12"
+                y1="8"
+                x2="12.01"
+                y2="8"
+              />
             </svg>
             申请须知
           </h3>
@@ -96,27 +154,62 @@
     <!-- 申请友链弹窗 -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="isApplyModalOpen" class="apply-modal-overlay" @click="closeApplyModal">
-          <div class="apply-modal" @click.stop>
+        <div
+          v-if="isApplyModalOpen"
+          class="apply-modal-overlay"
+          @click="closeApplyModal"
+        >
+          <div
+            class="apply-modal"
+            @click.stop
+          >
             <div class="modal-header">
               <h3 class="modal-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 5v14M5 12h14"/>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 5v14M5 12h14" />
                 </svg>
                 申请友链
               </h3>
-              <button class="modal-close" @click="closeApplyModal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"/>
-                  <line x1="6" y1="6" x2="18" y2="18"/>
+              <button
+                class="modal-close"
+                @click="closeApplyModal"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line
+                    x1="18"
+                    y1="6"
+                    x2="6"
+                    y2="18"
+                  />
+                  <line
+                    x1="6"
+                    y1="6"
+                    x2="18"
+                    y2="18"
+                  />
                 </svg>
               </button>
             </div>
 
             <div class="modal-body">
-              <p class="modal-desc">填写信息申请加入友链，审核通过后将展示在列表中</p>
+              <p class="modal-desc">
+                填写信息申请加入友链，审核通过后将展示在列表中
+              </p>
 
-              <form class="apply-form" @submit.prevent="handleSubmit">
+              <form
+                class="apply-form"
+                @submit.prevent="handleSubmit"
+              >
                 <!-- 站点名称 -->
                 <div class="form-group">
                   <label class="form-label">
@@ -129,8 +222,11 @@
                     class="form-input"
                     placeholder="请输入站点名称"
                     maxlength="30"
-                  />
-                  <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
+                  >
+                  <span
+                    v-if="errors.name"
+                    class="error-msg"
+                  >{{ errors.name }}</span>
                 </div>
 
                 <!-- 站点地址 -->
@@ -144,8 +240,11 @@
                     type="url"
                     class="form-input"
                     placeholder="https://example.com"
-                  />
-                  <span v-if="errors.url" class="error-msg">{{ errors.url }}</span>
+                  >
+                  <span
+                    v-if="errors.url"
+                    class="error-msg"
+                  >{{ errors.url }}</span>
                 </div>
 
                 <!-- 站点Logo -->
@@ -167,17 +266,37 @@
                         accept="image/*"
                         style="display: none"
                         @change="handleFileChange"
-                      />
-                      <img v-if="form.logo" :src="form.logo" class="preview-image" />
-                      <div v-else-if="logoUploading" class="upload-loading">
-                        <div class="upload-spinner"></div>
+                      >
+                      <img
+                        v-if="form.logo"
+                        :src="form.logo"
+                        class="preview-image"
+                      >
+                      <div
+                        v-else-if="logoUploading"
+                        class="upload-loading"
+                      >
+                        <div class="upload-spinner" />
                         <span>上传中...</span>
                       </div>
-                      <div v-else class="upload-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                          <polyline points="17 8 12 3 7 8"/>
-                          <line x1="12" y1="3" x2="12" y2="15"/>
+                      <div
+                        v-else
+                        class="upload-placeholder"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                        >
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="17 8 12 3 7 8" />
+                          <line
+                            x1="12"
+                            y1="3"
+                            x2="12"
+                            y2="15"
+                          />
                         </svg>
                         <span>点击或拖拽上传</span>
                         <small>支持 JPG、PNG 格式</small>
@@ -188,14 +307,32 @@
                         class="remove-image"
                         @click.stop="removeImage"
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <line x1="18" y1="6" x2="6" y2="18"/>
-                          <line x1="6" y1="6" x2="18" y2="18"/>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <line
+                            x1="18"
+                            y1="6"
+                            x2="6"
+                            y2="18"
+                          />
+                          <line
+                            x1="6"
+                            y1="6"
+                            x2="18"
+                            y2="18"
+                          />
                         </svg>
                       </button>
                     </div>
                   </div>
-                  <span v-if="errors.logo" class="error-msg">{{ errors.logo }}</span>
+                  <span
+                    v-if="errors.logo"
+                    class="error-msg"
+                  >{{ errors.logo }}</span>
                 </div>
 
                 <!-- 站点描述 -->
@@ -207,7 +344,7 @@
                     placeholder="简单介绍一下你的站点..."
                     rows="3"
                     maxlength="100"
-                  ></textarea>
+                  />
                   <span class="char-count">{{ form.description.length }}/100</span>
                 </div>
 
@@ -219,8 +356,11 @@
                     type="email"
                     class="form-input"
                     placeholder="your@email.com"
-                  />
-                  <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
+                  >
+                  <span
+                    v-if="errors.email"
+                    class="error-msg"
+                  >{{ errors.email }}</span>
                 </div>
 
                 <!-- 提交按钮 -->
@@ -229,7 +369,10 @@
                   class="submit-btn"
                   :disabled="submitting"
                 >
-                  <span v-if="submitting" class="btn-spinner"></span>
+                  <span
+                    v-if="submitting"
+                    class="btn-spinner"
+                  />
                   <span>{{ submitting ? '提交中...' : '提交申请' }}</span>
                 </button>
               </form>
@@ -318,7 +461,7 @@ const loadFriendLinks = async () => {
       friendLinks.value = res.rows || []
     }
   } catch (error) {
-    console.error('加载友链失败:', error)
+    console.error(error)
   } finally {
     loading.value = false
   }
@@ -398,6 +541,7 @@ const uploadLogo = async (file) => {
       form.logo = res.imgUrl
       ElMessage.success('Logo 上传成功')
     } else {
+      ElMessage.error(res.message || '上传失败')
     }
   } catch (error) {
     console.error('上传失败:', error)

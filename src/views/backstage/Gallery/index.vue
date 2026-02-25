@@ -7,24 +7,68 @@
           <span class="subtitle">共检索到 {{ total }} 项媒体资源</span>
         </div>
         <div class="header-right button-row">
-          <el-button type="primary" round :icon="Upload" @click="handleUpload">上传资源</el-button>
-          <el-button type="danger" round :icon="Delete" plain @click="handleBatchDelete">批量删除</el-button>
+          <el-button
+            type="primary"
+            round
+            :icon="Upload"
+            @click="handleUpload"
+          >
+            上传资源
+          </el-button>
+          <el-button
+            type="danger"
+            round
+            :icon="Delete"
+            plain
+            @click="handleBatchDelete"
+          >
+            批量删除
+          </el-button>
         </div>
       </div>
       <div class="card-body">
-        <el-form :inline="true" :model="filterForm" class="filter-form">
+        <el-form
+          :inline="true"
+          :model="filterForm"
+          class="filter-form"
+        >
           <el-form-item label="资源名称">
-            <el-input v-model="filterForm.name" placeholder="搜索资源" clearable />
+            <el-input
+              v-model="filterForm.name"
+              placeholder="搜索资源"
+              clearable
+            />
           </el-form-item>
           <el-form-item label="类型">
-            <el-select v-model="filterForm.type" placeholder="全部类型" clearable style="width: 120px">
-              <el-option label="图片" value="image" />
-              <el-option label="视频" value="video" />
-              <el-option label="文档" value="doc" />
+            <el-select
+              v-model="filterForm.type"
+              placeholder="全部类型"
+              clearable
+              style="width: 120px"
+            >
+              <el-option
+                label="图片"
+                value="image"
+              />
+              <el-option
+                label="视频"
+                value="video"
+              />
+              <el-option
+                label="文档"
+                value="doc"
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" round :icon="Search" @click="handleSearch">检索</el-button>
+            <el-button
+              type="primary"
+              round
+              :icon="Search"
+              @click="handleSearch"
+            >
+              检索
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -32,24 +76,48 @@
 
     <div class="media-grid mt-20">
       <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="item in mediaList" :key="item.id">
+        <el-col
+          v-for="item in mediaList"
+          :key="item.id"
+          :xs="24"
+          :sm="12"
+          :md="8"
+          :lg="6"
+        >
           <div class="media-item slide-in">
             <div class="media-preview">
-              <el-image :src="item.url" fit="cover" lazy>
+              <el-image
+                :src="item.url"
+                fit="cover"
+                lazy
+              >
                 <template #placeholder>
-                  <div class="image-slot">加载中...</div>
+                  <div class="image-slot">
+                    加载中...
+                  </div>
                 </template>
               </el-image>
               <div class="media-overlay">
                 <div class="actions">
-                  <el-icon @click="handlePreview(item)"><ZoomIn /></el-icon>
-                  <el-icon @click="handleCopyUrl(item)"><CopyDocument /></el-icon>
-                  <el-icon @click="handleDelete(item)"><Delete /></el-icon>
+                  <el-icon @click="handlePreview(item)">
+                    <ZoomIn />
+                  </el-icon>
+                  <el-icon @click="handleCopyUrl(item)">
+                    <CopyDocument />
+                  </el-icon>
+                  <el-icon @click="handleDelete(item)">
+                    <Delete />
+                  </el-icon>
                 </div>
               </div>
             </div>
             <div class="media-info">
-              <div class="name" :title="item.name">{{ item.name }}</div>
+              <div
+                class="name"
+                :title="item.name"
+              >
+                {{ item.name }}
+              </div>
               <div class="meta">
                 <span>{{ item.size }}</span>
                 <span>{{ item.date }}</span>
@@ -74,7 +142,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Search, Upload, Delete, ZoomIn, CopyDocument, Picture } from '@element-plus/icons-vue'
+import { Search, Upload, Delete, ZoomIn, CopyDocument } from '@element-plus/icons-vue'
 
 const filterForm = reactive({
   name: '',
@@ -106,15 +174,15 @@ const handleBatchDelete = () => {
   // TODO: 使用 ElMessageBox.confirm 批量删除
 }
 
-const handlePreview = (item) => {
+const handlePreview = () => {
   // TODO: 使用 ElImageViewer 预览大图
 }
 
-const handleCopyUrl = (item) => {
+const handleCopyUrl = () => {
   // TODO: 复制 URL 到剪贴板，使用 ElMessage 反馈
 }
 
-const handleDelete = (item) => {
+const handleDelete = () => {
   // TODO: 使用 ElMessageBox.confirm 确认删除
 }
 

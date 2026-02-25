@@ -15,22 +15,22 @@
     <div class="filter-tags">
       <el-tag 
         :type="filterForm.status === '' ? 'primary' : 'info'" 
-        @click="filterForm.status = ''; handleSearch()"
         class="filter-tag"
+        @click="filterForm.status = ''; handleSearch()"
       >
         全部
       </el-tag>
       <el-tag 
         :type="filterForm.status === 'published' ? 'success' : 'info'" 
-        @click="filterForm.status = 'published'; handleSearch()"
         class="filter-tag"
+        @click="filterForm.status = 'published'; handleSearch()"
       >
         已发布
       </el-tag>
       <el-tag 
         :type="filterForm.status === 'draft' ? 'warning' : 'info'" 
-        @click="filterForm.status = 'draft'; handleSearch()"
         class="filter-tag"
+        @click="filterForm.status = 'draft'; handleSearch()"
       >
         草稿
       </el-tag>
@@ -38,7 +38,13 @@
 
     <!-- 新增按钮 -->
     <div class="action-bar">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">创作新文章</el-button>
+      <el-button
+        type="primary"
+        :icon="Plus"
+        @click="handleAdd"
+      >
+        创作新文章
+      </el-button>
     </div>
 
     <!-- 文章列表 -->
@@ -50,7 +56,11 @@
         @click="handleEdit(article)"
       >
         <div class="article-cover">
-          <el-image :src="article.cover" fit="cover" class="cover-img">
+          <el-image
+            :src="article.cover"
+            fit="cover"
+            class="cover-img"
+          >
             <template #error>
               <div class="cover-placeholder">
                 <el-icon><Picture /></el-icon>
@@ -60,8 +70,13 @@
         </div>
         <div class="article-content">
           <div class="article-header">
-            <h3 class="article-title">{{ article.title }}</h3>
-            <el-tag :type="article.status === 'published' ? 'success' : 'warning'" size="small">
+            <h3 class="article-title">
+              {{ article.title }}
+            </h3>
+            <el-tag
+              :type="article.status === 'published' ? 'success' : 'warning'"
+              size="small"
+            >
               {{ article.status === 'published' ? '已发布' : '草稿' }}
             </el-tag>
           </div>
@@ -75,27 +90,69 @@
               {{ article.createTime }}
             </span>
           </div>
-          <div class="article-tags" v-if="article.tags && article.tags.length > 0">
-            <el-tag v-for="tag in article.tags" :key="tag" size="small" type="info" effect="plain">
+          <div
+            v-if="article.tags && article.tags.length > 0"
+            class="article-tags"
+          >
+            <el-tag
+              v-for="tag in article.tags"
+              :key="tag"
+              size="small"
+              type="info"
+              effect="plain"
+            >
               {{ tag }}
             </el-tag>
           </div>
         </div>
         <div class="article-actions">
-          <el-button type="primary" link :icon="Edit" @click.stop="handleEdit(article)">编辑</el-button>
-          <el-button type="primary" link :icon="View" @click.stop="handlePreview(article)">预览</el-button>
-          <el-button type="danger" link :icon="Delete" @click.stop="handleDelete(article)">删除</el-button>
+          <el-button
+            type="primary"
+            link
+            :icon="Edit"
+            @click.stop="handleEdit(article)"
+          >
+            编辑
+          </el-button>
+          <el-button
+            type="primary"
+            link
+            :icon="View"
+            @click.stop="handlePreview(article)"
+          >
+            预览
+          </el-button>
+          <el-button
+            type="danger"
+            link
+            :icon="Delete"
+            @click.stop="handleDelete(article)"
+          >
+            删除
+          </el-button>
         </div>
       </div>
     </div>
 
     <!-- 加载更多 -->
     <div class="load-more">
-      <el-button v-if="hasMore" type="primary" plain @click="loadMore" :loading="loading">
+      <el-button
+        v-if="hasMore"
+        type="primary"
+        plain
+        :loading="loading"
+        @click="loadMore"
+      >
         加载更多
       </el-button>
-      <span v-else-if="tableData.length > 0" class="no-more">没有更多了</span>
-      <span v-else class="no-more">暂无文章</span>
+      <span
+        v-else-if="tableData.length > 0"
+        class="no-more"
+      >没有更多了</span>
+      <span
+        v-else
+        class="no-more"
+      >暂无文章</span>
     </div>
   </div>
 </template>
@@ -112,9 +169,7 @@ const filterForm = reactive({
 })
 
 const loading = ref(false)
-const total = ref(128)
 const currentPage = ref(1)
-const pageSize = ref(10)
 const hasMore = ref(true)
 
 const tableData = ref([
@@ -153,12 +208,12 @@ const handleAdd = () => {
   ElMessage.info('跳转到文章发布页面')
 }
 
-const handleEdit = (row) => {
+const handleEdit = () => {
   // TODO: 跳转到文章编辑页面
   ElMessage.info('跳转到文章编辑页面')
 }
 
-const handlePreview = (row) => {
+const handlePreview = () => {
   // TODO: 跳转到前台文章详情页
   ElMessage.info('跳转到文章预览页面')
 }

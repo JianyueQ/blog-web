@@ -5,49 +5,100 @@
         <!-- Markdown 编辑器工具栏 -->
         <div class="md-toolbar">
           <div class="toolbar-group">
-            <el-tooltip content="加粗" placement="top">
-              <el-button size="small" @click="insertMarkdown('**', '**')">
+            <el-tooltip
+              content="加粗"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('**', '**')"
+              >
                 <el-icon><strong>B</strong></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="斜体" placement="top">
-              <el-button size="small" @click="insertMarkdown('*', '*')">
+            <el-tooltip
+              content="斜体"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('*', '*')"
+              >
                 <el-icon><em>I</em></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="标题" placement="top">
-              <el-button size="small" @click="insertMarkdown('## ', '')">
+            <el-tooltip
+              content="标题"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('## ', '')"
+              >
                 H
               </el-button>
             </el-tooltip>
-            <el-tooltip content="引用" placement="top">
-              <el-button size="small" @click="insertMarkdown('> ', '')">
+            <el-tooltip
+              content="引用"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('> ', '')"
+              >
                 <el-icon><MessageBox /></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="代码块" placement="top">
-              <el-button size="small" @click="insertMarkdown('```\n', '\n```')">
+            <el-tooltip
+              content="代码块"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('```\n', '\n```')"
+              >
                 <el-icon><Tickets /></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="链接" placement="top">
-              <el-button size="small" @click="insertMarkdown('[', '](url)')">
+            <el-tooltip
+              content="链接"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('[', '](url)')"
+              >
                 <el-icon><Link /></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="无序列表" placement="top">
-              <el-button size="small" @click="insertMarkdown('- ', '')">
+            <el-tooltip
+              content="无序列表"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('- ', '')"
+              >
                 <el-icon><List /></el-icon>
               </el-button>
             </el-tooltip>
-            <el-tooltip content="有序列表" placement="top">
-              <el-button size="small" @click="insertMarkdown('1. ', '')">
+            <el-tooltip
+              content="有序列表"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="insertMarkdown('1. ', '')"
+              >
                 <el-icon><Checked /></el-icon>
               </el-button>
             </el-tooltip>
           </div>
           <div class="toolbar-group">
-            <el-tooltip content="上传图片" placement="top">
+            <el-tooltip
+              content="上传图片"
+              placement="top"
+            >
               <el-upload
                 class="inline-upload"
                 action="#"
@@ -56,13 +107,22 @@
                 :on-change="handleImageUpload"
                 accept="image/*"
               >
-                <el-button size="small" :loading="uploading">
+                <el-button
+                  size="small"
+                  :loading="uploading"
+                >
                   <el-icon><Picture /></el-icon>
                 </el-button>
               </el-upload>
             </el-tooltip>
-            <el-tooltip content="预览模式" placement="top">
-              <el-button size="small" @click="togglePreviewMode">
+            <el-tooltip
+              content="预览模式"
+              placement="top"
+            >
+              <el-button
+                size="small"
+                @click="togglePreviewMode"
+              >
                 <el-icon><View /></el-icon>
               </el-button>
             </el-tooltip>
@@ -70,9 +130,15 @@
         </div>
 
         <!-- 编辑区域 -->
-        <div class="md-editor-container" :class="{ 'preview-only': previewMode === 'preview' }">
+        <div
+          class="md-editor-container"
+          :class="{ 'preview-only': previewMode === 'preview' }"
+        >
           <!-- 编辑器 -->
-          <div v-show="previewMode !== 'preview'" class="editor-pane">
+          <div
+            v-show="previewMode !== 'preview'"
+            class="editor-pane"
+          >
             <el-input
               ref="editorInput"
               v-model="aboutForm.content"
@@ -84,17 +150,35 @@
           </div>
 
           <!-- 预览区域 -->
-          <div v-show="previewMode !== 'edit'" class="preview-pane">
-            <div class="preview-header">预览</div>
-            <div class="markdown-body" v-html="renderedMarkdown"></div>
+          <div
+            v-show="previewMode !== 'edit'"
+            class="preview-pane"
+          >
+            <div class="preview-header">
+              预览
+            </div>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div
+              class="markdown-body"
+              v-html="renderedMarkdown"
+            />
           </div>
         </div>
 
         <div class="form-actions mt-20">
-          <el-button type="primary" size="large" round @click="handleSaveAbout" :loading="saving">
+          <el-button
+            type="primary"
+            size="large"
+            round
+            :loading="saving"
+            @click="handleSaveAbout"
+          >
             更新关于页面
           </el-button>
-          <span v-if="updateTime" class="save-time">最后保存: {{ updateTime }}</span>
+          <span
+            v-if="updateTime"
+            class="save-time"
+          >最后保存: {{ updateTime }}</span>
         </div>
       </div>
     </div>
@@ -120,7 +204,9 @@ const md = new MarkdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(str, { language: lang }).value
-      } catch (__) {}
+      } catch (__) {
+        // pass
+      }
     }
     return ''
   }

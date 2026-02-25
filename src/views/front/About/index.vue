@@ -1,19 +1,34 @@
 <template>
   <div class="about-view">
     <!-- 加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <div class="loading-spinner"></div>
+    <div
+      v-if="loading"
+      class="loading-container"
+    >
+      <div class="loading-spinner" />
       <p>加载中...</p>
     </div>
 
     <!-- 内容区域 -->
-    <div v-else-if="aboutContent" class="about-container">
+    <div
+      v-else-if="aboutContent"
+      class="about-container"
+    >
       <!-- Markdown 渲染区域 -->
-      <article class="markdown-body" v-html="renderedMarkdown"></article>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <article
+        class="markdown-body"
+        v-html="renderedMarkdown"
+      />
 
       <!-- 社交联系方式 -->
-      <div v-if="contacts.length > 0" class="social-section">
-        <h2 class="social-title">快速联系</h2>
+      <div
+        v-if="contacts.length > 0"
+        class="social-section"
+      >
+        <h2 class="social-title">
+          快速联系
+        </h2>
         <div class="social-grid">
           <a
             v-for="contact in contacts"
@@ -24,7 +39,11 @@
             class="social-item"
             :title="contact.tip"
           >
-            <img :src="contact.icon" :alt="contact.name" class="social-icon" />
+            <img
+              :src="contact.icon"
+              :alt="contact.name"
+              class="social-icon"
+            >
             <span class="social-name">{{ contact.name }}</span>
           </a>
         </div>
@@ -32,7 +51,10 @@
     </div>
 
     <!-- 错误状态 -->
-    <div v-else class="error-container">
+    <div
+      v-else
+      class="error-container"
+    >
       <p>暂无内容</p>
     </div>
 
@@ -59,7 +81,9 @@ const md = new MarkdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(str, { language: lang }).value
-      } catch (__) {}
+      } catch (__) {
+        // pass
+      }
     }
     return ''
   }

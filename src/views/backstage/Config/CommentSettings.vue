@@ -2,7 +2,11 @@
   <div class="comment-settings-panel">
     <div class="pro-card">
       <div class="card-body">
-        <el-form :model="commentForm" label-position="left" label-width="150px">
+        <el-form
+          :model="commentForm"
+          label-position="left"
+          label-width="150px"
+        >
           <el-form-item label="开启评论">
             <el-switch v-model="commentForm.enable" />
           </el-form-item>
@@ -13,10 +17,22 @@
             <el-switch v-model="commentForm.emailNotify" />
           </el-form-item>
           <el-form-item label="黑名单关键词">
-            <el-input v-model="commentForm.blacklist" type="textarea" :rows="4" placeholder="每行一个关键词" />
+            <el-input
+              v-model="commentForm.blacklist"
+              type="textarea"
+              :rows="4"
+              placeholder="每行一个关键词"
+            />
           </el-form-item>
           <div class="form-actions mt-20">
-            <el-button type="primary" size="large" round @click="handleSaveComment">保存评论设置</el-button>
+            <el-button
+              type="primary"
+              size="large"
+              round
+              @click="handleSaveComment"
+            >
+              保存评论设置
+            </el-button>
           </div>
         </el-form>
       </div>

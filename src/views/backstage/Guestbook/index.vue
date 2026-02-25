@@ -1,23 +1,56 @@
 <template>
-  <MobileGuestbook v-if="isMobile" ref="mobileRef" />
-  <div v-else class="guestbook-manage">
+  <MobileGuestbook
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="guestbook-manage"
+  >
     <!-- 搜索区域 -->
     <div class="pro-card search-card">
       <div class="search-row">
         <div class="time-filter">
           <span class="filter-label">时间筛选：</span>
-          <el-radio-group v-model="selectedTimeRange" size="small" @change="handleTimeRangeChange">
-            <el-radio-button value="">全部</el-radio-button>
-            <el-radio-button value="today">今天</el-radio-button>
-            <el-radio-button value="yesterday">昨天</el-radio-button>
-            <el-radio-button value="last3days">近三天</el-radio-button>
-            <el-radio-button value="last7days">近七天</el-radio-button>
-            <el-radio-button value="last30days">近三十天</el-radio-button>
+          <el-radio-group
+            v-model="selectedTimeRange"
+            size="small"
+            @change="handleTimeRangeChange"
+          >
+            <el-radio-button value="">
+              全部
+            </el-radio-button>
+            <el-radio-button value="today">
+              今天
+            </el-radio-button>
+            <el-radio-button value="yesterday">
+              昨天
+            </el-radio-button>
+            <el-radio-button value="last3days">
+              近三天
+            </el-radio-button>
+            <el-radio-button value="last7days">
+              近七天
+            </el-radio-button>
+            <el-radio-button value="last30days">
+              近三十天
+            </el-radio-button>
           </el-radio-group>
         </div>
         <div class="search-actions">
-          <el-button type="primary" @click="handleQuery" :icon="Search">搜索</el-button>
-          <el-button @click="handleReset" :icon="Refresh">重置</el-button>
+          <el-button
+            type="primary"
+            :icon="Search"
+            @click="handleQuery"
+          >
+            搜索
+          </el-button>
+          <el-button
+            :icon="Refresh"
+            @click="handleReset"
+          >
+            重置
+          </el-button>
         </div>
       </div>
     </div>
@@ -25,35 +58,69 @@
     <!-- 工具栏 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
-<!--        <el-button type="danger" plain @click="handleBatchDelete" :icon="Delete" :disabled="selectedIds.length === 0">-->
-<!--          批量删除-->
-<!--        </el-button>-->
+        <!--        <el-button type="danger" plain @click="handleBatchDelete" :icon="Delete" :disabled="selectedIds.length === 0">-->
+        <!--          批量删除-->
+        <!--        </el-button>-->
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="fetchData" :icon="Refresh" title="刷新" :loading="loading"/>
+        <el-button
+          circle
+          :icon="Refresh"
+          title="刷新"
+          :loading="loading"
+          @click="fetchData"
+        />
       </div>
     </div>
 
     <!-- 留言列表 -->
     <div class="pro-card message-list-card">
-      <div v-loading="loading" class="message-list">
-        <div v-for="item in tableData" :key="item.guestbookId" class="message-item">
+      <div
+        v-loading="loading"
+        class="message-list"
+      >
+        <div
+          v-for="item in tableData"
+          :key="item.guestbookId"
+          class="message-item"
+        >
           <!-- 根留言 -->
           <div class="root-message">
             <div class="message-header">
               <div class="user-info">
-                <el-avatar :size="40" :src="item.avatar" class="user-avatar">
+                <el-avatar
+                  :size="40"
+                  :src="item.avatar"
+                  class="user-avatar"
+                >
                   {{ item.nickname ? item.nickname.charAt(0).toUpperCase() : '?' }}
                 </el-avatar>
                 <div class="user-meta">
                   <div class="nickname-row">
                     <span class="nickname">{{ item.nickname }}</span>
-                    <el-tag v-if="item.status === 0" type="danger" size="small" effect="light">隐藏</el-tag>
-<!--                    <el-tag v-else-if="item.status === 2" type="warning" size="small" effect="light">审核中</el-tag>-->
-                    <el-tag v-else type="success" size="small" effect="light">显示</el-tag>
+                    <el-tag
+                      v-if="item.status === 0"
+                      type="danger"
+                      size="small"
+                      effect="light"
+                    >
+                      隐藏
+                    </el-tag>
+                    <!--                    <el-tag v-else-if="item.status === 2" type="warning" size="small" effect="light">审核中</el-tag>-->
+                    <el-tag
+                      v-else
+                      type="success"
+                      size="small"
+                      effect="light"
+                    >
+                      显示
+                    </el-tag>
                   </div>
                   <div class="meta-info">
-                    <span class="location" v-if="item.location">
+                    <span
+                      v-if="item.location"
+                      class="location"
+                    >
                       <el-icon><Location /></el-icon>
                       {{ item.location }}
                     </span>
@@ -65,28 +132,51 @@
                 </div>
               </div>
               <div class="message-actions">
-                <el-dropdown trigger="click" @command="(cmd) => handleStatusChange(item, cmd)">
-                  <el-button link type="primary" :icon="Switch">
+                <el-dropdown
+                  trigger="click"
+                  @command="(cmd) => handleStatusChange(item, cmd)"
+                >
+                  <el-button
+                    link
+                    type="primary"
+                    :icon="Switch"
+                  >
                     状态
                   </el-button>
                   <template #dropdown>
                     <el-dropdown-menu>
-                      <el-dropdown-item command="1" :disabled="item.status === 1">
+                      <el-dropdown-item
+                        command="1"
+                        :disabled="item.status === 1"
+                      >
                         <el-icon><Check /></el-icon> 显示
                       </el-dropdown-item>
-                      <el-dropdown-item command="0" :disabled="item.status === 0">
+                      <el-dropdown-item
+                        command="0"
+                        :disabled="item.status === 0"
+                      >
                         <el-icon><Hide /></el-icon> 隐藏
                       </el-dropdown-item>
-<!--                      <el-dropdown-item command="2" :disabled="item.status === 2">-->
-<!--                        <el-icon><Warning /></el-icon> 审核中-->
-<!--                      </el-dropdown-item>-->
+                      <!--                      <el-dropdown-item command="2" :disabled="item.status === 2">-->
+                      <!--                        <el-icon><Warning /></el-icon> 审核中-->
+                      <!--                      </el-dropdown-item>-->
                     </el-dropdown-menu>
                   </template>
                 </el-dropdown>
-                <el-button link type="primary" :icon="ChatLineRound" @click="handleReply(item)">
+                <el-button
+                  link
+                  type="primary"
+                  :icon="ChatLineRound"
+                  @click="handleReply(item)"
+                >
                   回复
                 </el-button>
-                <el-button link type="danger" :icon="Delete" @click="handleDelete(item)">
+                <el-button
+                  link
+                  type="danger"
+                  :icon="Delete"
+                  @click="handleDelete(item)"
+                >
                   删除
                 </el-button>
               </div>
@@ -95,12 +185,15 @@
               {{ item.content }}
             </div>
             <!-- 展开回复按钮 -->
-            <div v-if="item.replyList && item.replyList.length > 0" class="reply-toggle">
+            <div
+              v-if="item.replyList && item.replyList.length > 0"
+              class="reply-toggle"
+            >
               <el-button
                 link
                 type="primary"
-                @click="toggleReplies(item.guestbookId)"
                 :icon="expandedRows.includes(item.guestbookId) ? ArrowUp : ArrowDown"
+                @click="toggleReplies(item.guestbookId)"
               >
                 {{ expandedRows.includes(item.guestbookId) ? '收起回复' : `展开 ${item.replyList.length} 条回复` }}
               </el-button>
@@ -108,42 +201,107 @@
           </div>
 
           <!-- 回复列表 -->
-          <div v-if="item.replyList && item.replyList.length > 0 && expandedRows.includes(item.guestbookId)" class="reply-list">
-            <div v-for="reply in item.replyList" :key="reply.guestbookId" class="reply-item">
+          <div
+            v-if="item.replyList && item.replyList.length > 0 && expandedRows.includes(item.guestbookId)"
+            class="reply-list"
+          >
+            <div
+              v-for="reply in item.replyList"
+              :key="reply.guestbookId"
+              class="reply-item"
+            >
               <div class="reply-avatar">
-                <el-avatar :size="32" :src="reply.avatar">
+                <el-avatar
+                  :size="32"
+                  :src="reply.avatar"
+                >
                   {{ reply.nickname ? reply.nickname.charAt(0).toUpperCase() : '?' }}
                 </el-avatar>
               </div>
               <div class="reply-content-wrapper">
                 <div class="reply-header">
                   <span class="reply-nickname">{{ reply.nickname }}</span>
-                  <el-tag v-if="reply.status === 0" type="danger" size="small" effect="plain">隐藏</el-tag>
-                  <el-tag v-else-if="reply.status === 1" type="success" size="small" effect="plain">显示</el-tag>
-                  <span class="reply-location" v-if="reply.location">
+                  <el-tag
+                    v-if="reply.status === 0"
+                    type="danger"
+                    size="small"
+                    effect="plain"
+                  >
+                    隐藏
+                  </el-tag>
+                  <el-tag
+                    v-else-if="reply.status === 1"
+                    type="success"
+                    size="small"
+                    effect="plain"
+                  >
+                    显示
+                  </el-tag>
+                  <span
+                    v-if="reply.location"
+                    class="reply-location"
+                  >
                     <el-icon><Location /></el-icon>
                     {{ reply.location }}
                   </span>
                   <span class="reply-time">{{ reply.messageTime }}</span>
                 </div>
                 <!-- 显示回复对象 -->
-                <div v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId" class="reply-to">
+                <div
+                  v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId"
+                  class="reply-to"
+                >
                   <span class="reply-to-text">回复</span>
                   <span class="reply-to-nickname">{{ getReplyToNickname(item.replyList, reply.parentId) }}</span>
                 </div>
-                <div class="reply-content">{{ reply.content }}</div>
+                <div class="reply-content">
+                  {{ reply.content }}
+                </div>
                 <div class="reply-actions">
-                  <el-dropdown trigger="click" @command="(cmd) => handleStatusChange(reply, cmd)">
-                    <el-button link type="primary" size="small">状态</el-button>
+                  <el-dropdown
+                    trigger="click"
+                    @command="(cmd) => handleStatusChange(reply, cmd)"
+                  >
+                    <el-button
+                      link
+                      type="primary"
+                      size="small"
+                    >
+                      状态
+                    </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item command="1" :disabled="reply.status === 1">显示</el-dropdown-item>
-                        <el-dropdown-item command="0" :disabled="reply.status === 0">隐藏</el-dropdown-item>
+                        <el-dropdown-item
+                          command="1"
+                          :disabled="reply.status === 1"
+                        >
+                          显示
+                        </el-dropdown-item>
+                        <el-dropdown-item
+                          command="0"
+                          :disabled="reply.status === 0"
+                        >
+                          隐藏
+                        </el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
                   </el-dropdown>
-                  <el-button link type="primary" size="small" @click="handleReply(reply)">回复</el-button>
-                  <el-button link type="danger" size="small" @click="handleDelete(reply)">删除</el-button>
+                  <el-button
+                    link
+                    type="primary"
+                    size="small"
+                    @click="handleReply(reply)"
+                  >
+                    回复
+                  </el-button>
+                  <el-button
+                    link
+                    type="danger"
+                    size="small"
+                    @click="handleDelete(reply)"
+                  >
+                    删除
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -151,7 +309,10 @@
         </div>
 
         <!-- 空状态 -->
-        <el-empty v-if="!loading && tableData.length === 0" description="暂无留言数据" />
+        <el-empty
+          v-if="!loading && tableData.length === 0"
+          description="暂无留言数据"
+        />
       </div>
 
       <!-- 分页 -->
@@ -178,16 +339,27 @@
       <div class="reply-dialog-content">
         <div class="original-message">
           <div class="original-header">
-            <el-avatar :size="32" :src="currentReplyItem?.avatar">
+            <el-avatar
+              :size="32"
+              :src="currentReplyItem?.avatar"
+            >
               {{ currentReplyItem?.nickname ? currentReplyItem.nickname.charAt(0).toUpperCase() : '?' }}
             </el-avatar>
             <span class="original-nickname">{{ currentReplyItem?.nickname }}</span>
           </div>
-          <div class="original-text">{{ currentReplyItem?.content }}</div>
+          <div class="original-text">
+            {{ currentReplyItem?.content }}
+          </div>
         </div>
         <el-divider />
-        <el-form :model="replyForm" label-position="top">
-          <el-form-item label="回复内容" :rules="[{ required: true, message: '请输入回复内容', trigger: 'blur' }]">
+        <el-form
+          :model="replyForm"
+          label-position="top"
+        >
+          <el-form-item
+            label="回复内容"
+            :rules="[{ required: true, message: '请输入回复内容', trigger: 'blur' }]"
+          >
             <el-input
               v-model="replyForm.content"
               type="textarea"
@@ -200,8 +372,16 @@
         </el-form>
       </div>
       <template #footer>
-        <el-button @click="replyDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitReply" :loading="replyLoading">确认回复</el-button>
+        <el-button @click="replyDialogVisible = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          :loading="replyLoading"
+          @click="submitReply"
+        >
+          确认回复
+        </el-button>
       </template>
     </el-dialog>
   </div>
@@ -217,11 +397,9 @@ import {
   ChatLineRound,
   Check,
   Hide,
-  Warning,
   Switch,
   Clock,
   Location,
-  UserFilled,
   ArrowDown,
   ArrowUp
 } from '@element-plus/icons-vue'
@@ -252,7 +430,6 @@ const selectedTimeRange = ref('')
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
-const selectedIds = ref([])
 const expandedRows = ref([])
 
 // 回复弹窗
@@ -451,22 +628,7 @@ function handleDelete(item) {
   }).catch(() => {})
 }
 
-// 批量删除
-function handleBatchDelete() {
-  if (selectedIds.value.length === 0) {
-    ElMessage.warning('请选择要删除的留言')
-    return
-  }
-  ElMessageBox.confirm(`确定要删除选中的 ${selectedIds.value.length} 条留言吗？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    // 批量删除逻辑
-    ElMessage.success('批量删除成功')
-    fetchData()
-  }).catch(() => {})
-}
+
 
 // 获取回复对象的昵称
 function getReplyToNickname(replyList, parentId) {

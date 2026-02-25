@@ -3,7 +3,7 @@
     <div class="home-grid">
       <!-- 左侧个人资料 -->
       <div class="left-section">
-        <ProfileCard/>
+        <ProfileCard />
       </div>
 
       <!-- 右侧内容区域 -->
@@ -16,14 +16,26 @@
           <!-- 时钟卡片 -->
           <div class="info-card clock-card">
             <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <polyline points="12 6 12 12 16 14" />
               </svg>
             </div>
             <div class="card-content">
-              <div class="time-display">{{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}</div>
-              <div class="date-display">{{ currentTime.year }}年{{ currentTime.month }}月{{ currentTime.day }}日
+              <div class="time-display">
+                {{ currentTime.hour }}:{{ currentTime.minute }}:{{ currentTime.second }}
+              </div>
+              <div class="date-display">
+                {{ currentTime.year }}年{{ currentTime.month }}月{{ currentTime.day }}日
                 {{ currentTime.weekday }}
               </div>
             </div>
@@ -32,50 +44,109 @@
           <!-- 文章统计卡片 -->
           <div class="info-card stats-card">
             <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line
+                  x1="16"
+                  y1="13"
+                  x2="8"
+                  y2="13"
+                />
+                <line
+                  x1="16"
+                  y1="17"
+                  x2="8"
+                  y2="17"
+                />
+                <polyline points="10 9 9 9 8 9" />
               </svg>
             </div>
             <div class="card-content">
-              <div class="stats-value">{{ articleCount }}</div>
-              <div class="stats-label">文章总数</div>
+              <div class="stats-value">
+                {{ articleCount }}
+              </div>
+              <div class="stats-label">
+                文章总数
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 时光胶囊 -->
-        <TimeCapsule/>
+        <TimeCapsule />
 
         <!-- 欢迎语/快速入口 -->
         <div class="welcome-section">
-          <h2 class="welcome-title">欢迎来到我的技术角</h2>
+          <h2 class="welcome-title">
+            欢迎来到我的技术角
+          </h2>
           <p class="welcome-text">
             在这里，我分享关于全栈开发、系统架构以及生活中的点滴思考。
             希望你能在这里找到灵感或解决问题的方案。
           </p>
           <div class="quick-links">
-            <button class="link-btn" @click="$router.push('/archive')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            <button
+              class="link-btn"
+              @click="$router.push('/archive')"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
               </svg>
               探索文章
             </button>
-            <button class="link-btn secondary" @click="$router.push('/about')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="16" x2="12" y2="12"/>
-                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            <button
+              class="link-btn secondary"
+              @click="$router.push('/about')"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <line
+                  x1="12"
+                  y1="16"
+                  x2="12"
+                  y2="12"
+                />
+                <line
+                  x1="12"
+                  y1="8"
+                  x2="12.01"
+                  y2="8"
+                />
               </svg>
               关于我
             </button>
-            <button class="link-btn secondary" @click="$router.push('/message')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+            <button
+              class="link-btn secondary"
+              @click="$router.push('/message')"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
               </svg>
               留言板
             </button>
@@ -96,7 +167,6 @@ import TimeCapsule from './TimeCapsule.vue'
 import AnnouncementBoard from './AnnouncementBoard.vue'
 import BackToTop from '@/components/BackToTop.vue'
 import {getCurrentTime} from '@/utils/getTime.js'
-import {listBlog} from '@/api/front/blog.js'
 
 
 const currentTime = ref({

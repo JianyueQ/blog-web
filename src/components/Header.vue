@@ -1,28 +1,40 @@
 <template>
-  <header class="header" :class="{ 'mobile-open': mobileMenuOpen }">
+  <header
+    class="header"
+    :class="{ 'mobile-open': mobileMenuOpen }"
+  >
     <div class="container">
-      <div class="logo" @click="router.push('/home')">
-        <img src="/images/icon/logo.png" alt="Logo"/>
-<!--        <span class="logo-text">blog</span>-->
+      <div
+        class="logo"
+        @click="router.push('/home')"
+      >
+        <img
+          src="/images/icon/logo.png"
+          alt="Logo"
+        >
+        <!--        <span class="logo-text">blog</span>-->
       </div>
 
       <!-- PC端导航 -->
       <nav class="nav xs-hidden">
         <a
-            v-for="item in navItems"
-            :key="item.path"
-            href="javascript:void(0)"
-            class="nav-item"
-            :class="{ active: router.currentRoute.value.path === item.path }"
-            @click="handleNavClick(item.path)"
+          v-for="item in navItems"
+          :key="item.path"
+          href="javascript:void(0)"
+          class="nav-item"
+          :class="{ active: router.currentRoute.value.path === item.path }"
+          @click="handleNavClick(item.path)"
         >
           <span class="nav-text">{{ item.name }}</span>
         </a>
       </nav>
 
       <!-- 移动端菜单按钮 -->
-      <div class="menu-btn" @click="toggleMobileMenu">
-        <span class="menu-icon"></span>
+      <div
+        class="menu-btn"
+        @click="toggleMobileMenu"
+      >
+        <span class="menu-icon" />
       </div>
     </div>
 
@@ -38,12 +50,12 @@
         @touchend="handleTouchEnd"
       >
         <a
-            v-for="item in navItems"
-            :key="item.path"
-            href="javascript:void(0)"
-            class="mobile-nav-item"
-            :class="{ active: router.currentRoute.value.path === item.path }"
-            @click="handleNavClick(item.path)"
+          v-for="item in navItems"
+          :key="item.path"
+          href="javascript:void(0)"
+          class="mobile-nav-item"
+          :class="{ active: router.currentRoute.value.path === item.path }"
+          @click="handleNavClick(item.path)"
         >
           {{ item.name }}
         </a>

@@ -2,23 +2,41 @@
   <div class="message-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">留言板</h1>
-      <p class="page-subtitle">欢迎留下你的足迹，分享你的想法~</p>
+      <h1 class="page-title">
+        留言板
+      </h1>
+      <p class="page-subtitle">
+        欢迎留下你的足迹，分享你的想法~
+      </p>
     </div>
 
     <div class="message-container">
       <!-- 留言列表头部 + 触发按钮 -->
       <div class="list-header-section">
         <h3 class="list-title">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          <svg
+            class="icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
           留言列表
         </h3>
         <div class="header-actions">
-          <button class="message-trigger-btn" @click="openMessageModal">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 5v14M5 12h14"/>
+          <button
+            class="message-trigger-btn"
+            @click="openMessageModal"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M12 5v14M5 12h14" />
             </svg>
             <span>想要留言？点我来写下你的想法吧！</span>
           </button>
@@ -29,26 +47,59 @@
       <!-- 留言弹窗 -->
       <Teleport to="body">
         <Transition name="modal">
-          <div v-if="isMessageModalOpen" class="message-modal-overlay" @click="closeMessageModal">
-            <div class="message-modal" @click.stop>
+          <div
+            v-if="isMessageModalOpen"
+            class="message-modal-overlay"
+            @click="closeMessageModal"
+          >
+            <div
+              class="message-modal"
+              @click.stop
+            >
               <div class="modal-header">
                 <h3 class="modal-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
                   写下你的留言
                 </h3>
-                <button class="modal-close" @click="closeMessageModal">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
+                <button
+                  class="modal-close"
+                  @click="closeMessageModal"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line
+                      x1="18"
+                      y1="6"
+                      x2="6"
+                      y2="18"
+                    />
+                    <line
+                      x1="6"
+                      y1="6"
+                      x2="18"
+                      y2="18"
+                    />
                   </svg>
                 </button>
               </div>
 
               <div class="modal-body">
-                <form class="message-form" @submit.prevent="submitMessage">
+                <form
+                  class="message-form"
+                  @submit.prevent="submitMessage"
+                >
                   <!-- 头像选择区域 -->
                   <div class="form-group avatar-group">
                     <div class="avatar-section">
@@ -60,25 +111,57 @@
                           @click="!avatarUploading && toggleAvatarPicker()"
                         >
                           <!-- 头像预览 -->
-                          <img v-if="messageForm.avatar && !avatarUploading" :src="messageForm.avatar" class="avatar-preview" />
+                          <img
+                            v-if="messageForm.avatar && !avatarUploading"
+                            :src="messageForm.avatar"
+                            class="avatar-preview"
+                          >
 
                           <!-- 上传中状态 -->
-                          <div v-else-if="avatarUploading" class="avatar-uploading">
+                          <div
+                            v-else-if="avatarUploading"
+                            class="avatar-uploading"
+                          >
                             <div class="avatar-spinner">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke-opacity="0.25"
+                                />
+                                <path
+                                  d="M12 2a10 10 0 0 1 10 10"
+                                  stroke-linecap="round"
+                                />
                               </svg>
                             </div>
                             <span class="upload-text">上传中...</span>
                           </div>
 
                           <!-- 默认状态 -->
-                          <div v-else class="avatar-placeholder">
+                          <div
+                            v-else
+                            class="avatar-placeholder"
+                          >
                             <div class="avatar-icon">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                              >
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle
+                                  cx="12"
+                                  cy="7"
+                                  r="4"
+                                />
                               </svg>
                             </div>
                             <span class="upload-hint">选择头像</span>
@@ -89,12 +172,27 @@
                             v-if="messageForm.avatar && !avatarUploading"
                             type="button"
                             class="avatar-remove-btn"
-                            @click.stop="removeAvatar"
                             title="删除头像"
+                            @click.stop="removeAvatar"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                              <line x1="18" y1="6" x2="6" y2="18"/>
-                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                            >
+                              <line
+                                x1="18"
+                                y1="6"
+                                x2="6"
+                                y2="18"
+                              />
+                              <line
+                                x1="6"
+                                y1="6"
+                                x2="18"
+                                y2="18"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -102,13 +200,35 @@
                       </div>
 
                       <!-- 头像选择器 -->
-                      <div v-if="showAvatarPicker" class="avatar-picker">
+                      <div
+                        v-if="showAvatarPicker"
+                        class="avatar-picker"
+                      >
                         <div class="avatar-picker-header">
                           <span class="avatar-picker-title">选择头像</span>
-                          <button type="button" class="avatar-close-btn" @click="toggleAvatarPicker">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <line x1="18" y1="6" x2="6" y2="18"/>
-                              <line x1="6" y1="6" x2="18" y2="18"/>
+                          <button
+                            type="button"
+                            class="avatar-close-btn"
+                            @click="toggleAvatarPicker"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <line
+                                x1="18"
+                                y1="6"
+                                x2="6"
+                                y2="18"
+                              />
+                              <line
+                                x1="6"
+                                y1="6"
+                                x2="18"
+                                y2="18"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -136,7 +256,10 @@
                             :class="{ 'selected': messageForm.avatar === avatar }"
                             @click="selectPresetAvatar(avatar)"
                           >
-                            <img :src="avatar" :alt="`预设头像 ${index + 1}`" />
+                            <img
+                              :src="avatar"
+                              :alt="`预设头像 ${index + 1}`"
+                            >
                           </div>
                         </div>
 
@@ -157,11 +280,21 @@
                               accept="image/*"
                               style="display: none"
                               @change="handleFileChange"
-                            />
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                              <polyline points="17 8 12 3 7 8"/>
-                              <line x1="12" y1="3" x2="12" y2="15"/>
+                            >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line
+                                x1="12"
+                                y1="3"
+                                x2="12"
+                                y2="15"
+                              />
                             </svg>
                             <span>上传自定义头像</span>
                             <small>支持 JPG、PNG，最大 10MB</small>
@@ -180,8 +313,11 @@
                         placeholder="你的昵称 *"
                         maxlength="20"
                         required
-                      />
-                      <span v-if="formErrors.nickname" class="error-msg">{{ formErrors.nickname }}</span>
+                      >
+                      <span
+                        v-if="formErrors.nickname"
+                        class="error-msg"
+                      >{{ formErrors.nickname }}</span>
                     </div>
                     <div class="form-group">
                       <input
@@ -190,8 +326,11 @@
                         class="form-input"
                         placeholder="你的邮箱（选填）"
                         maxlength="50"
-                      />
-                      <span v-if="formErrors.email" class="error-msg">{{ formErrors.email }}</span>
+                      >
+                      <span
+                        v-if="formErrors.email"
+                        class="error-msg"
+                      >{{ formErrors.email }}</span>
                     </div>
                   </div>
 
@@ -204,26 +343,71 @@
                         rows="4"
                         maxlength="500"
                         required
-                      ></textarea>
+                      />
                       <!-- Emoji 按钮 -->
-                      <button type="button" class="emoji-trigger-btn" @click="toggleEmojiPicker">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                          <line x1="9" y1="9" x2="9.01" y2="9"/>
-                          <line x1="15" y1="9" x2="15.01" y2="9"/>
+                      <button
+                        type="button"
+                        class="emoji-trigger-btn"
+                        @click="toggleEmojiPicker"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                          <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                          <line
+                            x1="9"
+                            y1="9"
+                            x2="9.01"
+                            y2="9"
+                          />
+                          <line
+                            x1="15"
+                            y1="9"
+                            x2="15.01"
+                            y2="9"
+                          />
                         </svg>
                       </button>
                     </div>
 
                     <!-- Emoji 选择器 -->
-                    <div v-if="showEmojiPicker" class="emoji-picker">
+                    <div
+                      v-if="showEmojiPicker"
+                      class="emoji-picker"
+                    >
                       <div class="emoji-picker-header">
                         <span class="emoji-picker-title">选择表情</span>
-                        <button type="button" class="emoji-close-btn" @click="toggleEmojiPicker">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        <button
+                          type="button"
+                          class="emoji-close-btn"
+                          @click="toggleEmojiPicker"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -241,7 +425,10 @@
                     </div>
 
                     <div class="textarea-footer">
-                      <span v-if="formErrors.content" class="error-msg">{{ formErrors.content }}</span>
+                      <span
+                        v-if="formErrors.content"
+                        class="error-msg"
+                      >{{ formErrors.content }}</span>
                       <span class="char-count">{{ messageForm.content.length }}/500</span>
                     </div>
                   </div>
@@ -251,7 +438,10 @@
                     class="submit-btn"
                     :disabled="submitting"
                   >
-                    <span v-if="submitting" class="btn-spinner"></span>
+                    <span
+                      v-if="submitting"
+                      class="btn-spinner"
+                    />
                     <span>{{ submitting ? '提交中...' : '发表留言' }}</span>
                   </button>
                 </form>
@@ -264,19 +454,49 @@
       <!-- 回复弹窗 -->
       <Teleport to="body">
         <Transition name="modal">
-          <div v-if="isReplyModalOpen" class="reply-modal-overlay" @click="closeReplyModal">
-            <div class="reply-modal" @click.stop>
+          <div
+            v-if="isReplyModalOpen"
+            class="reply-modal-overlay"
+            @click="closeReplyModal"
+          >
+            <div
+              class="reply-modal"
+              @click.stop
+            >
               <div class="modal-header">
                 <h3 class="modal-title">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                   {{ replyTarget.isRoot === 1 ? '回复留言' : `回复 @${replyTarget.nickname}` }}
                 </h3>
-                <button class="modal-close" @click="closeReplyModal">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
+                <button
+                  class="modal-close"
+                  @click="closeReplyModal"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line
+                      x1="18"
+                      y1="6"
+                      x2="6"
+                      y2="18"
+                    />
+                    <line
+                      x1="6"
+                      y1="6"
+                      x2="18"
+                      y2="18"
+                    />
                   </svg>
                 </button>
               </div>
@@ -288,10 +508,15 @@
                     <span class="quote-author">{{ replyTarget.nickname }}</span>
                     <span class="quote-time">{{ formatTime(replyTarget.messageTime) }}</span>
                   </div>
-                  <p class="quote-content">{{ replyTarget.content }}</p>
+                  <p class="quote-content">
+                    {{ replyTarget.content }}
+                  </p>
                 </div>
 
-                <form class="reply-form" @submit.prevent="submitReply">
+                <form
+                  class="reply-form"
+                  @submit.prevent="submitReply"
+                >
                   <!-- 头像选择区域 -->
                   <div class="form-group avatar-group">
                     <div class="avatar-section">
@@ -303,25 +528,57 @@
                           @click="!replyAvatarUploading && toggleReplyAvatarPicker()"
                         >
                           <!-- 头像预览 -->
-                          <img v-if="replyForm.avatar && !replyAvatarUploading" :src="replyForm.avatar" class="avatar-preview" />
+                          <img
+                            v-if="replyForm.avatar && !replyAvatarUploading"
+                            :src="replyForm.avatar"
+                            class="avatar-preview"
+                          >
 
                           <!-- 上传中状态 -->
-                          <div v-else-if="replyAvatarUploading" class="avatar-uploading">
+                          <div
+                            v-else-if="replyAvatarUploading"
+                            class="avatar-uploading"
+                          >
                             <div class="avatar-spinner">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <circle
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke-opacity="0.25"
+                                />
+                                <path
+                                  d="M12 2a10 10 0 0 1 10 10"
+                                  stroke-linecap="round"
+                                />
                               </svg>
                             </div>
                             <span class="upload-text">上传中...</span>
                           </div>
 
                           <!-- 默认状态 -->
-                          <div v-else class="avatar-placeholder">
+                          <div
+                            v-else
+                            class="avatar-placeholder"
+                          >
                             <div class="avatar-icon">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                              >
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle
+                                  cx="12"
+                                  cy="7"
+                                  r="4"
+                                />
                               </svg>
                             </div>
                             <span class="upload-hint">选择头像</span>
@@ -332,12 +589,27 @@
                             v-if="replyForm.avatar && !replyAvatarUploading"
                             type="button"
                             class="avatar-remove-btn"
-                            @click.stop="removeReplyAvatar"
                             title="删除头像"
+                            @click.stop="removeReplyAvatar"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                              <line x1="18" y1="6" x2="6" y2="18"/>
-                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                            >
+                              <line
+                                x1="18"
+                                y1="6"
+                                x2="6"
+                                y2="18"
+                              />
+                              <line
+                                x1="6"
+                                y1="6"
+                                x2="18"
+                                y2="18"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -345,13 +617,35 @@
                       </div>
 
                       <!-- 头像选择器 -->
-                      <div v-if="showReplyAvatarPicker" class="avatar-picker">
+                      <div
+                        v-if="showReplyAvatarPicker"
+                        class="avatar-picker"
+                      >
                         <div class="avatar-picker-header">
                           <span class="avatar-picker-title">选择头像</span>
-                          <button type="button" class="avatar-close-btn" @click="toggleReplyAvatarPicker">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <line x1="18" y1="6" x2="6" y2="18"/>
-                              <line x1="6" y1="6" x2="18" y2="18"/>
+                          <button
+                            type="button"
+                            class="avatar-close-btn"
+                            @click="toggleReplyAvatarPicker"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <line
+                                x1="18"
+                                y1="6"
+                                x2="6"
+                                y2="18"
+                              />
+                              <line
+                                x1="6"
+                                y1="6"
+                                x2="18"
+                                y2="18"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -379,7 +673,10 @@
                             :class="{ 'selected': replyForm.avatar === avatar }"
                             @click="selectReplyPresetAvatar(avatar)"
                           >
-                            <img :src="avatar" :alt="`预设头像 ${index + 1}`" />
+                            <img
+                              :src="avatar"
+                              :alt="`预设头像 ${index + 1}`"
+                            >
                           </div>
                         </div>
 
@@ -400,11 +697,21 @@
                               accept="image/*"
                               style="display: none"
                               @change="handleReplyFileChange"
-                            />
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                              <polyline points="17 8 12 3 7 8"/>
-                              <line x1="12" y1="3" x2="12" y2="15"/>
+                            >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                            >
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line
+                                x1="12"
+                                y1="3"
+                                x2="12"
+                                y2="15"
+                              />
                             </svg>
                             <span>上传自定义头像</span>
                             <small>支持 JPG、PNG，最大 10MB</small>
@@ -423,7 +730,7 @@
                         placeholder="你的昵称 *"
                         maxlength="20"
                         required
-                      />
+                      >
                     </div>
                     <div class="form-group">
                       <input
@@ -432,7 +739,7 @@
                         class="form-input"
                         placeholder="你的邮箱（选填）"
                         maxlength="50"
-                      />
+                      >
                     </div>
                   </div>
 
@@ -445,26 +752,71 @@
                         rows="4"
                         maxlength="500"
                         required
-                      ></textarea>
+                      />
                       <!-- Emoji 按钮 -->
-                      <button type="button" class="emoji-trigger-btn" @click="toggleReplyEmojiPicker">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="12" cy="12" r="10"/>
-                          <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                          <line x1="9" y1="9" x2="9.01" y2="9"/>
-                          <line x1="15" y1="9" x2="15.01" y2="9"/>
+                      <button
+                        type="button"
+                        class="emoji-trigger-btn"
+                        @click="toggleReplyEmojiPicker"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="10"
+                          />
+                          <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                          <line
+                            x1="9"
+                            y1="9"
+                            x2="9.01"
+                            y2="9"
+                          />
+                          <line
+                            x1="15"
+                            y1="9"
+                            x2="15.01"
+                            y2="9"
+                          />
                         </svg>
                       </button>
                     </div>
 
                     <!-- Emoji 选择器 -->
-                    <div v-if="showReplyEmojiPicker" class="emoji-picker">
+                    <div
+                      v-if="showReplyEmojiPicker"
+                      class="emoji-picker"
+                    >
                       <div class="emoji-picker-header">
                         <span class="emoji-picker-title">选择表情</span>
-                        <button type="button" class="emoji-close-btn" @click="toggleReplyEmojiPicker">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        <button
+                          type="button"
+                          class="emoji-close-btn"
+                          @click="toggleReplyEmojiPicker"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -491,7 +843,10 @@
                     class="submit-btn"
                     :disabled="replySubmitting"
                   >
-                    <span v-if="replySubmitting" class="btn-spinner"></span>
+                    <span
+                      v-if="replySubmitting"
+                      class="btn-spinner"
+                    />
                     <span>{{ replySubmitting ? '提交中...' : '提交回复' }}</span>
                   </button>
                 </form>
@@ -504,21 +859,36 @@
       <!-- 留言列表 -->
       <div class="message-list">
         <!-- 加载状态 -->
-        <div v-if="loading" class="loading-state">
-          <div class="loading-spinner"></div>
+        <div
+          v-if="loading"
+          class="loading-state"
+        >
+          <div class="loading-spinner" />
           <p>加载中...</p>
         </div>
 
         <!-- 空状态 -->
-        <div v-else-if="messages.length === 0" class="empty-state">
-          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <div
+          v-else-if="messages.length === 0"
+          class="empty-state"
+        >
+          <svg
+            class="empty-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
           <p>还没有留言，来做第一个留言的人吧~</p>
         </div>
 
         <!-- 留言列表 -->
-        <div v-else class="messages">
+        <div
+          v-else
+          class="messages"
+        >
           <div
             v-for="(item, index) in messages"
             :key="item.guestbookId"
@@ -530,20 +900,40 @@
               <div class="message-header">
                 <div class="user-info">
                   <div class="user-avatar">
-                    <img v-if="item.avatar" :src="item.avatar" :alt="item.nickname" @error="handleAvatarError" />
+                    <img
+                      v-if="item.avatar"
+                      :src="item.avatar"
+                      :alt="item.nickname"
+                      @error="handleAvatarError"
+                    >
                     <span v-else>{{ item.nickname.charAt(0).toUpperCase() }}</span>
                   </div>
                   <div class="user-details">
                     <div class="user-name-row">
                       <span class="nickname">{{ item.nickname }}</span>
-                      <span v-if="item.email" class="email">{{ item.email }}</span>
+                      <span
+                        v-if="item.email"
+                        class="email"
+                      >{{ item.email }}</span>
                     </div>
                     <div class="meta-info">
                       <span class="time">{{ formatTime(item.messageTime) }}</span>
-                      <span v-if="item.location" class="location">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                          <circle cx="12" cy="10" r="3"/>
+                      <span
+                        v-if="item.location"
+                        class="location"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle
+                            cx="12"
+                            cy="10"
+                            r="3"
+                          />
                         </svg>
                         {{ item.location }}
                       </span>
@@ -551,11 +941,21 @@
                   </div>
                 </div>
               </div>
-              <div class="message-content">{{ item.content }}</div>
+              <div class="message-content">
+                {{ item.content }}
+              </div>
               <div class="message-actions">
-                <button class="action-btn reply-btn" @click="openReplyModal(item)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <button
+                  class="action-btn reply-btn"
+                  @click="openReplyModal(item)"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                   回复
                 </button>
@@ -572,7 +972,7 @@
                     stroke-width="2"
                     :class="{ 'rotated': expandedReplies.includes(item.guestbookId) }"
                   >
-                    <polyline points="6 9 12 15 18 9"/>
+                    <polyline points="6 9 12 15 18 9" />
                   </svg>
                   {{ item.replyList.length }}条回复
                 </button>
@@ -591,35 +991,66 @@
                 class="reply-item"
               >
                 <div class="reply-avatar">
-                  <img v-if="reply.avatar" :src="reply.avatar" :alt="reply.nickname" @error="handleAvatarError" />
+                  <img
+                    v-if="reply.avatar"
+                    :src="reply.avatar"
+                    :alt="reply.nickname"
+                    @error="handleAvatarError"
+                  >
                   <span v-else>{{ reply.nickname.charAt(0).toUpperCase() }}</span>
                 </div>
                 <div class="reply-content-wrapper">
                   <div class="reply-header">
                     <div class="reply-name-row">
                       <span class="nickname">{{ reply.nickname }}</span>
-                      <span v-if="reply.email" class="email">{{ reply.email }}</span>
+                      <span
+                        v-if="reply.email"
+                        class="email"
+                      >{{ reply.email }}</span>
                     </div>
                     <span class="time">{{ formatTime(reply.messageTime) }}</span>
-                    <span v-if="reply.location" class="location">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
+                    <span
+                      v-if="reply.location"
+                      class="location"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle
+                          cx="12"
+                          cy="10"
+                          r="3"
+                        />
                       </svg>
                       {{ reply.location }}
                     </span>
                   </div>
                   <div class="reply-content">
                     <!-- 显示回复对象 -->
-                    <span v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId" class="reply-to">
+                    <span
+                      v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId"
+                      class="reply-to"
+                    >
                       回复 <span class="reply-to-nickname">@{{ getReplyToNickname(item.replyList, reply.parentId, item) }}</span>:
                     </span>
                     {{ reply.content }}
                   </div>
                   <div class="reply-actions">
-                    <button class="action-btn reply-btn" @click="openReplyModal(reply, item)">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <button
+                      class="action-btn reply-btn"
+                      @click="openReplyModal(reply, item)"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                       </svg>
                       回复
                     </button>
@@ -631,23 +1062,53 @@
         </div>
 
         <!-- 加载更多提示 -->
-        <div v-if="messages.length > 0" class="load-more-section">
-          <div v-if="loadingMore" class="loading-more">
+        <div
+          v-if="messages.length > 0"
+          class="load-more-section"
+        >
+          <div
+            v-if="loadingMore"
+            class="loading-more"
+          >
             <div class="loading-spinner">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke-opacity="0.25"
+                />
+                <path
+                  d="M12 2a10 10 0 0 1 10 10"
+                  stroke-linecap="round"
+                />
               </svg>
             </div>
             <span>加载中...</span>
           </div>
-          <div v-else-if="!pageParams.hasMore" class="no-more">
+          <div
+            v-else-if="!pageParams.hasMore"
+            class="no-more"
+          >
             <span>—— 已经到底啦 ——</span>
           </div>
-          <div v-else class="scroll-hint">
+          <div
+            v-else
+            class="scroll-hint"
+          >
             <span>继续滚动加载更多</span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="6 9 12 15 18 9" />
             </svg>
           </div>
         </div>
@@ -659,11 +1120,16 @@
       <button
         v-show="showBackToTop"
         class="back-to-top"
-        @click="scrollToTop"
         title="回到顶部"
+        @click="scrollToTop"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="18 15 12 9 6 15"/>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="18 15 12 9 6 15" />
         </svg>
       </button>
     </Transition>
@@ -1446,16 +1912,6 @@ const getScrollContainer = () => {
 let lastLoadTime = 0
 // 最小触发间隔（毫秒）
 const MIN_LOAD_INTERVAL = 300
-
-// 获取滚动位置（相对于滚动容器）
-const getScrollPosition = () => {
-  const scrollContainer = getScrollContainer()
-  if (scrollContainer === window) {
-    return window.scrollY || document.documentElement.scrollTop
-  } else {
-    return scrollContainer.scrollTop
-  }
-}
 
 // 滚动监听 - 懒加载
 const handleScroll = () => {

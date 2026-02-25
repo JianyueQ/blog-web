@@ -130,7 +130,7 @@ body {
 /* 前台专用卡片样式 - 不影响后台 */
 .front-layout .el-card {
   border-radius: 8px !important;
-  border: 1px solid transparent !important;
+  border-color: transparent !important;
   background-color: transparent !important;
   .el-card__header {
     font-weight: bold;
@@ -227,4 +227,32 @@ scrollbar {
 scrollbar-thumb {
   border-radius: 10px;
   background-color: #eeeeee;
+}
+
+// 响应式布局调用 (从 global.scss 移动而来)
+@include changeWidth;
+
+/* 小于1380px时 */
+@media (max-width: 1380px) {
+  .el-radio-group {
+    justify-content: center !important;
+  }
+}
+
+/* 小于1280px时 */
+@media (max-width: 1280px) {
+  @include changeWidth($maxWidth: 1100px);
+}
+
+/* 小于992px时 */
+@media (max-width: 992px) {
+  @include changeWidth($maxWidth: 900px);
+}
+
+/* 小于720px时 */
+@media (max-width: 720px) {
+  // 隐藏元素
+  .xs-hidden {
+    display: none;
+  }
 }

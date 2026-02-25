@@ -1,25 +1,41 @@
 <template>
   <div class="config-manage">
-    <el-tabs v-model="activeTab" class="pro-tabs" @tab-change="handleTabChange">
-      <el-tab-pane label="社交链接" name="social">
+    <el-tabs
+      v-model="activeTab"
+      class="pro-tabs"
+      @tab-change="handleTabChange"
+    >
+      <el-tab-pane
+        label="社交链接"
+        name="social"
+      >
         <div class="mt-10">
           <SocialLinks />
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="评论设置" name="comment">
+      <el-tab-pane
+        label="评论设置"
+        name="comment"
+      >
         <div class="mt-10">
           <CommentSettings />
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="关于我" name="about">
+      <el-tab-pane
+        label="关于我"
+        name="about"
+      >
         <div class="mt-10">
           <AboutMe ref="aboutMeRef" />
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="系统设置" name="system">
+      <el-tab-pane
+        label="系统设置"
+        name="system"
+      >
         <div class="mt-10">
           <SystemSettings />
         </div>

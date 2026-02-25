@@ -1,32 +1,51 @@
 <template>
-  <footer class="footer" :class="{ 'collapsed': isCollapsed }">
+  <footer
+    class="footer"
+    :class="{ 'collapsed': isCollapsed }"
+  >
     <div class="footer-content">
       <div class="footer-info">
         <p class="copyright">
-          © {{ currentYear }} <span class="brand" @click="handleBrandClick">{{ siteConfig.brandName }}</span>
+          © {{ currentYear }} <span
+            class="brand"
+            @click="handleBrandClick"
+          >{{ siteConfig.brandName }}</span>
         </p>
-        <p class="site-stats" v-if="systemUptime">
+        <p
+          v-if="systemUptime"
+          class="site-stats"
+        >
           本站苟活了 {{ systemUptime }}
         </p>
-        <p class="site-stats" v-else-if="siteConfig.siteStartDate">
+        <p
+          v-else-if="siteConfig.siteStartDate"
+          class="site-stats"
+        >
           {{ siteDateStatistics(new Date(siteConfig.siteStartDate)) }}
         </p>
       </div>
 
       <div class="footer-links">
         <div
-            v-for="(link, index) in socialLinks"
-            :key="link.name"
-            class="social-link-item"
-            :class="{ 'active': hoveredIndex === index }"
-            @mouseenter="hoveredIndex = index"
-            @mouseleave="hoveredIndex = null"
-            @click="handleLinkClick(link)"
+          v-for="(link, index) in socialLinks"
+          :key="link.name"
+          class="social-link-item"
+          :class="{ 'active': hoveredIndex === index }"
+          @mouseenter="hoveredIndex = index"
+          @mouseleave="hoveredIndex = null"
+          @click="handleLinkClick(link)"
         >
-          <img :src="link.icon" :alt="link.name" class="social-icon"/>
+          <img
+            :src="link.icon"
+            :alt="link.name"
+            class="social-icon"
+          >
 
           <transition name="slide-fade">
-            <div v-if="hoveredIndex === index" class="social-tooltip">
+            <div
+              v-if="hoveredIndex === index"
+              class="social-tooltip"
+            >
               {{ link.tip }}
             </div>
           </transition>
@@ -73,7 +92,6 @@ const parseUptimeToSeconds = (timeString) => {
   if (!timeString) return 0
   
   let totalSeconds = 0
-  const timeParts = timeString.split('')
   
   //匹配天、小时、分钟、秒
   const daysMatch = timeString.match(/(\d+)天/)

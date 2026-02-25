@@ -240,8 +240,9 @@ class WebSocketManager {
      * 注册事件监听器
      */
     on(event, callback) {
-        if (this.listeners.hasOwnProperty(`on${event.charAt(0).toUpperCase()}${event.slice(1)}`)) {
-            this.listeners[`on${event.charAt(0).toUpperCase()}${event.slice(1)}`] = callback
+        const key = `on${event.charAt(0).toUpperCase()}${event.slice(1)}`
+        if (Object.prototype.hasOwnProperty.call(this.listeners, key)) {
+            this.listeners[key] = callback
         }
     }
 

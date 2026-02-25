@@ -1,14 +1,24 @@
 <template>
-  <MobileServerMonitor v-if="isMobile" ref="mobileRef" />
-  <div v-else class="server-monitor">
+  <MobileServerMonitor
+    v-if="isMobile"
+    ref="mobileRef"
+  />
+  <div
+    v-else
+    class="server-monitor"
+  >
     <!-- 自动刷新控制 -->
     <div class="pro-card toolbar-card">
       <div class="toolbar-left">
-        <el-switch v-model="autoRefresh" active-text="实时推送" @change="handleAutoRefreshChange"/>
+        <el-switch
+          v-model="autoRefresh"
+          active-text="实时推送"
+          @change="handleAutoRefreshChange"
+        />
         <el-tag
-            :type="connectionStatus === 'connected' ? 'success' : connectionStatus === 'connecting' ? 'warning' : 'info'"
-            size="small"
-            effect="plain"
+          :type="connectionStatus === 'connected' ? 'success' : connectionStatus === 'connecting' ? 'warning' : 'info'"
+          size="small"
+          effect="plain"
         >
           <template v-if="connectionStatus === 'connected'">
             ● 已连接 WebSocket
@@ -22,26 +32,41 @@
         </el-tag>
       </div>
       <div class="toolbar-right">
-        <el-button circle @click="handleManualRefresh" :icon="Refresh" title="立即刷新" :loading="loading"/>
+        <el-button
+          circle
+          :icon="Refresh"
+          title="立即刷新"
+          :loading="loading"
+          @click="handleManualRefresh"
+        />
       </div>
     </div>
 
     <!-- 核心监控指标 -->
     <el-row :gutter="20">
-      <el-col :xs="24" :sm="12" :lg="6">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :lg="6"
+      >
         <div class="pro-card metric-card">
           <div class="metric-header">
-            <el-icon class="icon" :style="{ color: getCpuColor(serverData.cpu?.used) }">
-              <Monitor/>
+            <el-icon
+              class="icon"
+              :style="{ color: getCpuColor(serverData.cpu?.used) }"
+            >
+              <Monitor />
             </el-icon>
             <span class="title">CPU 使用率</span>
           </div>
           <div class="metric-body">
-            <div class="value">{{ serverData.cpu?.used || 0 }}%</div>
+            <div class="value">
+              {{ serverData.cpu?.used || 0 }}%
+            </div>
             <el-progress
-                :percentage="serverData.cpu?.used || 0"
-                :color="getCpuColor(serverData.cpu?.used)"
-                :stroke-width="8"
+              :percentage="serverData.cpu?.used || 0"
+              :color="getCpuColor(serverData.cpu?.used)"
+              :stroke-width="8"
             />
             <div class="metric-details">
               <span>核心数: {{ serverData.cpu?.cpuNum || 0 }}</span>
@@ -51,20 +76,29 @@
         </div>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :lg="6">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :lg="6"
+      >
         <div class="pro-card metric-card">
           <div class="metric-header">
-            <el-icon class="icon" :style="{ color: getMemColor(serverData.mem?.usage) }">
-              <Coin/>
+            <el-icon
+              class="icon"
+              :style="{ color: getMemColor(serverData.mem?.usage) }"
+            >
+              <Coin />
             </el-icon>
             <span class="title">内存占用</span>
           </div>
           <div class="metric-body">
-            <div class="value">{{ serverData.mem?.usage || 0 }}%</div>
+            <div class="value">
+              {{ serverData.mem?.usage || 0 }}%
+            </div>
             <el-progress
-                :percentage="serverData.mem?.usage || 0"
-                :color="getMemColor(serverData.mem?.usage)"
-                :stroke-width="8"
+              :percentage="serverData.mem?.usage || 0"
+              :color="getMemColor(serverData.mem?.usage)"
+              :stroke-width="8"
             />
             <div class="metric-details">
               <span>已用: {{ serverData.mem?.used || 0 }} GB</span>
@@ -74,20 +108,29 @@
         </div>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :lg="6">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :lg="6"
+      >
         <div class="pro-card metric-card">
           <div class="metric-header">
-            <el-icon class="icon" :style="{ color: getJvmColor(serverData.jvm?.usage) }">
-              <SetUp/>
+            <el-icon
+              class="icon"
+              :style="{ color: getJvmColor(serverData.jvm?.usage) }"
+            >
+              <SetUp />
             </el-icon>
             <span class="title">JVM 内存</span>
           </div>
           <div class="metric-body">
-            <div class="value">{{ serverData.jvm?.usage || 0 }}%</div>
+            <div class="value">
+              {{ serverData.jvm?.usage || 0 }}%
+            </div>
             <el-progress
-                :percentage="serverData.jvm?.usage || 0"
-                :color="getJvmColor(serverData.jvm?.usage)"
-                :stroke-width="8"
+              :percentage="serverData.jvm?.usage || 0"
+              :color="getJvmColor(serverData.jvm?.usage)"
+              :stroke-width="8"
             />
             <div class="metric-details">
               <span>已用: {{ serverData.jvm?.used || 0 }} MB</span>
@@ -97,17 +140,29 @@
         </div>
       </el-col>
 
-      <el-col :xs="24" :sm="12" :lg="6">
+      <el-col
+        :xs="24"
+        :sm="12"
+        :lg="6"
+      >
         <div class="pro-card metric-card">
           <div class="metric-header">
-            <el-icon class="icon" style="color: #13c2c2">
-              <Clock/>
+            <el-icon
+              class="icon"
+              style="color: #13c2c2"
+            >
+              <Clock />
             </el-icon>
             <span class="title">运行时长</span>
           </div>
           <div class="metric-body">
-            <div class="value runtime">{{ serverData.jvm?.runTime || '- - -' }}</div>
-            <div class="metric-details" style="margin-top: 12px">
+            <div class="value runtime">
+              {{ serverData.jvm?.runTime || '- - -' }}
+            </div>
+            <div
+              class="metric-details"
+              style="margin-top: 12px"
+            >
               <span>启动: {{ serverData.jvm?.startTime || '- - -' }}</span>
             </div>
           </div>
@@ -118,19 +173,35 @@
     <!-- 详细信息 -->
     <el-row :gutter="20">
       <!-- 服务器信息 -->
-      <el-col :xs="24" :lg="12">
+      <el-col
+        :xs="24"
+        :lg="12"
+      >
         <div class="pro-card info-card">
           <div class="card-header">
             <span class="title">服务器信息</span>
           </div>
           <div class="card-body">
-            <el-descriptions :column="1" border>
-              <el-descriptions-item label="主机名称">{{ serverData.sys?.computerName || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="服务器IP">{{ serverData.sys?.computerIp || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="操作系统">{{ serverData.sys?.osName || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="系统架构">{{ serverData.sys?.osArch || '-' }}</el-descriptions-item>
+            <el-descriptions
+              :column="1"
+              border
+            >
+              <el-descriptions-item label="主机名称">
+                {{ serverData.sys?.computerName || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="服务器IP">
+                {{ serverData.sys?.computerIp || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="操作系统">
+                {{ serverData.sys?.osName || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="系统架构">
+                {{ serverData.sys?.osArch || '-' }}
+              </el-descriptions-item>
               <el-descriptions-item label="项目路径">
-                <div class="path-text">{{ serverData.sys?.userDir || '-' }}</div>
+                <div class="path-text">
+                  {{ serverData.sys?.userDir || '-' }}
+                </div>
               </el-descriptions-item>
             </el-descriptions>
           </div>
@@ -138,20 +209,36 @@
       </el-col>
 
       <!-- JVM 详细信息 -->
-      <el-col :xs="24" :lg="12">
+      <el-col
+        :xs="24"
+        :lg="12"
+      >
         <div class="pro-card info-card">
           <div class="card-header">
             <span class="title">Java 虚拟机</span>
           </div>
           <div class="card-body">
-            <el-descriptions :column="1" border>
-              <el-descriptions-item label="JVM 名称">{{ serverData.jvm?.name || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="Java 版本">{{ serverData.jvm?.version || '-' }}</el-descriptions-item>
-              <el-descriptions-item label="JDK 路径">
-                <div class="path-text">{{ serverData.jvm?.home || '-' }}</div>
+            <el-descriptions
+              :column="1"
+              border
+            >
+              <el-descriptions-item label="JVM 名称">
+                {{ serverData.jvm?.name || '-' }}
               </el-descriptions-item>
-              <el-descriptions-item label="总内存">{{ serverData.jvm?.total || 0 }} MB</el-descriptions-item>
-              <el-descriptions-item label="剩余内存">{{ serverData.jvm?.free || 0 }} MB</el-descriptions-item>
+              <el-descriptions-item label="Java 版本">
+                {{ serverData.jvm?.version || '-' }}
+              </el-descriptions-item>
+              <el-descriptions-item label="JDK 路径">
+                <div class="path-text">
+                  {{ serverData.jvm?.home || '-' }}
+                </div>
+              </el-descriptions-item>
+              <el-descriptions-item label="总内存">
+                {{ serverData.jvm?.total || 0 }} MB
+              </el-descriptions-item>
+              <el-descriptions-item label="剩余内存">
+                {{ serverData.jvm?.free || 0 }} MB
+              </el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
@@ -166,27 +253,43 @@
       </div>
       <div class="card-body">
         <el-row :gutter="24">
-          <el-col :xs="24" :sm="12" :lg="8" v-for="(disk, index) in serverData.sysFiles" :key="index">
-            <div class="disk-item" :class="{ 'disk-warning': disk.usage >= 75, 'disk-danger': disk.usage >= 90 }">
+          <el-col
+            v-for="(disk, index) in serverData.sysFiles"
+            :key="index"
+            :xs="24"
+            :sm="12"
+            :lg="8"
+          >
+            <div
+              class="disk-item"
+              :class="{ 'disk-warning': disk.usage >= 75, 'disk-danger': disk.usage >= 90 }"
+            >
               <div class="disk-header">
                 <div class="disk-icon-wrapper">
                   <el-icon class="disk-icon">
-                    <Folder/>
+                    <Folder />
                   </el-icon>
                 </div>
                 <div class="disk-info">
-                  <el-tooltip :content="disk.typeName" placement="top" :show-after="500">
+                  <el-tooltip
+                    :content="disk.typeName"
+                    placement="top"
+                    :show-after="500"
+                  >
                     <span class="disk-name">{{ disk.typeName }}</span>
                   </el-tooltip>
-                  <span class="disk-usage" :style="{ color: getDiskColor(disk.usage) }">{{ disk.usage }}%</span>
+                  <span
+                    class="disk-usage"
+                    :style="{ color: getDiskColor(disk.usage) }"
+                  >{{ disk.usage }}%</span>
                 </div>
               </div>
               <div class="disk-progress-wrapper">
                 <el-progress
-                    :percentage="disk.usage"
-                    :color="getDiskColor(disk.usage)"
-                    :stroke-width="12"
-                    :show-text="false"
+                  :percentage="disk.usage"
+                  :color="getDiskColor(disk.usage)"
+                  :stroke-width="12"
+                  :show-text="false"
                 />
               </div>
               <div class="disk-details">
