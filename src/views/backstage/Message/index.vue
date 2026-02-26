@@ -314,6 +314,7 @@ const messageTypeMap = {
   'GUESTBOOK': { icon: 'Message', text: '留言', tag: 'warning', color: '#E6A23C', route: '/backstage/guestbook' },
   'FRIEND_LINK': { icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links' },
   'FRIEND_LINKS': { icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links' },
+  'VISITORS': { icon: 'User', text: '访客', tag: 'info', color: '#409EFF', route: '/backstage/visitor/record' },
   'OTHER': { icon: 'InfoFilled', text: '其他', tag: 'info', color: '#909399', route: '/backstage/home' }
 }
 

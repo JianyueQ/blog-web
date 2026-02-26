@@ -15,7 +15,7 @@ const apiPrefix = '/system/guestbook'
  */
 export function getGuestbookList(params) {
     return request({
-        url: `${apiPrefix}/list`,
+        url: `${apiPrefix}/list/isRoot`,
         method: 'get',
         params
     })

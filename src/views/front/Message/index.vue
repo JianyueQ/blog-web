@@ -897,17 +897,18 @@
           >
             <!-- 根留言 -->
             <div class="root-message">
-              <div class="message-header">
+              <div class="user-avatar">
+                <img
+                  v-if="item.avatar"
+                  :src="item.avatar"
+                  :alt="item.nickname"
+                  @error="handleAvatarError"
+                >
+                <span v-else>{{ item.nickname.charAt(0).toUpperCase() }}</span>
+              </div>
+
+              <div class="message-content-wrapper">
                 <div class="user-info">
-                  <div class="user-avatar">
-                    <img
-                      v-if="item.avatar"
-                      :src="item.avatar"
-                      :alt="item.nickname"
-                      @error="handleAvatarError"
-                    >
-                    <span v-else>{{ item.nickname.charAt(0).toUpperCase() }}</span>
-                  </div>
                   <div class="user-details">
                     <div class="user-name-row">
                       <span class="nickname">{{ item.nickname }}</span>
@@ -915,77 +916,53 @@
                         v-if="item.email"
                         class="email"
                       >{{ item.email }}</span>
-                    </div>
-                    <div class="meta-info">
-                      <span class="time">{{ formatTime(item.messageTime) }}</span>
                       <span
                         v-if="item.location"
-                        class="location"
+                        class="location-tag"
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                          <circle
-                            cx="12"
-                            cy="10"
-                            r="3"
-                          />
-                        </svg>
                         {{ item.location }}
                       </span>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="message-content">
-                {{ item.content }}
-              </div>
-              <div class="message-actions">
-                <button
-                  class="action-btn reply-btn"
-                  @click="openReplyModal(item)"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
+
+                <div class="message-content">
+                  {{ item.content }}
+                </div>
+
+                <div class="message-actions">
+                  <span class="time">{{ formatTime(item.messageTime) }}</span>
+                  <button
+                    class="action-btn reply-btn"
+                    @click="openReplyModal(item)"
                   >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  回复
-                </button>
-                <!-- 展开/收起回复按钮 -->
-                <button
-                  v-if="item.replyList && item.replyList.length > 0"
-                  class="action-btn expand-btn"
-                  @click="toggleReplies(item.guestbookId)"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    :class="{ 'rotated': expandedReplies.includes(item.guestbookId) }"
+                    回复
+                  </button>
+                  <!-- 展开回复按钮 (仅在收起时显示) -->
+                  <button
+                    v-if="(item.replyCount || 0) > 0 && !expandedReplies.includes(item.guestbookId)"
+                    class="action-btn expand-btn"
+                    @click="toggleReplies(item)"
                   >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                  {{ item.replyList.length }}条回复
-                </button>
+                    {{ `共${item.replyCount}条回复，点击查看` }}
+                  </button>
+                </div>
               </div>
             </div>
 
             <!-- 回复列表（可展开） -->
             <div
-              v-if="item.replyList && item.replyList.length > 0"
-              class="reply-list"
-              :class="{ 'expanded': expandedReplies.includes(item.guestbookId) }"
+              v-if="expandedReplies.includes(item.guestbookId)"
+              class="reply-list expanded"
             >
+              <!-- 加载中 -->
+              <div v-if="item.loadingReplies && (!item.replyList || item.replyList.length === 0)" class="reply-loading">
+                <div class="reply-loading-spinner"></div>
+                <span>加载中...</span>
+              </div>
+
               <div
+                v-else
                 v-for="reply in item.replyList"
                 :key="reply.guestbookId"
                 class="reply-item"
@@ -1056,6 +1033,49 @@
                     </button>
                   </div>
                 </div>
+              </div>
+
+              <!-- 分页与操作栏 -->
+              <div class="reply-pagination-bar">
+                <!-- 分页组件 (仅当超过1页时显示) -->
+                <div v-if="item.replyTotal > 5" class="pagination-wrapper">
+                  <span class="total-pages">共{{ Math.ceil(item.replyTotal / 5) }}页</span>
+                  
+                  <button 
+                    class="prev-page-btn"
+                    :disabled="(item.replyPageNum || 1) <= 1"
+                    @click="loadChildReplies(item, (item.replyPageNum || 1) - 1)"
+                  >
+                    上一页
+                  </button>
+
+                  <div class="page-numbers">
+                    <button 
+                      v-for="page in getPageRange(item.replyTotal, item.replyPageNum || 1)" 
+                      :key="page"
+                      class="page-num-btn"
+                      :class="{ active: (item.replyPageNum || 1) === page }"
+                      @click="loadChildReplies(item, page)"
+                    >
+                      {{ page }}
+                    </button>
+                  </div>
+
+                  <button 
+                    class="next-page-btn"
+                    :disabled="(item.replyPageNum || 1) >= Math.ceil(item.replyTotal / 5)"
+                    @click="loadChildReplies(item, (item.replyPageNum || 1) + 1)"
+                  >
+                    下一页
+                  </button>
+                </div>
+
+                <button
+                  class="collapse-reply-btn"
+                  @click="toggleReplies(item)"
+                >
+                  收起
+                </button>
               </div>
             </div>
           </div>
@@ -1138,7 +1158,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, computed, nextTick } from 'vue'
-import { getGuestbookList, addGuestbookMessage } from '@/api/front/guestbook.js'
+import { getGuestbookList, addGuestbookMessage, getChildGuestbookList } from '@/api/front/guestbook.js'
 import { uploadImage } from '@/api/front/file.js'
 import { ElMessage } from 'element-plus'
 
@@ -1322,13 +1342,54 @@ const insertReplyEmoji = (emoji) => {
 }
 
 // 切换回复展开/收起
-const toggleReplies = (guestbookId) => {
-  const index = expandedReplies.value.indexOf(guestbookId)
-  if (index === -1) {
-    expandedReplies.value.push(guestbookId)
-  } else {
+const toggleReplies = async (item) => {
+  if (expandedReplies.value.includes(item.guestbookId)) {
+    const index = expandedReplies.value.indexOf(item.guestbookId)
     expandedReplies.value.splice(index, 1)
+  } else {
+    expandedReplies.value.push(item.guestbookId)
+    // 如果没有回复列表或者列表为空，尝试加载
+    if (!item.replyList || item.replyList.length === 0) {
+      await loadChildReplies(item)
+    }
   }
+}
+
+// 加载子留言
+const loadChildReplies = async (rootMessage, pageNum = 1) => {
+  rootMessage.loadingReplies = true
+  try {
+    const res = await getChildGuestbookList({
+      guestbookId: rootMessage.guestbookId,
+      pageNum: pageNum,
+      pageSize: 5 // 默认每页5条
+    })
+    if (res.code === 200) {
+      // 分页加载模式：直接覆盖当前页数据
+      rootMessage.replyList = res.rows || []
+      
+      rootMessage.replyTotal = res.total || 0
+      rootMessage.replyPageNum = pageNum
+      rootMessage.replyHasMore = (rootMessage.replyList.length < rootMessage.replyTotal)
+    }
+  } catch (error) {
+    console.error('加载子留言失败:', error)
+  } finally {
+    rootMessage.loadingReplies = false
+  }
+}
+
+// 获取分页页码范围
+const getPageRange = (total, current) => {
+  const pageSize = 5
+  const totalPages = Math.ceil(total / pageSize)
+  const range = []
+  
+  // 简单实现：显示所有页码，如果太多可以后续优化
+  for (let i = 1; i <= totalPages; i++) {
+    range.push(i)
+  }
+  return range
 }
 
 // 打开回复弹窗
@@ -1645,14 +1706,34 @@ const silentRefresh = async () => {
       pageSize: pageParams.pageNum * pageParams.pageSize
     })
     if (res.code === 200) {
-      const newMessages = res.rows || []
-      // 保留现有的展开状态
-      const expandedIds = [...expandedReplies.value]
-      // 更新数据，保持引用稳定
-      messages.value = newMessages
+      const newRows = res.rows || []
+      
+      // 合并新数据，保留已加载的回复列表
+      const mergedMessages = newRows.map(newItem => {
+        const existingItem = messages.value.find(m => m.guestbookId === newItem.guestbookId)
+        if (existingItem) {
+          return {
+            ...newItem,
+            loadingReplies: existingItem.loadingReplies || false,
+            replyList: existingItem.replyList || [], 
+            replyTotal: newItem.replyCount || existingItem.replyTotal || 0,
+            replyPageNum: existingItem.replyPageNum || 1,
+            replyHasMore: existingItem.replyHasMore
+          }
+        } else {
+          return {
+            ...newItem,
+            loadingReplies: false,
+            replyList: [],
+            replyTotal: newItem.replyCount || 0,
+            replyPageNum: 1,
+            replyHasMore: (newItem.replyCount || 0) > 0
+          }
+        }
+      })
+      
+      messages.value = mergedMessages
       pageParams.total = res.total || 0
-      // 恢复展开状态
-      expandedReplies.value = expandedIds
     }
   } catch (error) {
     console.error('静默刷新失败:', error)
@@ -1735,8 +1816,18 @@ const submitReply = async () => {
       messageForm.nickname = replyForm.nickname
       messageForm.email = replyForm.email
       closeReplyModal()
-      // 静默刷新获取真实ID
-      await silentRefresh()
+      
+      // 刷新子留言列表
+      if (currentRootMessage.value) {
+        // 确保展开
+        if (!expandedReplies.value.includes(currentRootMessage.value.guestbookId)) {
+          expandedReplies.value.push(currentRootMessage.value.guestbookId)
+        }
+        // 重新加载第一页
+        await loadChildReplies(currentRootMessage.value, 1)
+      } else {
+        await silentRefresh()
+      }
     } else {
       ElMessage.error(res.msg || '回复失败')
     }
@@ -1794,7 +1885,14 @@ const loadMessages = async () => {
       pageSize: pageParams.pageSize
     })
     if (res.code === 200) {
-      messages.value = res.rows || []
+      messages.value = (res.rows || []).map(item => ({
+        ...item,
+        loadingReplies: false,
+        replyList: item.replyList || [],
+        replyTotal: item.replyCount || 0,
+        replyPageNum: 1,
+        replyHasMore: (item.replyCount || 0) > (item.replyList?.length || 0)
+      }))
       // 保存后端返回的总数
       pageParams.total = res.total || 0
       // 根据已加载数量和总数判断是否还有更多
@@ -1855,7 +1953,15 @@ const loadMoreMessages = async () => {
     if (res.code === 200) {
       const newMessages = res.rows || []
       if (newMessages.length > 0) {
-        messages.value.push(...newMessages)
+        const processedMessages = newMessages.map(item => ({
+          ...item,
+          loadingReplies: false,
+          replyList: item.replyList || [],
+          replyTotal: item.replyCount || 0,
+          replyPageNum: 1,
+          replyHasMore: (item.replyCount || 0) > (item.replyList?.length || 0)
+        }))
+        messages.value.push(...processedMessages)
         pageParams.pageNum = nextPage
       }
       // 更新总数并根据已加载数量判断是否还有更多
@@ -2914,10 +3020,10 @@ $primary-hover: #3b82f6;
 
 // 留言项
 .message-item {
-  background: rgba(24, 24, 27, 0.4);
+  background: rgba(24, 24, 27, 0.55);
   backdrop-filter: blur(24px) saturate(180%);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(138, 135, 135, 0.08);
   overflow: hidden;
   animation: slideInUp 0.5s ease backwards;
   transition: all 0.3s ease;
@@ -2929,26 +3035,20 @@ $primary-hover: #3b82f6;
 
 // 根留言
 .root-message {
-  padding: 1.5rem;
-}
-
-.message-header {
+  padding: 1rem 1rem 1.5rem; // 减小左右 padding，增加内容宽度
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.user-info {
-  display: flex;
-  align-items: flex-start;
   gap: 1rem;
+  
+  .message-header {
+    margin-bottom: 0.5rem;
+    flex: 1;
+  }
 }
 
 .user-avatar {
   width: 48px;
   height: 48px;
-  border-radius: 14px;
+  border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
   background: rgba($primary-color, 0.8);
@@ -2958,46 +3058,74 @@ $primary-hover: #3b82f6;
   color: #fff;
   font-weight: 600;
   font-size: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+}
 
-  span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
+.message-content-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .user-details {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
 
   .user-name-row {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
 
     .nickname {
       font-size: 1rem;
       font-weight: 700;
-      color: #fff;
+      color: #eea4b9; // Bilibili 风格粉色昵称
       font-family: 'Archivo', sans-serif;
     }
 
     .email {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.3);
       background: rgba(255, 255, 255, 0.05);
-      padding: 0.15rem 0.5rem;
-      border-radius: 10px;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+    
+    .location-tag {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      
+      &::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
     }
   }
 
@@ -3005,11 +3133,10 @@ $primary-hover: #3b82f6;
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    flex-wrap: wrap;
 
     .time {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .location {
@@ -3017,11 +3144,8 @@ $primary-hover: #3b82f6;
       align-items: center;
       gap: 0.3rem;
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.35);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.2rem 0.5rem;
-      border-radius: 10px;
-
+      color: rgba(255, 255, 255, 0.3);
+      
       svg {
         width: 12px;
         height: 12px;
@@ -3030,27 +3154,36 @@ $primary-hover: #3b82f6;
   }
 }
 
-.message-index {
-  font-size: 1rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.2);
-  font-family: 'Archivo', sans-serif;
-}
-
 .message-content {
   font-size: 0.95rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
   white-space: pre-wrap;
   word-break: break-word;
-  padding-left: calc(48px + 1rem);
+  padding: 0.2rem 0;
 }
 
 .message-actions {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-left: calc(48px + 1rem);
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.8rem;
+  
+  .time {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .action-btn {
+    padding: 0;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    
+    &:hover {
+      color: $primary-light;
+      background: transparent;
+    }
+  }
 }
 
 .action-btn {
@@ -3089,19 +3222,24 @@ $primary-hover: #3b82f6;
   }
 }
 
-// 回复列表 - Bilibili风格可展开
+// 回复列表 - Bilibili风格
 .reply-list {
-  background: rgba(0, 0, 0, 0.2);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  margin-left: calc(48px + 1rem + 1.5rem); // 对齐主评论内容
+  margin-right: 1.5rem;
   max-height: 0;
   overflow: hidden;
   opacity: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.expanded {
-    max-height: 2000px;
+    max-height: 5000px;
     opacity: 1;
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1rem;
+    overflow: visible;
   }
 
   .reply-item {
@@ -3118,6 +3256,109 @@ $primary-hover: #3b82f6;
       &:nth-child(#{$i}) {
         transition-delay: #{$i * 0.05}s;
       }
+    }
+  }
+}
+
+.reply-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  
+  .reply-loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top-color: $primary-color;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+.reply-pagination-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.8rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  flex-wrap: wrap;
+  
+  .pagination-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    
+    .total-pages {
+      margin-right: 0.2rem;
+    }
+    
+    .page-numbers {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      
+      .page-num-btn {
+        min-width: 24px;
+        height: 24px;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.6);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.8rem;
+        
+        &:hover {
+          color: $primary-light;
+          border-color: rgba($primary-color, 0.3);
+          background: rgba($primary-color, 0.1);
+        }
+        
+        &.active {
+          color: #fff;
+          background: $primary-color;
+          border-color: $primary-color;
+        }
+      }
+    }
+    
+    .prev-page-btn,
+    .next-page-btn {
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      padding: 0 0.2rem;
+      
+      &:hover:not(:disabled) {
+        color: $primary-light;
+      }
+      
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .collapse-reply-btn {
+    color: rgba(255, 255, 255, 0.6);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    
+    &:hover {
+      color: $primary-light;
     }
   }
 }
@@ -3201,8 +3442,8 @@ $primary-hover: #3b82f6;
   }
 
   .time {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .location {

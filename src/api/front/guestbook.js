@@ -14,13 +14,37 @@ let apiPrefix = '/blog/user/guestbook'
  */
 export function getGuestbookList(params) {
   return request({
-    url: `${apiPrefix}/list`,
+    url: `${apiPrefix}/list/isRoot`,
     method: 'get',
     params: {
       pageNum: 1,
       pageSize: 10,
       orderByColumn: 'create_time',
       isAsc: 'desc',
+      ...params
+    }
+  })
+}
+
+/**
+ * 获取前台展示子留言列表
+ * @param {Object} params - 查询参数
+ * @param {number} params.guestbookId - 根留言ID
+ * @param {number} params.pageNum - 页码，默认1
+ * @param {number} params.pageSize - 每页条数，默认10
+ * @param {string} params.orderByColumn - 排序列，如：create_time
+ * @param {string} params.isAsc - 排序方向，asc-升序，desc-降序
+ * @param {boolean} params.reasonable - 分页参数合理化
+ */
+export function getChildGuestbookList(params) {
+  return request({
+    url: `${apiPrefix}/list/child`,
+    method: 'get',
+    params: {
+      pageNum: 1,
+      pageSize: 5,
+      orderByColumn: 'create_time',
+      isAsc: 'asc',
       ...params
     }
   })
