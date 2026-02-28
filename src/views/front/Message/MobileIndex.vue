@@ -790,7 +790,7 @@ $card-bg: rgba(39, 39, 42, 0.6);
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    overflow: hidden;
+    overflow: visible;
     background: rgba(255, 255, 255, 0.05);
     border: 2px dashed rgba(255, 255, 255, 0.2);
     display: flex;
@@ -803,7 +803,7 @@ $card-bg: rgba(39, 39, 42, 0.6);
       border-color: rgba(255, 255, 255, 0.4);
     }
 
-    .avatar-img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     
     .avatar-placeholder {
       color: rgba(255, 255, 255, 0.3);
