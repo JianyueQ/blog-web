@@ -197,6 +197,26 @@
                           </button>
                         </div>
                         <span class="avatar-tip">点击选择或上传头像</span>
+                        
+                        <!-- 清除信息按钮 -->
+                        <button 
+                          v-if="hasSavedInfo" 
+                          type="button"
+                          class="clear-info-btn" 
+                          @click.stop="clearUserInfo"
+                          title="清除已保存的昵称、邮箱和头像"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                          清除记录
+                        </button>
                       </div>
 
                       <!-- 头像选择器 -->
@@ -614,6 +634,26 @@
                           </button>
                         </div>
                         <span class="avatar-tip">点击选择或上传头像</span>
+                        
+                        <!-- 清除信息按钮 -->
+                        <button 
+                          v-if="hasSavedInfo" 
+                          type="button"
+                          class="clear-info-btn" 
+                          @click.stop="clearUserInfo"
+                          title="清除已保存的昵称、邮箱和头像"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M3 6h18" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                          清除记录
+                        </button>
                       </div>
 
                       <!-- 头像选择器 -->
@@ -1012,7 +1052,7 @@
                       v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId"
                       class="reply-to"
                     >
-                      回复 <span class="reply-to-nickname">@{{ getReplyToNickname(item.replyList, reply.parentId, item) }}</span>:
+                      回复 <span class="reply-to-nickname">@{{ getReplyToNickname(item.replyList, reply.parentId, item, reply) }}</span>:
                     </span>
                     {{ reply.content }}
                   </div>
@@ -1040,8 +1080,8 @@
                 <!-- 分页组件 (仅当超过1页时显示) -->
                 <div v-if="item.replyTotal > 5" class="pagination-wrapper">
                   <span class="total-pages">共{{ Math.ceil(item.replyTotal / 5) }}页</span>
-                  
-                  <button 
+
+                  <button
                     class="prev-page-btn"
                     :disabled="(item.replyPageNum || 1) <= 1"
                     @click="loadChildReplies(item, (item.replyPageNum || 1) - 1)"
@@ -1050,8 +1090,8 @@
                   </button>
 
                   <div class="page-numbers">
-                    <button 
-                      v-for="page in getPageRange(item.replyTotal, item.replyPageNum || 1)" 
+                    <button
+                      v-for="page in getPageRange(item.replyTotal, item.replyPageNum || 1)"
                       :key="page"
                       class="page-num-btn"
                       :class="{ active: (item.replyPageNum || 1) === page }"
@@ -1061,7 +1101,7 @@
                     </button>
                   </div>
 
-                  <button 
+                  <button
                     class="next-page-btn"
                     :disabled="(item.replyPageNum || 1) >= Math.ceil(item.replyTotal / 5)"
                     @click="loadChildReplies(item, (item.replyPageNum || 1) + 1)"
@@ -1215,6 +1255,66 @@ const isReplyDragging = ref(false)
 const replyAvatarUploading = ref(false)
 const replyFileInput = ref(null)
 
+// 用户信息存储相关
+const STORAGE_KEY = 'guestbook_user_info'
+const hasSavedInfo = ref(false)
+
+// 加载保存的用户信息
+const loadUserInfo = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const { nickname, email, avatar } = JSON.parse(saved)
+      if (nickname) {
+        messageForm.nickname = nickname
+        replyForm.nickname = nickname
+      }
+      if (email) {
+        messageForm.email = email
+        replyForm.email = email
+      }
+      if (avatar) {
+        messageForm.avatar = avatar
+        replyForm.avatar = avatar
+      }
+      hasSavedInfo.value = true
+    }
+  } catch (e) {
+    console.error('Failed to load user info:', e)
+  }
+}
+
+// 保存用户信息
+const saveUserInfo = (nickname, email, avatar) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ nickname, email, avatar }))
+    hasSavedInfo.value = true
+  } catch (e) {
+    console.error('Failed to save user info:', e)
+  }
+}
+
+// 清除用户信息
+const clearUserInfo = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+    
+    // 重置表单
+    messageForm.nickname = ''
+    messageForm.email = ''
+    messageForm.avatar = ''
+    
+    replyForm.nickname = ''
+    replyForm.email = ''
+    replyForm.avatar = ''
+    
+    hasSavedInfo.value = false
+    ElMessage.success('已清除保存的信息')
+  } catch (e) {
+    console.error('Failed to clear user info:', e)
+  }
+}
+
 // DOM 渲染完成标志 - 用于防止在 DOM 未渲染完成时触发下一次加载
 const isDomReady = ref(true)
 
@@ -1277,11 +1377,15 @@ const generateAvatars = (styleKey, count = 12) => {
 const presetAvatars = computed(() => generateAvatars(currentStyle.value))
 
 // 计算总留言数
-// 总留言数（使用后端返回的 total 字段）
-const totalMessages = computed(() => pageParams.total)
+// 总留言数（优先使用 guestbookAllCount，否则使用 total）
+const totalMessages = computed(() => pageParams.guestbookAllCount || pageParams.total)
 
 // 打开留言弹窗
 const openMessageModal = () => {
+  // 如果头像为空但有保存的信息，尝试重新加载
+  if (!messageForm.avatar && hasSavedInfo.value) {
+    loadUserInfo()
+  }
   isMessageModalOpen.value = true
   document.body.style.overflow = 'hidden'
 }
@@ -1307,7 +1411,6 @@ const toggleAvatarPicker = () => {
 const selectPresetAvatar = (avatar) => {
   messageForm.avatar = avatar
   showAvatarPicker.value = false
-  ElMessage.success('头像选择成功')
 }
 
 // 切换头像风格
@@ -1366,9 +1469,11 @@ const loadChildReplies = async (rootMessage, pageNum = 1) => {
     })
     if (res.code === 200) {
       // 分页加载模式：直接覆盖当前页数据
-      rootMessage.replyList = res.rows || []
+      rootMessage.replyList = res.data || res.rows || []
+
+      // 使用 Math.max 确保如果前端已经增加了总数，不会被后端旧数据覆盖（解决Redis异步更新延迟问题）
+      rootMessage.replyTotal = Math.max(rootMessage.replyTotal || 0, res.total || 0)
       
-      rootMessage.replyTotal = res.total || 0
       rootMessage.replyPageNum = pageNum
       rootMessage.replyHasMore = (rootMessage.replyList.length < rootMessage.replyTotal)
     }
@@ -1384,7 +1489,7 @@ const getPageRange = (total, current) => {
   const pageSize = 5
   const totalPages = Math.ceil(total / pageSize)
   const range = []
-  
+
   // 简单实现：显示所有页码，如果太多可以后续优化
   for (let i = 1; i <= totalPages; i++) {
     range.push(i)
@@ -1394,6 +1499,10 @@ const getPageRange = (total, current) => {
 
 // 打开回复弹窗
 const openReplyModal = (target, rootMessage = null) => {
+  // 如果头像为空但有保存的信息，尝试重新加载
+  if (!replyForm.avatar && hasSavedInfo.value) {
+    loadUserInfo()
+  }
   replyTarget.value = target
   currentRootMessage.value = rootMessage || target
 
@@ -1429,7 +1538,6 @@ const toggleReplyAvatarPicker = () => {
 const selectReplyPresetAvatar = (avatar) => {
   replyForm.avatar = avatar
   showReplyAvatarPicker.value = false
-  ElMessage.success('头像选择成功')
 }
 
 // 触发回复文件选择
@@ -1476,7 +1584,6 @@ const uploadReplyAvatar = async (file) => {
     const res = await uploadImage(formData)
     if (res.code === 200) {
       replyForm.avatar = res.imgUrl
-      ElMessage.success('头像上传成功')
     } else {
       ElMessage.error(res.msg || '上传失败')
     }
@@ -1539,7 +1646,6 @@ const uploadAvatar = async (file) => {
     const res = await uploadImage(formData)
     if (res.code === 200) {
       messageForm.avatar = res.imgUrl
-      ElMessage.success('头像上传成功')
     } else {
       ElMessage.error(res.msg || '上传失败')
     }
@@ -1648,7 +1754,12 @@ const uploadPresetAvatar = async (dataUri) => {
 }
 
 // 获取回复对象的昵称
-const getReplyToNickname = (replyList, parentId, rootMessage) => {
+const getReplyToNickname = (replyList, parentId, rootMessage, currentReply) => {
+  // 优先使用后端返回的 parentNickname
+  if (currentReply && currentReply.parentNickname) {
+    return currentReply.parentNickname
+  }
+
   // 先在回复列表中查找
   const parent = replyList.find(r => r.guestbookId === parentId)
   if (parent) return parent.nickname
@@ -1673,8 +1784,8 @@ const validateForm = (form, isReply = false) => {
     if (!form.nickname.trim()) {
       formErrors.nickname = '请输入昵称'
       isValid = false
-    } else if (form.nickname.trim().length < 2) {
-      formErrors.nickname = '昵称至少2个字符'
+    } else if (form.nickname.trim().length < 1) {
+      formErrors.nickname = '昵称至少1个字符'
       isValid = false
     }
 
@@ -1689,8 +1800,8 @@ const validateForm = (form, isReply = false) => {
     if (!form.content.trim()) {
       formErrors.content = '请输入留言内容'
       isValid = false
-    } else if (form.content.trim().length < 2) {
-      formErrors.content = '内容至少2个字符'
+    } else if (form.content.trim().length < 1) {
+      formErrors.content = '内容至少1个字符'
       isValid = false
     }
   }
@@ -1706,8 +1817,9 @@ const silentRefresh = async () => {
       pageSize: pageParams.pageNum * pageParams.pageSize
     })
     if (res.code === 200) {
-      const newRows = res.rows || []
-      
+      // 兼容后端可能返回 rows 或 data
+      const newRows = res.data || res.rows || []
+
       // 合并新数据，保留已加载的回复列表
       const mergedMessages = newRows.map(newItem => {
         const existingItem = messages.value.find(m => m.guestbookId === newItem.guestbookId)
@@ -1715,7 +1827,7 @@ const silentRefresh = async () => {
           return {
             ...newItem,
             loadingReplies: existingItem.loadingReplies || false,
-            replyList: existingItem.replyList || [], 
+            replyList: existingItem.replyList || [],
             replyTotal: newItem.replyCount || existingItem.replyTotal || 0,
             replyPageNum: existingItem.replyPageNum || 1,
             replyHasMore: existingItem.replyHasMore
@@ -1731,7 +1843,7 @@ const silentRefresh = async () => {
           }
         }
       })
-      
+
       messages.value = mergedMessages
       pageParams.total = res.total || 0
     }
@@ -1750,6 +1862,8 @@ const submitMessage = async () => {
     let avatarUrl = messageForm.avatar
     if (avatarUrl && avatarUrl.startsWith('data:')) {
       avatarUrl = await uploadPresetAvatar(avatarUrl)
+      // 更新表单中的头像为远程地址，以便保存
+      messageForm.avatar = avatarUrl
     }
 
     const data = {
@@ -1763,10 +1877,17 @@ const submitMessage = async () => {
 
     const res = await addGuestbookMessage(data)
     if (res.code === 200) {
-      ElMessage.success('留言发表成功！')
+      // 保存用户信息
+      saveUserInfo(messageForm.nickname, messageForm.email, messageForm.avatar)
+
       messageForm.content = ''
-      messageForm.avatar = ''
+      // messageForm.avatar = '' // 不再清空头像
       closeMessageModal()
+      
+      // 手动更新总数
+      pageParams.guestbookAllCount = (pageParams.guestbookAllCount || 0) + 1
+      pageParams.total = (pageParams.total || 0) + 1
+      
       // 静默刷新获取真实ID
       await silentRefresh()
     } else {
@@ -1796,6 +1917,8 @@ const submitReply = async () => {
     let avatarUrl = replyForm.avatar
     if (avatarUrl && avatarUrl.startsWith('data:')) {
       avatarUrl = await uploadPresetAvatar(avatarUrl)
+      // 更新表单中的头像为远程地址，以便保存
+      replyForm.avatar = avatarUrl
     }
 
     const isRoot = replyTarget.value.isRoot === 1
@@ -1811,20 +1934,38 @@ const submitReply = async () => {
 
     const res = await addGuestbookMessage(data)
     if (res.code === 200) {
-      ElMessage.success('回复发表成功！')
+      // ElMessage.success('回复发表成功！')
+      
+      // 保存用户信息
+      saveUserInfo(replyForm.nickname, replyForm.email, replyForm.avatar)
+      
       // 保存昵称和邮箱到主表单
       messageForm.nickname = replyForm.nickname
       messageForm.email = replyForm.email
-      closeReplyModal()
       
+      // 保存当前操作的根留言引用，因为 closeReplyModal 会将其重置为 null
+      const targetRootMessage = currentRootMessage.value
+
+      closeReplyModal()
+
+      // 手动更新总数
+      pageParams.guestbookAllCount = (pageParams.guestbookAllCount || 0) + 1
+
       // 刷新子留言列表
-      if (currentRootMessage.value) {
+      if (targetRootMessage) {
+        // 手动增加子评论总数
+        targetRootMessage.replyTotal = (targetRootMessage.replyTotal || 0) + 1
+        
         // 确保展开
-        if (!expandedReplies.value.includes(currentRootMessage.value.guestbookId)) {
-          expandedReplies.value.push(currentRootMessage.value.guestbookId)
+        if (!expandedReplies.value.includes(targetRootMessage.guestbookId)) {
+          expandedReplies.value.push(targetRootMessage.guestbookId)
         }
-        // 重新加载第一页
-        await loadChildReplies(currentRootMessage.value, 1)
+        
+        // 计算目标页码：跳转到最后一页以显示新评论
+        const pageSize = 5
+        const targetPage = Math.ceil(targetRootMessage.replyTotal / pageSize) || 1
+        
+        await loadChildReplies(targetRootMessage, targetPage)
       } else {
         await silentRefresh()
       }
@@ -1865,6 +2006,7 @@ const pageParams = reactive({
   pageNum: 1,
   pageSize: 20,  // 每页20条记录
   total: 0,
+  guestbookAllCount: 0,
   hasMore: true
 })
 
@@ -1885,7 +2027,9 @@ const loadMessages = async () => {
       pageSize: pageParams.pageSize
     })
     if (res.code === 200) {
-      messages.value = (res.rows || []).map(item => ({
+      // 兼容后端可能返回 rows 或 data
+      const rows = res.data || res.rows || []
+      messages.value = rows.map(item => ({
         ...item,
         loadingReplies: false,
         replyList: item.replyList || [],
@@ -1895,8 +2039,11 @@ const loadMessages = async () => {
       }))
       // 保存后端返回的总数
       pageParams.total = res.total || 0
-      // 根据已加载数量和总数判断是否还有更多
-      pageParams.hasMore = messages.value.length < pageParams.total
+      pageParams.guestbookAllCount = res.guestbookAllCount || 0
+
+      // 根据总页数判断是否还有更多
+      const totalPages = Math.ceil(pageParams.total / pageParams.pageSize)
+      pageParams.hasMore = pageParams.pageNum < totalPages
 
       // 等待 DOM 更新完成
       await nextTick()
@@ -1940,9 +2087,17 @@ const loadMessages = async () => {
 const loadMoreMessages = async () => {
   if (loadingMore.value || !pageParams.hasMore || !isDomReady.value) return
 
+  // 计算总页数，防止因后端分页合理化导致重复加载最后一页
+  const totalPages = Math.ceil(pageParams.total / pageParams.pageSize)
+  const nextPage = pageParams.pageNum + 1
+
+  if (nextPage > totalPages) {
+    pageParams.hasMore = false
+    return
+  }
+
   loadingMore.value = true
   isDomReady.value = false  // 标记 DOM 未就绪，防止重复触发
-  const nextPage = pageParams.pageNum + 1
 
   try {
     const res = await getGuestbookList({
@@ -1951,7 +2106,8 @@ const loadMoreMessages = async () => {
     })
 
     if (res.code === 200) {
-      const newMessages = res.rows || []
+      // 兼容后端可能返回 rows 或 data
+      const newMessages = res.data || res.rows || []
       if (newMessages.length > 0) {
         const processedMessages = newMessages.map(item => ({
           ...item,
@@ -1964,9 +2120,12 @@ const loadMoreMessages = async () => {
         messages.value.push(...processedMessages)
         pageParams.pageNum = nextPage
       }
-      // 更新总数并根据已加载数量判断是否还有更多
+      // 更新总数并根据总页数判断是否还有更多
       pageParams.total = res.total || 0
-      pageParams.hasMore = messages.value.length < pageParams.total
+      pageParams.guestbookAllCount = res.guestbookAllCount || 0
+
+      const currentTotalPages = Math.ceil(pageParams.total / pageParams.pageSize)
+      pageParams.hasMore = pageParams.pageNum < currentTotalPages
 
       // 等待 DOM 更新完成
       await nextTick()
@@ -2078,6 +2237,7 @@ const scrollToTop = () => {
 
 // 页面加载
 onMounted(() => {
+  loadUserInfo()
   loadMessages()
   // 延迟绑定滚动事件，确保 DOM 已渲染
   setTimeout(() => {
@@ -2426,6 +2586,32 @@ $primary-hover: #3b82f6;
 .avatar-tip {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
+}
+
+.clear-info-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
 }
 
 // 头像选择器
@@ -3038,7 +3224,7 @@ $primary-hover: #3b82f6;
   padding: 1rem 1rem 1.5rem; // 减小左右 padding，增加内容宽度
   display: flex;
   gap: 1rem;
-  
+
   .message-header {
     margin-bottom: 0.5rem;
     flex: 1;
@@ -3110,13 +3296,13 @@ $primary-hover: #3b82f6;
       padding: 0.1rem 0.4rem;
       border-radius: 4px;
     }
-    
+
     .location-tag {
       font-size: 0.7rem;
       color: rgba(255, 255, 255, 0.4);
       display: flex;
       align-items: center;
-      
+
       &::before {
         content: '';
         display: inline-block;
@@ -3145,7 +3331,7 @@ $primary-hover: #3b82f6;
       gap: 0.3rem;
       font-size: 0.75rem;
       color: rgba(255, 255, 255, 0.3);
-      
+
       svg {
         width: 12px;
         height: 12px;
@@ -3168,17 +3354,17 @@ $primary-hover: #3b82f6;
   align-items: center;
   gap: 1.5rem;
   margin-top: 0.8rem;
-  
+
   .time {
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.5);
   }
-  
+
   .action-btn {
     padding: 0;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.4);
-    
+
     &:hover {
       color: $primary-light;
       background: transparent;
@@ -3228,7 +3414,7 @@ $primary-hover: #3b82f6;
   border-radius: 8px;
   margin-top: 0.5rem;
   margin-bottom: 1.5rem;
-  margin-left: calc(48px + 1rem + 1.5rem); // 对齐主评论内容
+  margin-left: calc(1rem + 1.5rem); // 对齐主评论内容
   margin-right: 1.5rem;
   max-height: 0;
   overflow: hidden;
@@ -3268,7 +3454,7 @@ $primary-hover: #3b82f6;
   color: rgba(255, 255, 255, 0.5);
   gap: 0.5rem;
   font-size: 0.9rem;
-  
+
   .reply-loading-spinner {
     width: 16px;
     height: 16px;
@@ -3287,21 +3473,21 @@ $primary-hover: #3b82f6;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.6);
   flex-wrap: wrap;
-  
+
   .pagination-wrapper {
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    
+
     .total-pages {
       margin-right: 0.2rem;
     }
-    
+
     .page-numbers {
       display: flex;
       align-items: center;
       gap: 0.4rem;
-      
+
       .page-num-btn {
         min-width: 24px;
         height: 24px;
@@ -3316,13 +3502,13 @@ $primary-hover: #3b82f6;
         cursor: pointer;
         transition: all 0.2s;
         font-size: 0.8rem;
-        
+
         &:hover {
           color: $primary-light;
           border-color: rgba($primary-color, 0.3);
           background: rgba($primary-color, 0.1);
         }
-        
+
         &.active {
           color: #fff;
           background: $primary-color;
@@ -3330,7 +3516,7 @@ $primary-hover: #3b82f6;
         }
       }
     }
-    
+
     .prev-page-btn,
     .next-page-btn {
       border: none;
@@ -3338,11 +3524,11 @@ $primary-hover: #3b82f6;
       color: rgba(255, 255, 255, 0.6);
       cursor: pointer;
       padding: 0 0.2rem;
-      
+
       &:hover:not(:disabled) {
         color: $primary-light;
       }
-      
+
       &:disabled {
         opacity: 0.3;
         cursor: not-allowed;
@@ -3356,7 +3542,7 @@ $primary-hover: #3b82f6;
     border: none;
     cursor: pointer;
     padding: 0;
-    
+
     &:hover {
       color: $primary-light;
     }

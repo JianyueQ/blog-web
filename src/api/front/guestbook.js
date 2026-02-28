@@ -1,4 +1,7 @@
 import request from '@/utils/request'
+import JSONbig from 'json-bigint'
+
+const JSONbigString = JSONbig({ storeAsString: true })
 
 // 前缀
 let apiPrefix = '/blog/user/guestbook'
@@ -21,8 +24,16 @@ export function getGuestbookList(params) {
       pageSize: 10,
       orderByColumn: 'create_time',
       isAsc: 'desc',
+      reasonable: true,
       ...params
-    }
+    },
+    transformResponse: [data => {
+      try {
+        return JSONbigString.parse(data)
+      } catch (e) {
+        return data
+      }
+    }]
   })
 }
 
@@ -46,7 +57,14 @@ export function getChildGuestbookList(params) {
       orderByColumn: 'create_time',
       isAsc: 'asc',
       ...params
-    }
+    },
+    transformResponse: [data => {
+      try {
+        return JSONbigString.parse(data)
+      } catch (e) {
+        return data
+      }
+    }]
   })
 }
 
@@ -64,6 +82,13 @@ export function addGuestbookMessage(data) {
   return request({
     url: `${apiPrefix}/add`,
     method: 'post',
-    data
+    data,
+    transformResponse: [data => {
+      try {
+        return JSONbigString.parse(data)
+      } catch (e) {
+        return data
+      }
+    }]
   })
 }
