@@ -46,11 +46,6 @@
                 <span class="nickname">{{ item.nickname }}</span>
                 <span class="time">{{ formatTime(item.messageTime) }}</span>
               </div>
-              <button class="reply-icon-btn" @click="openReplyModal(item)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-              </button>
             </div>
 
             <div class="card-content">
@@ -58,79 +53,38 @@
             </div>
 
             <div class="card-footer">
-              <div v-if="item.location" class="location-tag">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-                {{ item.location }}
+              <div class="footer-left">
+                <div v-if="item.location" class="location-tag">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  {{ item.location }}
+                </div>
+                <button class="reply-text-btn" @click="openReplyModal(item)">回复</button>
               </div>
               
-              <!-- 展开回复按钮 -->
+              <!-- 查看回复按钮 -->
               <button
-                v-if="(item.replyCount || 0) > 0"
+                v-if="(item.replyCount || 0) > 0 && (!item.replyList || item.replyList.length === 0)"
                 class="expand-replies-btn"
-                @click="toggleReplies(item)"
+                @click="openCommentDetail(item)"
               >
-                {{ expandedReplies.includes(item.guestbookId) ? '收起回复' : `查看 ${item.replyCount} 条回复` }}
-                <svg :class="{ rotated: expandedReplies.includes(item.guestbookId) }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9" />
+                查看 {{ item.replyCount }} 条回复
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6" />
                 </svg>
               </button>
             </div>
 
-            <!-- 回复列表 -->
-            <div v-if="expandedReplies.includes(item.guestbookId)" class="mobile-reply-list">
-               <!-- 加载中 -->
-               <div v-if="item.loadingReplies && (!item.replyList || item.replyList.length === 0)" class="reply-loading">
-                <div class="reply-loading-spinner"></div>
-                <span>加载中...</span>
+            <!-- 回复列表 (预览，仅显示前两条) -->
+            <div v-if="(item.replyList && item.replyList.length > 0)" class="mobile-reply-preview">
+              <div v-for="reply in item.replyList.slice(0, 2)" :key="reply.guestbookId" class="preview-item">
+                <span class="preview-nickname">{{ reply.nickname }}:</span>
+                <span class="preview-content">{{ reply.content }}</span>
               </div>
-
-              <div v-else v-for="reply in item.replyList" :key="reply.guestbookId" class="mobile-reply-item">
-                <div class="reply-avatar-small">
-                  <img
-                    v-if="reply.avatar"
-                    :src="reply.avatar"
-                    :alt="reply.nickname"
-                    @error="handleAvatarError"
-                  >
-                  <span v-else>{{ reply.nickname.charAt(0).toUpperCase() }}</span>
-                </div>
-                <div class="reply-content-wrapper">
-                  <div class="reply-header-row">
-                    <span class="reply-nickname">{{ reply.nickname }}</span>
-                    <span class="reply-time">{{ formatTime(reply.messageTime) }}</span>
-                  </div>
-                  <div class="reply-text">
-                    <span v-if="reply.parentId !== 0 && reply.parentId !== item.guestbookId" class="reply-to">
-                      回复 <span class="reply-to-name">@{{ getReplyToNickname(item.replyList, reply.parentId, item, reply) }}</span>
-                    </span>
-                    {{ reply.content }}
-                  </div>
-                  <button class="mobile-reply-action" @click="openReplyModal(reply, item)">
-                    回复
-                  </button>
-                </div>
-              </div>
-
-              <!-- 分页加载更多回复 -->
-              <div v-if="item.replyTotal > 5" class="reply-pagination">
-                 <button
-                    class="pagination-btn"
-                    :disabled="(item.replyPageNum || 1) <= 1"
-                    @click="loadChildReplies(item, (item.replyPageNum || 1) - 1)"
-                  >
-                    上一页
-                  </button>
-                  <span class="page-indicator">{{ item.replyPageNum || 1 }} / {{ Math.ceil(item.replyTotal / 5) }}</span>
-                  <button
-                    class="pagination-btn"
-                    :disabled="(item.replyPageNum || 1) >= Math.ceil(item.replyTotal / 5)"
-                    @click="loadChildReplies(item, (item.replyPageNum || 1) + 1)"
-                  >
-                    下一页
-                  </button>
+              <div v-if="(item.replyCount || 0) > 2" class="preview-more" @click="openCommentDetail(item)">
+                查看全部 {{ item.replyCount }} 条回复 >
               </div>
             </div>
           </div>
@@ -149,13 +103,27 @@
       </div>
     </div>
 
-    <!-- 悬浮按钮 FAB -->
-    <button class="fab-btn" @click="openMessageModal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-      </svg>
-    </button>
+    <!-- 底部回复框 -->
+    <div class="mobile-footer-input">
+      <div class="input-bar" @click="openMessageModal">
+        <span class="placeholder">说点什么...</span>
+      </div>
+    </div>
+
+    <!-- 全屏评论详情弹窗 -->
+    <Teleport to="body">
+      <Transition name="slide-up-full">
+        <MobileCommentDetail
+          v-if="currentRootMessage"
+          :root-message="currentRootMessage"
+          :format-time="formatTime"
+          :handle-avatar-error="handleAvatarError"
+          :get-reply-to-nickname="getReplyToNickname"
+          @close="closeCommentDetail"
+          @open-reply="handleDetailReply"
+        />
+      </Transition>
+    </Teleport>
 
     <!-- 留言底部弹窗 (Bottom Sheet) -->
     <Teleport to="body">
@@ -173,21 +141,49 @@
             </div>
             <div class="mobile-modal-body">
               <form class="mobile-form" @submit.prevent="submitMessage">
-                <!-- 头像选择 (简化版) -->
-                <div class="avatar-selector" @click="toggleAvatarPicker">
-                  <div class="avatar-preview-wrapper">
-                    <img v-if="messageForm.avatar" :src="messageForm.avatar" class="avatar-img">
+                <!-- 头像选择 -->
+                <div class="avatar-selector">
+                  <div class="avatar-preview-wrapper" 
+                       :class="{ 'uploading': avatarUploading }"
+                       @click="!avatarUploading && toggleAvatarPicker()">
+                    <!-- 上传中 -->
+                    <div v-if="avatarUploading" class="loading-spinner small"></div>
+                    
+                    <!-- 头像展示 -->
+                    <img v-else-if="messageForm.avatar" :src="messageForm.avatar" class="avatar-img">
+                    
+                    <!-- 占位符 -->
                     <div v-else class="avatar-placeholder">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                       </svg>
                     </div>
+
+                    <!-- 删除按钮 -->
+                    <button v-if="messageForm.avatar && !avatarUploading" 
+                            type="button" 
+                            class="remove-avatar-btn" 
+                            @click.stop="removeAvatar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
                   </div>
-                  <span class="avatar-hint">点击设置头像</span>
+                  
+                  <div class="avatar-actions">
+                    <span class="avatar-hint" @click="toggleAvatarPicker">点击设置头像</span>
+                    <button v-if="hasSavedInfo" 
+                            type="button" 
+                            class="clear-info-btn" 
+                            @click="clearUserInfo">
+                      清除记录
+                    </button>
+                  </div>
                 </div>
 
-                <!-- 头像选择器 (嵌套在Modal内或再次弹窗，这里简化为内嵌) -->
+                <!-- 头像选择器 -->
                 <div v-if="showAvatarPicker" class="mobile-avatar-picker">
                    <div class="style-tabs">
                       <span v-for="(config, key) in avatarStyles" :key="key" 
@@ -202,7 +198,7 @@
                         <img :src="avatar">
                       </div>
                    </div>
-                   <div class="custom-upload" @click="triggerFileInput">
+                   <div class="custom-upload" @click.prevent.stop="triggerFileInput">
                       <span>上传自定义头像</span>
                       <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileChange">
                    </div>
@@ -250,16 +246,85 @@
                 {{ replyTarget.content }}
               </div>
               <form class="mobile-form" @submit.prevent="submitReply">
-                 <!-- 简化的回复表单，复用逻辑但简化UI -->
-                 <div class="input-group" v-if="!hasSavedInfo">
-                    <input v-model="replyForm.nickname" type="text" placeholder="昵称 *" required>
-                 </div>
-                 <div class="input-group textarea-group">
-                    <textarea v-model="replyForm.content" :placeholder="`回复 @${replyTarget.nickname}...`" rows="3" required></textarea>
-                 </div>
-                 <button type="submit" class="mobile-submit-btn" :disabled="replySubmitting">
-                    {{ replySubmitting ? '提交中...' : '发送' }}
-                 </button>
+                <!-- 头像选择 -->
+                <div class="avatar-selector">
+                  <div class="avatar-preview-wrapper"
+                       :class="{ 'uploading': replyAvatarUploading }"
+                       @click="!replyAvatarUploading && toggleReplyAvatarPicker()">
+                    <!-- 上传中 -->
+                    <div v-if="replyAvatarUploading" class="loading-spinner small"></div>
+
+                    <!-- 头像展示 -->
+                    <img v-else-if="replyForm.avatar" :src="replyForm.avatar" class="avatar-img">
+                    
+                    <!-- 占位符 -->
+                    <div v-else class="avatar-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                    </div>
+
+                    <!-- 删除按钮 -->
+                    <button v-if="replyForm.avatar && !replyAvatarUploading" 
+                            type="button" 
+                            class="remove-avatar-btn" 
+                            @click.stop="removeReplyAvatar">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="avatar-actions">
+                    <span class="avatar-hint" @click="toggleReplyAvatarPicker">点击设置头像</span>
+                    <button v-if="hasSavedInfo" 
+                            type="button" 
+                            class="clear-info-btn" 
+                            @click="clearUserInfo">
+                      清除记录
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 头像选择器 -->
+                <div v-if="showReplyAvatarPicker" class="mobile-avatar-picker">
+                   <div class="style-tabs">
+                      <span v-for="(config, key) in avatarStyles" :key="key" 
+                        class="style-tag" :class="{active: currentStyle === key}"
+                        @click="switchAvatarStyle(key)">
+                        {{ config.name }}
+                      </span>
+                   </div>
+                   <div class="preset-grid">
+                      <div v-for="(avatar, index) in presetAvatars" :key="index" 
+                        class="preset-item" @click="selectReplyPresetAvatar(avatar)">
+                        <img :src="avatar">
+                      </div>
+                   </div>
+                   <div class="custom-upload" @click.prevent.stop="triggerReplyFileInput">
+                      <span>上传自定义头像</span>
+                      <input ref="replyFileInput" type="file" accept="image/*" style="display:none" @change="handleReplyFileChange">
+                   </div>
+                </div>
+
+                <div class="input-group">
+                  <input v-model="replyForm.nickname" type="text" placeholder="昵称 *" required>
+                </div>
+                <div class="input-group">
+                  <input v-model="replyForm.email" type="email" placeholder="邮箱 (选填)">
+                </div>
+                <div class="input-group textarea-group">
+                  <textarea v-model="replyForm.content" :placeholder="`回复 @${replyTarget.nickname}...`" rows="4" maxlength="500" required></textarea>
+                  <div class="textarea-tools">
+                    <span class="char-count">{{ replyForm.content.length }}/500</span>
+                  </div>
+                </div>
+
+                <button type="submit" class="mobile-submit-btn" :disabled="replySubmitting">
+                  {{ replySubmitting ? '提交中...' : '发送' }}
+                </button>
               </form>
             </div>
           </div>
@@ -270,7 +335,11 @@
 </template>
 
 <script setup>
+import { ref, defineAsyncComponent } from 'vue'
 import { useGuestbook } from './useGuestbook.js'
+
+// 异步加载评论详情组件
+const MobileCommentDetail = defineAsyncComponent(() => import('./MobileCommentDetail.vue'))
 
 // 使用相同的逻辑 hook
 const {
@@ -307,8 +376,43 @@ const {
   formatTime,
   getReplyToNickname,
   hasSavedInfo,
-  fileInput
+  fileInput,
+  toggleReplyAvatarPicker,
+  selectReplyPresetAvatar,
+  triggerReplyFileInput,
+  handleReplyFileChange,
+  removeReplyAvatar,
+  replyAvatarUploading,
+  showReplyAvatarPicker,
+  showAvatarPicker,
+  clearUserInfo,
+  removeAvatar,
+  avatarUploading,
+  isDragging,
+  handleDrop,
+  handleReplyDrop,
+  isReplyDragging
 } = useGuestbook()
+
+const currentRootMessage = ref(null)
+
+// 打开评论详情
+const openCommentDetail = (rootMessage) => {
+  currentRootMessage.value = rootMessage
+  // 禁用背景滚动
+  document.body.style.overflow = 'hidden'
+}
+
+// 关闭评论详情
+const closeCommentDetail = () => {
+  currentRootMessage.value = null
+  document.body.style.overflow = ''
+}
+
+// 在详情页中点击回复
+const handleDetailReply = (target) => {
+  openReplyModal(target, currentRootMessage.value)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -322,6 +426,7 @@ $card-bg: rgba(39, 39, 42, 0.6);
   min-height: 100vh;
   background-color: transparent;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding-bottom: 80px; // 为底部回复框留出空间
 }
 
 // 页面头部
@@ -423,6 +528,26 @@ $card-bg: rgba(39, 39, 42, 0.6);
     align-items: center;
     font-size: 0.8rem;
 
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .reply-text-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 0;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: color 0.2s;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
     .location-tag {
       display: flex;
       align-items: center;
@@ -451,101 +576,69 @@ $card-bg: rgba(39, 39, 42, 0.6);
   }
 }
 
-// 移动端回复列表
-.mobile-reply-list {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+// 移动端回复预览
+.mobile-reply-preview {
+  margin-top: 0.8rem;
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  font-size: 0.85rem;
 
-  .mobile-reply-item {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+  .preview-item {
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 
-    .reply-avatar-small {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      overflow: hidden;
-      background: rgba($primary-color, 0.5);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 0.8rem;
-      
-      img { width: 100%; height: 100%; object-fit: cover; }
+    &:last-child {
+      margin-bottom: 0;
     }
 
-    .reply-content-wrapper {
-      flex: 1;
-
-      .reply-header-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.2rem;
-
-        .reply-nickname {
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: #ddd;
-        }
-        
-        .reply-time {
-          font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.3);
-        }
-      }
-
-      .reply-text {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.7);
-        line-height: 1.5;
-        margin-bottom: 0.4rem;
-
-        .reply-to {
-          color: rgba(255, 255, 255, 0.4);
-          margin-right: 0.2rem;
-          
-          .reply-to-name {
-            color: $primary-color;
-          }
-        }
-      }
-
-      .mobile-reply-action {
-        background: transparent;
-        border: none;
-        color: rgba(255, 255, 255, 0.4);
-        font-size: 0.8rem;
-        padding: 0;
-      }
+    .preview-nickname {
+      color: $primary-color;
+      font-weight: 600;
+      margin-right: 0.3rem;
     }
+
+    .preview-content {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  .preview-more {
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
   }
 }
 
-// 悬浮按钮
-.fab-btn {
+// 底部固定回复框
+.mobile-footer-input {
   position: fixed;
-  bottom: 2rem;
-  right: 1.5rem;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: $primary-color;
-  color: #fff;
-  border: none;
-  box-shadow: 0 4px 15px rgba($primary-color, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-top: none;
+  padding: 0.8rem 1rem;
   z-index: 100;
   
-  svg { width: 24px; height: 24px; }
-  
-  &:active {
-    transform: scale(0.95);
+  // 适配 iPhone X 等全面屏底部
+  padding-bottom: calc(0.8rem + env(safe-area-inset-bottom));
+
+  .input-bar {
+    background: rgba(39, 39, 42, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 0.6rem 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -558,7 +651,7 @@ $card-bg: rgba(39, 39, 42, 0.6);
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 3000; // 必须高于详情页
   display: flex;
   align-items: flex-end; // 底部对齐
 }
@@ -571,6 +664,7 @@ $card-bg: rgba(39, 39, 42, 0.6);
   display: flex;
   flex-direction: column;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+  padding-bottom: env(safe-area-inset-bottom);
   
   .mobile-modal-header {
     padding: 1rem 1.25rem;
@@ -599,6 +693,21 @@ $card-bg: rgba(39, 39, 42, 0.6);
     padding: 1.25rem;
     overflow-y: auto;
   }
+  
+  .mobile-reply-quote {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid $primary-color;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 // 移动端表单
@@ -608,14 +717,18 @@ $card-bg: rgba(39, 39, 42, 0.6);
   gap: 1rem;
   
   .input-group {
+    position: relative; // 确保相对定位
+
     input, textarea {
       width: 100%;
+      box-sizing: border-box; // 关键修复：防止 padding 撑大宽度
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       padding: 0.8rem 1rem;
       color: #fff;
       font-size: 1rem;
+      max-width: 100%;
       
       &:focus {
         outline: none;
@@ -626,6 +739,18 @@ $card-bg: rgba(39, 39, 42, 0.6);
     textarea {
       resize: none;
     }
+  }
+
+  // 新增/更新工具栏样式
+  .textarea-tools {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.3rem 0.5rem 0;
+  }
+
+  .char-count {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5); // 修复颜色问题
   }
   
   .mobile-submit-btn {
@@ -661,18 +786,71 @@ $card-bg: rgba(39, 39, 42, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; // 必须相对定位以放置删除按钮
     
+    &.uploading {
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
     .avatar-img { width: 100%; height: 100%; object-fit: cover; }
     
     .avatar-placeholder {
       color: rgba(255, 255, 255, 0.3);
       svg { width: 24px; height: 24px; }
     }
+
+    .loading-spinner.small {
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-top-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .remove-avatar-btn {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 20px;
+      height: 20px;
+      background: rgba(239, 68, 68, 0.9);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      z-index: 10;
+      
+      svg { width: 12px; height: 12px; }
+    }
   }
   
-  .avatar-hint {
-    color: $primary-color;
-    font-size: 0.9rem;
+  .avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    
+    .avatar-hint {
+      color: $primary-color;
+      font-size: 0.9rem;
+    }
+
+    .clear-info-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      padding: 0;
+      text-align: left;
+      
+      &:hover {
+        color: #ef4444;
+      }
+    }
   }
 }
 
@@ -748,29 +926,15 @@ $card-bg: rgba(39, 39, 42, 0.6);
   }
 }
 
-// 分页按钮
-.reply-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  
-  .pagination-btn {
-    background: rgba(255,255,255,0.05);
-    border: none;
-    color: #fff;
-    padding: 0.3rem 0.8rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    
-    &:disabled { opacity: 0.3; }
-  }
-  
-  .page-indicator {
-    color: rgba(255,255,255,0.5);
-    font-size: 0.8rem;
-  }
+// 全屏弹窗动画
+.slide-up-full-enter-active,
+.slide-up-full-leave-active {
+  transition: transform 0.3s ease-out;
+}
+
+.slide-up-full-enter-from,
+.slide-up-full-leave-to {
+  transform: translateY(100%);
 }
 
 .loading-state, .empty-state, .load-more-section {

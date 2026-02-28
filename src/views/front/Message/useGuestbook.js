@@ -852,6 +852,14 @@ export function useGuestbook() {
           replyPageNum: 1,
           replyHasMore: (item.replyCount || 0) > (item.replyList?.length || 0)
         }))
+
+        // 自动加载子评论
+        messages.value.forEach(item => {
+          if ((item.replyCount || 0) > 0) {
+            loadChildReplies(item)
+          }
+        })
+
         // 保存后端返回的总数
         pageParams.total = res.total || 0
         pageParams.guestbookAllCount = res.guestbookAllCount || 0
@@ -932,7 +940,17 @@ export function useGuestbook() {
             replyPageNum: 1,
             replyHasMore: (item.replyCount || 0) > (item.replyList?.length || 0)
           }))
+
           messages.value.push(...processedMessages)
+          
+          // 自动加载子评论（对新添加的响应式对象进行操作）
+          const newItems = messages.value.slice(-processedMessages.length)
+          newItems.forEach(item => {
+            if ((item.replyCount || 0) > 0) {
+              loadChildReplies(item)
+            }
+          })
+
           pageParams.pageNum = nextPage
         }
         // 更新总数并根据总页数判断是否还有更多
