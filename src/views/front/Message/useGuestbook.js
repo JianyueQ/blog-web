@@ -284,7 +284,9 @@ export function useGuestbook() {
         rootMessage.replyList = res.data || res.rows || []
 
         // 使用 Math.max 确保如果前端已经增加了总数，不会被后端旧数据覆盖（解决Redis异步更新延迟问题）
-        rootMessage.replyTotal = Math.max(rootMessage.replyTotal || 0, res.total || 0)
+        const newTotal = Math.max(rootMessage.replyTotal || 0, res.total || 0)
+        rootMessage.replyTotal = newTotal
+        rootMessage.replyCount = newTotal // 同步更新列表页显示的计数
         
         rootMessage.replyPageNum = pageNum
         rootMessage.replyHasMore = (rootMessage.replyList.length < rootMessage.replyTotal)
@@ -735,6 +737,13 @@ export function useGuestbook() {
 
       const isRoot = replyTarget.value.isRoot === 1
       const rootId = isRoot ? replyTarget.value.guestbookId : replyTarget.value.rootId
+      
+      // 修正 parentId 逻辑：如果是直接回复根评论（即在详情页回复），parentId 应为 0
+      let parentId = replyTarget.value.guestbookId
+      // 检查是否回复的是当前的根评论对象
+      if (currentRootMessage.value && replyTarget.value.guestbookId === currentRootMessage.value.guestbookId) {
+        parentId = 0
+      }
 
       // 计算分页参数
       const pageSize = 5
@@ -749,7 +758,7 @@ export function useGuestbook() {
         content: replyForm.content.trim(),
         avatar: avatarUrl,
         rootId: rootId,
-        parentId: replyTarget.value.guestbookId,
+        parentId: parentId,
         pageNum,
         pageSize,
         orderByColumn: 'create_time',
@@ -778,18 +787,26 @@ export function useGuestbook() {
 
         // 刷新子留言列表
         if (targetRootMessage) {
-          // 手动增加子评论总数
+          // 手动增加子评论总数 (修复异步更新延迟问题)
           targetRootMessage.replyTotal = (targetRootMessage.replyTotal || 0) + 1
+          targetRootMessage.replyCount = (targetRootMessage.replyCount || 0) + 1
           
           // 确保展开
           if (!expandedReplies.value.includes(targetRootMessage.guestbookId)) {
             expandedReplies.value.push(targetRootMessage.guestbookId)
           }
           
-          // 计算目标页码：跳转到最后一页以显示新评论
-          const targetPage = Math.ceil(targetRootMessage.replyTotal / pageSize) || 1
+          // 手动构造新评论对象并追加到列表末尾
+          // 直接使用后端返回的完整数据
+          const newReply = res.data
           
-          await loadChildReplies(targetRootMessage, targetPage)
+          if (!targetRootMessage.replyList) {
+            targetRootMessage.replyList = []
+          }
+          targetRootMessage.replyList.push(newReply)
+          
+          // 不再调用 loadChildReplies 刷新列表，避免已加载的分页数据丢失
+          // await loadChildReplies(targetRootMessage, targetPage)
         } else {
           await silentRefresh()
         }

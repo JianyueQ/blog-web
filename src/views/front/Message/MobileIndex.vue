@@ -78,12 +78,16 @@
             </div>
 
             <!-- 回复列表 (预览，仅显示前两条) -->
-            <div v-if="(item.replyList && item.replyList.length > 0)" class="mobile-reply-preview">
+            <div 
+              v-if="(item.replyList && item.replyList.length > 0)" 
+              class="mobile-reply-preview"
+              @click="openCommentDetail(item)"
+            >
               <div v-for="reply in item.replyList.slice(0, 2)" :key="reply.guestbookId" class="preview-item">
                 <span class="preview-nickname">{{ reply.nickname }}:</span>
                 <span class="preview-content">{{ reply.content }}</span>
               </div>
-              <div v-if="(item.replyCount || 0) > 2" class="preview-more" @click="openCommentDetail(item)">
+              <div v-if="(item.replyCount || 0) > 2" class="preview-more">
                 查看全部 {{ item.replyCount }} 条回复 >
               </div>
             </div>
@@ -583,6 +587,12 @@ $card-bg: rgba(39, 39, 42, 0.6);
   background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:active {
+    background: rgba(0, 0, 0, 0.3);
+  }
 
   .preview-item {
     margin-bottom: 0.4rem;
