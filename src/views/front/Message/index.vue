@@ -1923,13 +1923,26 @@ const submitReply = async () => {
 
     const isRoot = replyTarget.value.isRoot === 1
     const rootId = isRoot ? replyTarget.value.guestbookId : replyTarget.value.rootId
+
+    // 计算分页参数
+    const pageSize = 5
+    const targetRootMessage = currentRootMessage.value
+    // 预测新增后的总数
+    const nextTotal = (targetRootMessage.replyTotal || 0) + 1
+    const pageNum = Math.ceil(nextTotal / pageSize) || 1
+
     const data = {
       nickname: replyForm.nickname.trim(),
       email: replyForm.email.trim(),
       content: replyForm.content.trim(),
       avatar: avatarUrl,
       rootId: rootId,
-      parentId: replyTarget.value.guestbookId
+      parentId: replyTarget.value.guestbookId,
+      pageNum,
+      pageSize,
+      orderByColumn: 'create_time',
+      isAsc: 'asc',
+      reasonable: true
     }
 
     const res = await addGuestbookMessage(data)
@@ -1944,7 +1957,7 @@ const submitReply = async () => {
       messageForm.email = replyForm.email
       
       // 保存当前操作的根留言引用，因为 closeReplyModal 会将其重置为 null
-      const targetRootMessage = currentRootMessage.value
+      // const targetRootMessage = currentRootMessage.value // 已在上方定义
 
       closeReplyModal()
 
