@@ -145,67 +145,228 @@
             </div>
             <div class="mobile-modal-body">
               <form class="mobile-form" @submit.prevent="submitMessage">
-                <!-- 头像选择 -->
-                <div class="avatar-selector">
-                  <div class="avatar-preview-wrapper" 
-                       :class="{ 'uploading': avatarUploading }"
-                       @click="!avatarUploading && toggleAvatarPicker()">
-                    <!-- 上传中 -->
-                    <div v-if="avatarUploading" class="loading-spinner small"></div>
-                    
-                    <!-- 头像展示 -->
-                    <img v-else-if="messageForm.avatar" :src="messageForm.avatar" class="avatar-img">
-                    
-                    <!-- 占位符 -->
-                    <div v-else class="avatar-placeholder">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
+                <!-- 头像选择区域 -->
+                <div class="form-group avatar-group">
+                  <div class="avatar-section">
+                    <!-- 当前头像显示 -->
+                    <div class="avatar-current-wrapper">
+                      <div
+                        class="avatar-upload-area"
+                        :class="{ 'has-image': messageForm.avatar, 'uploading': avatarUploading }"
+                        @click="!avatarUploading && toggleAvatarPicker()"
+                      >
+                        <!-- 头像预览 -->
+                        <img
+                          v-if="messageForm.avatar && !avatarUploading"
+                          :src="messageForm.avatar"
+                          class="avatar-preview"
+                        >
+
+                        <!-- 上传中状态 -->
+                        <div
+                          v-else-if="avatarUploading"
+                          class="avatar-uploading"
+                        >
+                          <div class="avatar-spinner">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke-opacity="0.25"
+                              />
+                              <path
+                                d="M12 2a10 10 0 0 1 10 10"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          </div>
+                          <span class="upload-text">上传中...</span>
+                        </div>
+
+                        <!-- 默认状态 -->
+                        <div
+                          v-else
+                          class="avatar-placeholder"
+                        >
+                          <div class="avatar-icon">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                            >
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                              <circle
+                                cx="12"
+                                cy="7"
+                                r="4"
+                              />
+                            </svg>
+                          </div>
+                          <span class="upload-hint">选择头像</span>
+                        </div>
+
+                        <!-- 删除头像按钮 -->
+                        <button
+                          v-if="messageForm.avatar && !avatarUploading"
+                          type="button"
+                          class="avatar-remove-btn"
+                          title="删除头像"
+                          @click.stop="removeAvatar"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <span class="avatar-tip">点击选择或上传头像</span>
+                      
+                      <!-- 清除信息按钮 -->
+                      <button 
+                        v-if="hasSavedInfo" 
+                        type="button"
+                        class="clear-info-btn" 
+                        @click.stop="clearUserInfo"
+                        title="清除已保存的昵称、邮箱和头像"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        清除记录
+                      </button>
                     </div>
 
-                    <!-- 删除按钮 -->
-                    <button v-if="messageForm.avatar && !avatarUploading" 
-                            type="button" 
-                            class="remove-avatar-btn" 
-                            @click.stop="removeAvatar">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  <div class="avatar-actions">
-                    <span class="avatar-hint" @click="toggleAvatarPicker">点击设置头像</span>
-                    <button v-if="hasSavedInfo" 
-                            type="button" 
-                            class="clear-info-btn" 
-                            @click="clearUserInfo">
-                      清除记录
-                    </button>
-                  </div>
-                </div>
-
-                <!-- 头像选择器 -->
-                <div v-if="showAvatarPicker" class="mobile-avatar-picker">
-                   <div class="style-tabs">
-                      <span v-for="(config, key) in avatarStyles" :key="key" 
-                        class="style-tag" :class="{active: currentStyle === key}"
-                        @click="switchAvatarStyle(key)">
-                        {{ config.name }}
-                      </span>
-                   </div>
-                   <div class="preset-grid">
-                      <div v-for="(avatar, index) in presetAvatars" :key="index" 
-                        class="preset-item" @click="selectPresetAvatar(avatar)">
-                        <img :src="avatar">
+                    <!-- 头像选择器 -->
+                    <div
+                      v-if="showAvatarPicker"
+                      class="avatar-picker"
+                    >
+                      <div class="avatar-picker-header">
+                        <span class="avatar-picker-title">选择头像</span>
+                        <button
+                          type="button"
+                          class="avatar-close-btn"
+                          @click="toggleAvatarPicker"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
+                          </svg>
+                        </button>
                       </div>
-                   </div>
-                   <div class="custom-upload" @click.prevent.stop="triggerFileInput">
-                      <span>上传自定义头像</span>
-                      <input ref="fileInput" type="file" accept="image/*" style="display:none" @change="handleFileChange">
-                   </div>
+
+                      <!-- 风格选择标签 -->
+                      <div class="avatar-style-tabs">
+                        <button
+                          v-for="(config, key) in avatarStyles"
+                          :key="key"
+                          type="button"
+                          class="style-tab"
+                          :class="{ 'active': currentStyle === key }"
+                          @click="switchAvatarStyle(key)"
+                        >
+                          {{ config.name }}
+                        </button>
+                      </div>
+
+                      <!-- 预设头像网格 -->
+                      <div class="preset-avatars">
+                        <div
+                          v-for="(avatar, index) in presetAvatars"
+                          :key="`${currentStyle}-${index}`"
+                          class="preset-avatar-item"
+                          :class="{ 'selected': messageForm.avatar === avatar }"
+                          @click="selectPresetAvatar(avatar)"
+                        >
+                          <img
+                            :src="avatar"
+                            :alt="`预设头像 ${index + 1}`"
+                          >
+                        </div>
+                      </div>
+
+                      <!-- 自定义上传区域 -->
+                      <div class="custom-upload-section">
+                        <div
+                          class="custom-upload-area"
+                          :class="{ 'dragging': isDragging }"
+                          @click="triggerFileInput"
+                          @dragenter.prevent="isDragging = true"
+                          @dragleave.prevent="isDragging = false"
+                          @dragover.prevent
+                          @drop.prevent="handleDrop($event)"
+                        >
+                          <input
+                            ref="fileInput"
+                            type="file"
+                            accept="image/*"
+                            class="hidden-input"
+                            @change="handleFileChange"
+                          >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line
+                              x1="12"
+                              y1="3"
+                              x2="12"
+                              y2="15"
+                            />
+                          </svg>
+                          <span>上传自定义头像</span>
+                          <small>支持 JPG、PNG，最大 10MB</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="input-group">
@@ -250,67 +411,228 @@
                 {{ replyTarget.content }}
               </div>
               <form class="mobile-form" @submit.prevent="submitReply">
-                <!-- 头像选择 -->
-                <div class="avatar-selector">
-                  <div class="avatar-preview-wrapper"
-                       :class="{ 'uploading': replyAvatarUploading }"
-                       @click="!replyAvatarUploading && toggleReplyAvatarPicker()">
-                    <!-- 上传中 -->
-                    <div v-if="replyAvatarUploading" class="loading-spinner small"></div>
+                <!-- 头像选择区域 -->
+                <div class="form-group avatar-group">
+                  <div class="avatar-section">
+                    <!-- 当前头像显示 -->
+                    <div class="avatar-current-wrapper">
+                      <div
+                        class="avatar-upload-area"
+                        :class="{ 'has-image': replyForm.avatar, 'uploading': replyAvatarUploading }"
+                        @click="!replyAvatarUploading && toggleReplyAvatarPicker()"
+                      >
+                        <!-- 头像预览 -->
+                        <img
+                          v-if="replyForm.avatar && !replyAvatarUploading"
+                          :src="replyForm.avatar"
+                          class="avatar-preview"
+                        >
 
-                    <!-- 头像展示 -->
-                    <img v-else-if="replyForm.avatar" :src="replyForm.avatar" class="avatar-img">
-                    
-                    <!-- 占位符 -->
-                    <div v-else class="avatar-placeholder">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                      </svg>
+                        <!-- 上传中状态 -->
+                        <div
+                          v-else-if="replyAvatarUploading"
+                          class="avatar-uploading"
+                        >
+                          <div class="avatar-spinner">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke-opacity="0.25"
+                              />
+                              <path
+                                d="M12 2a10 10 0 0 1 10 10"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          </div>
+                          <span class="upload-text">上传中...</span>
+                        </div>
+
+                        <!-- 默认状态 -->
+                        <div
+                          v-else
+                          class="avatar-placeholder"
+                        >
+                          <div class="avatar-icon">
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                            >
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                              <circle
+                                cx="12"
+                                cy="7"
+                                r="4"
+                              />
+                            </svg>
+                          </div>
+                          <span class="upload-hint">选择头像</span>
+                        </div>
+
+                        <!-- 删除头像按钮 -->
+                        <button
+                          v-if="replyForm.avatar && !replyAvatarUploading"
+                          type="button"
+                          class="avatar-remove-btn"
+                          title="删除头像"
+                          @click.stop="removeReplyAvatar"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                      <span class="avatar-tip">点击选择或上传头像</span>
+                      
+                      <!-- 清除信息按钮 -->
+                      <button 
+                        v-if="hasSavedInfo" 
+                        type="button"
+                        class="clear-info-btn" 
+                        @click.stop="clearUserInfo"
+                        title="清除已保存的昵称、邮箱和头像"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path d="M3 6h18" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        清除记录
+                      </button>
                     </div>
 
-                    <!-- 删除按钮 -->
-                    <button v-if="replyForm.avatar && !replyAvatarUploading" 
-                            type="button" 
-                            class="remove-avatar-btn" 
-                            @click.stop="removeReplyAvatar">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div class="avatar-actions">
-                    <span class="avatar-hint" @click="toggleReplyAvatarPicker">点击设置头像</span>
-                    <button v-if="hasSavedInfo" 
-                            type="button" 
-                            class="clear-info-btn" 
-                            @click="clearUserInfo">
-                      清除记录
-                    </button>
-                  </div>
-                </div>
-
-                <!-- 头像选择器 -->
-                <div v-if="showReplyAvatarPicker" class="mobile-avatar-picker">
-                   <div class="style-tabs">
-                      <span v-for="(config, key) in avatarStyles" :key="key" 
-                        class="style-tag" :class="{active: currentStyle === key}"
-                        @click="switchAvatarStyle(key)">
-                        {{ config.name }}
-                      </span>
-                   </div>
-                   <div class="preset-grid">
-                      <div v-for="(avatar, index) in presetAvatars" :key="index" 
-                        class="preset-item" @click="selectReplyPresetAvatar(avatar)">
-                        <img :src="avatar">
+                    <!-- 头像选择器 -->
+                    <div
+                      v-if="showReplyAvatarPicker"
+                      class="avatar-picker"
+                    >
+                      <div class="avatar-picker-header">
+                        <span class="avatar-picker-title">选择头像</span>
+                        <button
+                          type="button"
+                          class="avatar-close-btn"
+                          @click="toggleReplyAvatarPicker"
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <line
+                              x1="18"
+                              y1="6"
+                              x2="6"
+                              y2="18"
+                            />
+                            <line
+                              x1="6"
+                              y1="6"
+                              x2="18"
+                              y2="18"
+                            />
+                          </svg>
+                        </button>
                       </div>
-                   </div>
-                   <div class="custom-upload" @click.prevent.stop="triggerReplyFileInput">
-                      <span>上传自定义头像</span>
-                      <input ref="replyFileInput" type="file" accept="image/*" style="display:none" @change="handleReplyFileChange">
-                   </div>
+
+                      <!-- 风格选择标签 -->
+                      <div class="avatar-style-tabs">
+                        <button
+                          v-for="(config, key) in avatarStyles"
+                          :key="key"
+                          type="button"
+                          class="style-tab"
+                          :class="{ 'active': currentStyle === key }"
+                          @click="switchAvatarStyle(key)"
+                        >
+                          {{ config.name }}
+                        </button>
+                      </div>
+
+                      <!-- 预设头像网格 -->
+                      <div class="preset-avatars">
+                        <div
+                          v-for="(avatar, index) in presetAvatars"
+                          :key="`${currentStyle}-${index}`"
+                          class="preset-avatar-item"
+                          :class="{ 'selected': replyForm.avatar === avatar }"
+                          @click="selectReplyPresetAvatar(avatar)"
+                        >
+                          <img
+                            :src="avatar"
+                            :alt="`预设头像 ${index + 1}`"
+                          >
+                        </div>
+                      </div>
+
+                      <!-- 自定义上传区域 -->
+                      <div class="custom-upload-section">
+                        <div
+                          class="custom-upload-area"
+                          :class="{ 'dragging': isReplyDragging }"
+                          @click="triggerReplyFileInput"
+                          @dragenter.prevent="isReplyDragging = true"
+                          @dragleave.prevent="isReplyDragging = false"
+                          @dragover.prevent
+                          @drop.prevent="handleReplyDrop($event)"
+                        >
+                          <input
+                            ref="replyFileInput"
+                            type="file"
+                            accept="image/*"
+                            class="hidden-input"
+                            @change="handleReplyFileChange"
+                          >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                          >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line
+                              x1="12"
+                              y1="3"
+                              x2="12"
+                              y2="15"
+                            />
+                          </svg>
+                          <span>上传自定义头像</span>
+                          <small>支持 JPG、PNG，最大 10MB</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="input-group">
@@ -779,142 +1101,368 @@ $card-bg: rgba(39, 39, 42, 0.6);
   }
 }
 
-// 头像选择
-.avatar-selector {
+// 头像上传组件 - 优化设计
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.avatar-current-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px; // 为删除按钮留出空间
+}
+
+.avatar-upload-area {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: visible; // 改为 visible，让删除按钮可以超出边界
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
-  
-  .avatar-preview-wrapper {
-    width: 60px;
-    height: 60px;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $primary-color;
+    background: rgba($primary-color, 0.1);
+  }
+
+  &.has-image {
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &:hover .avatar-overlay {
+      opacity: 1;
+    }
+  }
+
+  &.uploading {
+    cursor: not-allowed;
+    border-color: rgba($primary-color, 0.3);
+  }
+
+  // 头像预览
+  .avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 50%;
-    overflow: visible;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
+  }
+
+  // 上传中状态
+  .avatar-uploading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    color: rgba(255, 255, 255, 0.7);
+
+    .avatar-spinner {
+      width: 28px;
+      height: 28px;
+      animation: spin 1s linear infinite;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        color: $primary-color;
+      }
+    }
+
+    .upload-text {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  // 默认状态
+  .avatar-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    color: rgba(255, 255, 255, 0.4);
+
+    .avatar-icon {
+      width: 32px;
+      height: 32px;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .upload-hint {
+      font-size: 0.7rem;
+    }
+  }
+
+  // 移除按钮
+  .avatar-remove-btn {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; // 必须相对定位以放置删除按钮
-    
-    &.uploading {
-      cursor: not-allowed;
-      border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(239, 68, 68, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    svg {
+      width: 12px;
+      height: 12px;
     }
 
-    .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-    
-    .avatar-placeholder {
-      color: rgba(255, 255, 255, 0.3);
-      svg { width: 24px; height: 24px; }
+    &:hover {
+      background: rgba(239, 68, 68, 1);
+      transform: scale(1.15);
     }
+  }
 
-    .loading-spinner.small {
-      width: 24px;
-      height: 24px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-top-color: $primary-color;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+  // 悬停遮罩
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 
-    .remove-avatar-btn {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 20px;
-      height: 20px;
-      background: rgba(239, 68, 68, 0.9);
-      border: none;
-      border-radius: 50%;
+    span {
+      font-size: 0.75rem;
       color: #fff;
+      font-weight: 500;
+    }
+  }
+}
+
+.avatar-tip {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.clear-info-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+  }
+}
+
+// 头像选择器
+.avatar-picker {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1rem;
+  animation: slideInUp 0.2s ease;
+
+  // 风格选择标签
+  .avatar-style-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .style-tab {
+      padding: 0.4rem 0.8rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background: rgba($primary-color, 0.1);
+        border-color: rgba($primary-color, 0.3);
+        color: #fff; // 移动端hover颜色调整
+      }
+
+      &.active {
+        background: rgba($primary-color, 0.2);
+        border-color: $primary-color;
+        color: #fff;
+      }
+    }
+  }
+
+  .avatar-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+
+    .avatar-picker-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .avatar-close-btn {
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0;
-      z-index: 10;
-      
-      svg { width: 12px; height: 12px; }
-    }
-  }
-  
-  .avatar-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    
-    .avatar-hint {
-      color: $primary-color;
-      font-size: 0.9rem;
-    }
-
-    .clear-info-btn {
-      background: transparent;
+      background: rgba(255, 255, 255, 0.05);
       border: none;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 0.75rem;
-      padding: 0;
-      text-align: left;
-      
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
       &:hover {
-        color: #ef4444;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
       }
     }
   }
 }
 
-.mobile-avatar-picker {
-  background: rgba(0,0,0,0.2);
-  padding: 1rem;
-  border-radius: 12px;
+// 预设头像网格
+.preset-avatars {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); // 移动端改为5列
+  gap: 0.6rem;
   margin-bottom: 1rem;
-  
-  .style-tabs {
+
+  .preset-avatar-item {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &:hover {
+      border-color: rgba($primary-color, 0.5);
+      transform: scale(1.05);
+    }
+
+    &.selected {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+    }
+  }
+}
+
+// 自定义上传区域
+.custom-upload-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+
+  .custom-upload-area {
     display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin-bottom: 0.5rem;
-    
-    .style-tag {
-      white-space: nowrap;
-      padding: 0.3rem 0.8rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 20px;
-      font-size: 0.8rem;
-      color: #aaa;
-      
-      &.active {
-        background: $primary-color;
-        color: #fff;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    svg {
+      width: 24px;
+      height: 24px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    span {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+    }
+
+    small {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    &:hover {
+      border-color: rgba($primary-color, 0.5);
+      background: rgba($primary-color, 0.05);
+
+      svg {
+        color: #60a5fa; // $primary-light
       }
     }
-  }
-  
-  .preset-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 0.8rem;
-    
-    .preset-item {
-      aspect-ratio: 1;
-      border-radius: 8px;
-      overflow: hidden;
-      
-      img { width: 100%; height: 100%; }
+
+    &.dragging {
+      border-color: $primary-color;
+      background: rgba($primary-color, 0.1);
     }
   }
-  
-  .custom-upload {
-    text-align: center;
-    padding: 0.8rem;
-    border: 1px dashed rgba(255,255,255,0.2);
-    border-radius: 8px;
-    color: #aaa;
-    font-size: 0.9rem;
-  }
+}
+
+.hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
 }
 
 // 动画
