@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+import JSONBig from 'json-bigint'
 
 const apiPrefix = '/system/guestbook'
 
@@ -17,14 +18,57 @@ export function getGuestbookList(params) {
     return request({
         url: `${apiPrefix}/list/isRoot`,
         method: 'get',
-        params
+        params,
+        transformResponse: [function (data) {
+            try {
+                // 如果转换成功则返回转换的数据结果
+                return JSONBig({ storeAsString: true }).parse(data)
+            } catch (err) {
+                // 如果转换失败，则包装为统一数据格式并返回
+                return {
+                    data
+                }
+            }
+        }]
+    })
+}
+
+/**
+ * 获取子留言列表（后台管理）
+ * @param {Object} params - 查询参数
+ * @param {number} params.guestbookId - 根留言ID（必填）
+ * @param {number} params.pageNum - 页码，默认1
+ * @param {number} params.pageSize - 每页条数，默认10
+ * @param {string} params.orderByColumn - 排序列
+ * @param {string} params.isAsc - 排序方向，asc-升序，desc-降序
+ * @param {boolean} params.reasonable - 分页参数合理化
+ */
+export function getChildGuestbookList(params) {
+    return request({
+        url: `${apiPrefix}/list/child`,
+        method: 'get',
+        params,
+        transformResponse: [function (data) {
+            try {
+                // 如果转换成功则返回转换的数据结果
+                return JSONBig({ storeAsString: true }).parse(data)
+            } catch (err) {
+                // 如果转换失败，则包装为统一数据格式并返回
+                return {
+                    data
+                }
+            }
+        }]
     })
 }
 
 /**
  * 后台回复留言
  * @param {Object} data - 回复数据
+ * @param {string} data.nickname - 昵称（必填）
+ * @param {string} data.email - 邮箱（必填）
  * @param {string} data.content - 回复内容（必填）
+ * @param {string} data.avatar - 头像地址
  * @param {number} data.rootId - 根留言ID，0表示根留言（必填）
  * @param {number} data.parentId - 回复留言ID，0表示直接回复根留言（必填）
  */

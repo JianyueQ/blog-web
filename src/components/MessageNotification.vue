@@ -1,23 +1,23 @@
 <template>
   <div class="message-notification">
     <el-dropdown
-      trigger="click"
-      placement="bottom-end"
-      :hide-on-click="false"
-      @visible-change="handleDropdownVisible"
+        trigger="click"
+        placement="bottom-end"
+        :hide-on-click="false"
+        @visible-change="handleDropdownVisible"
     >
       <div
-        class="message-icon-wrapper"
-        :class="{ 'has-unread': unreadCount > 0 }"
+          class="message-icon-wrapper"
+          :class="{ 'has-unread': unreadCount > 0 }"
       >
         <el-icon :size="20">
-          <Bell />
+          <Bell/>
         </el-icon>
         <el-badge
-          v-if="unreadCount > 0"
-          :value="unreadCount > 99 ? '99+' : unreadCount"
-          :max="99"
-          class="message-badge"
+            v-if="unreadCount > 0"
+            :value="unreadCount > 99 ? '99+' : unreadCount"
+            :max="99"
+            class="message-badge"
         />
       </div>
       <template #dropdown>
@@ -25,76 +25,76 @@
           <div class="message-header">
             <div class="header-tabs">
               <span
-                class="tab-item"
-                :class="{ active: activeTab === 'unread' }"
-                @click="handleTabChange('unread')"
+                  class="tab-item"
+                  :class="{ active: activeTab === 'unread' }"
+                  @click="handleTabChange('unread')"
               >
                 未读消息
                 <el-tag
-                  v-if="unreadCount > 0"
-                  size="small"
-                  type="danger"
-                  class="tab-badge"
+                    v-if="unreadCount > 0"
+                    size="small"
+                    type="danger"
+                    class="tab-badge"
                 >
                   {{ unreadCount }}
                 </el-tag>
               </span>
               <span
-                class="tab-item"
-                :class="{ active: activeTab === 'all' }"
-                @click="handleTabChange('all')"
+                  class="tab-item"
+                  :class="{ active: activeTab === 'all' }"
+                  @click="handleTabChange('all')"
               >
                 全部消息
               </span>
             </div>
             <div class="header-actions">
               <el-button
-                v-if="activeTab === 'unread' && unreadCount > 0"
-                link
-                type="primary"
-                size="small"
-                @click="markAllAsRead"
+                  v-if="activeTab === 'unread' && unreadCount > 0"
+                  link
+                  type="primary"
+                  size="small"
+                  @click="markAllAsRead"
               >
                 全部已读
               </el-button>
               <el-button
-                v-if="messageList.length > 0"
-                link
-                type="danger"
-                size="small"
-                @click="clearAllMessages"
+                  v-if="messageList.length > 0"
+                  link
+                  type="danger"
+                  size="small"
+                  @click="clearAllMessages"
               >
                 清空
               </el-button>
             </div>
           </div>
           <div
-            v-loading="loading"
-            class="message-list"
+              v-loading="loading"
+              class="message-list"
           >
             <template v-if="messageList.length > 0">
               <div
-                v-for="msg in messageList"
-                :key="msg.messageId"
-                class="message-item"
-                :class="{ unread: msg.isRead === 0 }"
-                @click="handleMessageClick(msg)"
+                  v-for="msg in messageList"
+                  :key="msg.messageId"
+                  class="message-item"
+                  :class="{ unread: msg.isRead === 0 }"
+                  @click="handleMessageClick(msg)"
               >
                 <div class="message-icon">
                   <el-icon
-                    :size="16"
-                    :color="getMessageTypeColor(msg.messageType)"
+                      :size="16"
+                      :color="getMessageTypeColor(msg.messageType)"
                   >
-                    <component :is="getMessageTypeIcon(msg.messageType)" />
+                    <component :is="getMessageTypeIcon(msg.messageType)"/>
                   </el-icon>
                 </div>
                 <div class="message-content">
                   <div class="message-title">
                     {{ msg.messageTitle }}
                     <el-tag
-                      size="small"
-                      :type="getMessageTypeTag(msg.messageType)"
-                      class="type-tag"
+                        size="small"
+                        :type="getMessageTypeTag(msg.messageType)"
+                        class="type-tag"
                     >
                       {{ getMessageTypeText(msg.messageType) }}
                     </el-tag>
@@ -108,19 +108,19 @@
                 </div>
                 <div class="message-actions">
                   <el-button
-                    v-if="msg.isRead === 0"
-                    link
-                    type="primary"
-                    size="small"
-                    @click.stop="markAsRead(msg)"
+                      v-if="msg.isRead === 0"
+                      link
+                      type="primary"
+                      size="small"
+                      @click.stop="markAsRead(msg)"
                   >
                     标为已读
                   </el-button>
                   <el-button
-                    link
-                    type="danger"
-                    size="small"
-                    @click.stop="deleteMsg(msg)"
+                      link
+                      type="danger"
+                      size="small"
+                      @click.stop="deleteMsg(msg)"
                   >
                     删除
                   </el-button>
@@ -128,16 +128,16 @@
               </div>
             </template>
             <el-empty
-              v-else
-              description="暂无消息"
-              :image-size="60"
+                v-else
+                description="暂无消息"
+                :image-size="60"
             />
           </div>
           <div class="message-footer">
             <el-button
-              link
-              type="primary"
-              @click="goToMessagePage"
+                link
+                type="primary"
+                @click="goToMessagePage"
             >
               查看全部
             </el-button>
@@ -149,26 +149,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useUserStore } from '@/stores/user.js'
-import {
-  Bell
-} from '@element-plus/icons-vue'
+import {onMounted, onUnmounted, ref, watch} from 'vue'
+import {useRouter} from 'vue-router'
+import {storeToRefs} from 'pinia'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {useUserStore} from '@/stores/user.js'
+import {Bell} from '@element-plus/icons-vue'
 import WebSocketManager from '@/utils/websocket.js'
 import {
+  cleanMessage,
+  deleteMessage,
   getMessageList,
   getUnreadMessageList,
   updateMessageReadStatus,
-  deleteMessage,
-  cleanMessage
+  allReadMessage
 } from '@/api/backstage/messageRecord.js'
 
 const router = useRouter()
 const userStore = useUserStore()
-const { messageRefreshTrigger } = storeToRefs(userStore)
+const {messageRefreshTrigger} = storeToRefs(userStore)
 
 // 状态
 const activeTab = ref('unread')
@@ -181,12 +180,13 @@ const hasLoaded = ref(false)
 
 // 消息类型映射
 const messageTypeMap = {
-  'SYSTEM': { icon: 'InfoFilled', text: '系统', tag: 'info', color: '#909399', route: '/backstage/config' },
-  'COMMENT': { icon: 'ChatDotRound', text: '评论', tag: 'success', color: '#67C23A', route: '/backstage/comment' },
-  'GUESTBOOK': { icon: 'Message', text: '留言', tag: 'warning', color: '#E6A23C', route: '/backstage/guestbook' },
-  'FRIEND_LINK': { icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links' },
-  'FRIEND_LINKS': { icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links' },
-  'OTHER': { icon: 'InfoFilled', text: '其他', tag: 'info', color: '#909399', route: '/backstage/home' }
+  'SYSTEM': {icon: 'InfoFilled', text: '系统', tag: 'info', color: '#909399', route: '/backstage/config'},
+  'COMMENT': {icon: 'ChatDotRound', text: '评论', tag: 'success', color: '#67C23A', route: '/backstage/comment'},
+  'GUESTBOOK': {icon: 'Message', text: '留言', tag: 'warning', color: '#E6A23C', route: '/backstage/guestbook'},
+  'FRIEND_LINK': {icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links'},
+  'FRIEND_LINKS': {icon: 'Link', text: '友链', tag: 'primary', color: '#409EFF', route: '/backstage/links'},
+  'VISITORS': {icon: 'User', text: '访客', tag: 'info', color: '#909399', route: '/backstage/visitor/record'},
+  'OTHER': {icon: 'InfoFilled', text: '其他', tag: 'info', color: '#909399', route: '/backstage/home'}
 }
 
 // 获取消息类型图标
@@ -234,7 +234,7 @@ const fetchMessageList = async () => {
   loading.value = true
   try {
     const api = activeTab.value === 'unread' ? getUnreadMessageList : getMessageList
-    const res = await api({ pageNum: 1, pageSize: 10 })
+    const res = await api({pageNum: 1, pageSize: 10})
     if (res.code === 200) {
       messageList.value = res.rows || []
     }
@@ -248,7 +248,7 @@ const fetchMessageList = async () => {
 // 获取未读消息数量
 const fetchUnreadCount = async () => {
   try {
-    const res = await getUnreadMessageList({ pageNum: 1, pageSize: 1 })
+    const res = await getUnreadMessageList({pageNum: 1, pageSize: 1})
     if (res.code === 200) {
       unreadCount.value = res.total || 0
     }
@@ -278,14 +278,14 @@ const markAsRead = async (msg) => {
 // 标记全部已读
 const markAllAsRead = async () => {
   try {
-    // 批量标记未读消息为已读
-    const unreadMsgs = messageList.value.filter(msg => msg.isRead === 0)
-    for (const msg of unreadMsgs) {
-      await updateMessageReadStatus(msg.messageId, 1)
+    await allReadMessage()
+    if (activeTab.value === 'unread') {
+      messageList.value = []
+    } else {
+      messageList.value.forEach(msg => {
+        msg.isRead = 1
+      })
     }
-    messageList.value.forEach(msg => {
-      msg.isRead = 1
-    })
     unreadCount.value = 0
     // 触发全局刷新，通知消息管理页面
     userStore.triggerMessageRefresh()
@@ -383,8 +383,8 @@ const initWebSocket = () => {
   const hostname = window.location.hostname
   const isDev = import.meta.env.DEV
   const wsBaseUrl = isDev
-    ? `${hostname}:8998/ws/system/messageRecord`
-    : `${window.location.host}/ws/system/messageRecord`
+      ? `${hostname}:8998/ws/system/messageRecord`
+      : `${window.location.host}/ws/system/messageRecord`
 
   wsManager.value = new WebSocketManager(wsBaseUrl, {
     heartbeatInterval: 10000,
@@ -407,12 +407,6 @@ const initWebSocket = () => {
       if (activeTab.value === 'unread') {
         fetchMessageList()
       }
-      // 显示通知
-      ElMessage({
-        message: `新消息: ${data.messageTitle}`,
-        type: 'info',
-        duration: 3000
-      })
     }
     // 处理认证过期
     if (data.type === 'error' && data.message === '认证已过期') {

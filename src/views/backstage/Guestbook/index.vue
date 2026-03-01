@@ -186,27 +186,27 @@
             </div>
             <!-- 展开回复按钮 -->
             <div
-              v-if="item.replyList && item.replyList.length > 0"
+              v-if="item.replyCount > 0"
               class="reply-toggle"
             >
               <el-button
                 link
                 type="primary"
                 :icon="expandedRows.includes(item.guestbookId) ? ArrowUp : ArrowDown"
-                @click="toggleReplies(item.guestbookId)"
+                @click="toggleReplies(item)"
               >
-                {{ expandedRows.includes(item.guestbookId) ? '收起回复' : `展开 ${item.replyList.length} 条回复` }}
+                {{ expandedRows.includes(item.guestbookId) ? '收起回复' : `展开 ${item.replyCount} 条回复` }}
               </el-button>
             </div>
           </div>
 
           <!-- 回复列表 -->
           <div
-            v-if="item.replyList && item.replyList.length > 0 && expandedRows.includes(item.guestbookId)"
+            v-if="expandedRows.includes(item.guestbookId)"
             class="reply-list"
           >
             <div
-              v-for="reply in item.replyList"
+              v-for="reply in (item.replyList || [])"
               :key="reply.guestbookId"
               class="reply-item"
             >
@@ -405,11 +405,15 @@ import {
 } from '@element-plus/icons-vue'
 import {
   getGuestbookList,
+  getChildGuestbookList,
   adminReplyMessage,
   updateGuestbookStatus,
   deleteGuestbook
 } from '@/api/backstage/guestbook'
 import MobileGuestbook from './MobileGuestbook.vue'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
 
 // 检测是否为移动端
 const isMobile = computed(() => window.innerWidth < 768)
@@ -555,12 +559,22 @@ function handleReset() {
 }
 
 // 展开/收起回复
-function toggleReplies(guestbookId) {
-  const index = expandedRows.value.indexOf(guestbookId)
+async function toggleReplies(item) {
+  const index = expandedRows.value.indexOf(item.guestbookId)
   if (index > -1) {
     expandedRows.value.splice(index, 1)
   } else {
-    expandedRows.value.push(guestbookId)
+    expandedRows.value.push(item.guestbookId)
+    // 如果没有加载过且回复数大于0
+    if (!item.replyList && item.replyCount > 0) {
+      try {
+        const res = await getChildGuestbookList({ guestbookId: item.guestbookId })
+        item.replyList = res.rows || []
+      } catch (error) {
+        console.error('获取子留言失败:', error)
+        ElMessage.error('获取回复列表失败')
+      }
+    }
   }
 }
 
@@ -596,16 +610,41 @@ async function submitReply() {
   try {
     // 判断是回复根留言还是子评论
     const isRoot = currentReplyItem.value.isRoot === 1
+    const rootId = isRoot ? currentReplyItem.value.guestbookId : currentReplyItem.value.rootId
+
     await adminReplyMessage({
       content: replyForm.content.trim(),
-      rootId: isRoot ? currentReplyItem.value.guestbookId : currentReplyItem.value.rootId,
-      parentId: currentReplyItem.value.guestbookId
+      rootId: rootId,
+      parentId: currentReplyItem.value.guestbookId,
+      nickname: userStore.nickname || '管理员',
+      email: userStore.user?.email || 'admin@blog.com',
+      avatar: userStore.avatar
     })
     ElMessage.success('回复成功')
     replyDialogVisible.value = false
-    fetchData()
+
+    // 重新加载对应的子留言列表
+    const rootItem = tableData.value.find(item => item.guestbookId === rootId)
+    if (rootItem) {
+      try {
+        const res = await getChildGuestbookList({ guestbookId: rootId })
+        rootItem.replyList = res.rows || []
+        // 更新回复数量
+        rootItem.replyCount = (rootItem.replyList || []).length
+        // 确保展开
+        if (!expandedRows.value.includes(rootId)) {
+          expandedRows.value.push(rootId)
+        }
+      } catch (err) {
+        console.error('重新获取子留言失败:', err)
+        fetchData()
+      }
+    } else {
+      fetchData()
+    }
   } catch (error) {
     console.error('回复失败:', error)
+    ElMessage.error('回复失败')
   } finally {
     replyLoading.value = false
   }

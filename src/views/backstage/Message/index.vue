@@ -286,7 +286,8 @@ import {
   getReadMessageList,
   updateMessageReadStatus,
   deleteMessage,
-  cleanMessage
+  cleanMessage,
+  allReadMessage
 } from '@/api/backstage/messageRecord.js'
 
 const router = useRouter()
@@ -548,20 +549,8 @@ const handleMarkAllRead = async () => {
       type: 'warning'
     })
 
-    // 获取所有未读消息
-    const res = await getUnreadMessageList({ pageNum: 1, pageSize: 999 })
-    if (res.code === 200 && res.rows) {
-      for (const msg of res.rows) {
-        try {
-          if (isWsConnected()) {
-            await sendWsMessageStatusUpdate(msg.messageId, 1)
-          } else {
-            await updateMessageReadStatus(msg.messageId, 1)
-          }
-        } catch (error) {
-          console.error(`标记消息 ${msg.messageId} 失败:`, error)
-        }
-      }
+    const res = await allReadMessage()
+    if (res.code === 200) {
       unreadCount.value = 0
       fetchMessageList()
       // 触发全局刷新，通知头部组件

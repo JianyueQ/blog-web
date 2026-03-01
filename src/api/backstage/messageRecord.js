@@ -61,6 +61,16 @@ export function getReadMessageList(params) {
 }
 
 /**
+ * 全部已读
+ */
+export function allReadMessage() {
+    return request({
+        url: `${apiPrefix}/allRead`,
+        method: 'post'
+    })
+}
+
+/**
  * 删除消息
  * @param {string} ids - 消息ID数组，多个ID用逗号分隔
  */
