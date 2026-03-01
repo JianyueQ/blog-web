@@ -57,8 +57,70 @@
           >
             重置
           </el-button>
+          <el-button
+            type="success"
+            :icon="Calendar"
+            @click="handleQueryToday"
+          >
+            今日访客
+          </el-button>
         </el-form-item>
       </el-form>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div
+      v-if="tableData.length > 0"
+      class="pro-card statistics-card"
+    >
+      <div class="statistics-header">
+        <el-icon><PieChart /></el-icon>
+        <span>当前页数据统计</span>
+      </div>
+      <div class="statistics-content">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div class="stat-item">
+              <div class="stat-label">
+                独立IP数
+              </div>
+              <div class="stat-value">
+                {{ statistics.uniqueIpCount }}
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="stat-item">
+              <div class="stat-label">
+                热门网段 (Top 1)
+              </div>
+              <div class="stat-value">
+                {{ statistics.topSubnet }}
+              </div>
+              <div class="stat-desc">
+                {{ statistics.topSubnetCount }} 次
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="stat-item">
+              <div class="stat-label">
+                地区分布 (Top 3)
+              </div>
+              <div class="stat-tags">
+                <el-tag
+                  v-for="(item, index) in statistics.topLocations"
+                  :key="index"
+                  size="small"
+                  :type="index === 0 ? 'danger' : (index === 1 ? 'warning' : 'primary')"
+                >
+                  {{ item.location }}: {{ item.count }}
+                </el-tag>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </div>
 
     <!-- 工具栏 -->
@@ -222,7 +284,7 @@
 import {onMounted, reactive, ref, computed} from 'vue'
 import {cleanVisitorRecords, getVisitorDetail, getVisitorList, updateBlacklist} from '@/api/backstage/visitor'
 import {ElMessage, ElMessageBox} from 'element-plus'
-import {CircleClose, Clock, Delete, Refresh, Search, View} from '@element-plus/icons-vue'
+import {CircleClose, Clock, Delete, Refresh, Search, View, Calendar, PieChart} from '@element-plus/icons-vue'
 import MobileRecord from './MobileRecord.vue'
 
 // 检测是否为移动端
@@ -242,6 +304,12 @@ const dateRange = ref([])
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
+const statistics = reactive({
+  uniqueIpCount: 0,
+  topSubnet: '',
+  topSubnetCount: 0,
+  topLocations: []
+})
 
 // 详情弹窗
 const detailDialogVisible = ref(false)
@@ -264,6 +332,8 @@ const fetchData = async () => {
     params.isAsc = 'desc'
 
     const res = await getVisitorList(params)
+    // 计算统计数据
+    calculateStatistics(res.rows || [])
     tableData.value = res.rows || []
     total.value = res.total || 0
   } catch (error) {
@@ -271,6 +341,80 @@ const fetchData = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 查询今日访客
+const handleQueryToday = () => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  const startTime = `${year}-${month}-${day} 00:00:00`
+  const endTime = `${year}-${month}-${day} 23:59:59`
+  
+  dateRange.value = [startTime, endTime]
+  // 重置其他查询条件
+  queryParams.ipaddr = ''
+  queryParams.location = ''
+  queryParams.pageNum = 1
+  
+  fetchData()
+}
+
+// 计算统计数据
+const calculateStatistics = (data) => {
+  if (!data || data.length === 0) {
+    statistics.uniqueIpCount = 0
+    statistics.topSubnet = ''
+    statistics.topSubnetCount = 0
+    statistics.topLocations = []
+    return
+  }
+
+  // 1. 独立IP统计
+  const ipSet = new Set(data.map(item => item.ipaddr))
+  statistics.uniqueIpCount = ipSet.size
+
+  // 2. 网段统计 (取前三段)
+  const subnetMap = new Map()
+  data.forEach(item => {
+    if (item.ipaddr) {
+      // 兼容 IPv4
+      const parts = item.ipaddr.split('.')
+      if (parts.length >= 3) {
+        const subnet = `${parts[0]}.${parts[1]}.${parts[2]}`
+        subnetMap.set(subnet, (subnetMap.get(subnet) || 0) + 1)
+      }
+    }
+  })
+  
+  // 找出热门网段
+  let maxSubnetCount = 0
+  let topSubnet = ''
+  subnetMap.forEach((count, subnet) => {
+    if (count > maxSubnetCount) {
+      maxSubnetCount = count
+      topSubnet = subnet
+    }
+  })
+  statistics.topSubnet = topSubnet
+  statistics.topSubnetCount = maxSubnetCount
+
+  // 3. 地区分布统计
+  const locationMap = new Map()
+  data.forEach(item => {
+    if (item.location) {
+      locationMap.set(item.location, (locationMap.get(item.location) || 0) + 1)
+    }
+  })
+
+  // 排序取前三
+  const sortedLocations = Array.from(locationMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([location, count]) => ({ location, count }))
+  
+  statistics.topLocations = sortedLocations
 }
 
 // 搜索
@@ -469,6 +613,59 @@ onMounted(() => {
       word-break: break-all;
       color: var(--backstage-text-secondary);
       line-height: 1.5;
+    }
+  }
+
+  // 统计卡片样式
+  .statistics-card {
+    padding: 0;
+    
+    .statistics-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--backstage-border-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--backstage-text-primary);
+    }
+    
+    .statistics-content {
+      padding: 20px 24px;
+      
+      .stat-item {
+        background: var(--backstage-bg-color);
+        padding: 16px;
+        border-radius: var(--backstage-radius-lg);
+        border: 1px solid var(--backstage-border-light);
+        height: 100%;
+        
+        .stat-label {
+          font-size: 13px;
+          color: var(--backstage-text-secondary);
+          margin-bottom: 8px;
+        }
+        
+        .stat-value {
+          font-size: 24px;
+          font-weight: 600;
+          color: var(--backstage-text-primary);
+          font-family: 'Consolas', 'Monaco', monospace;
+        }
+        
+        .stat-desc {
+          margin-top: 4px;
+          font-size: 12px;
+          color: var(--backstage-text-placeholder);
+        }
+        
+        .stat-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+      }
     }
   }
 }
